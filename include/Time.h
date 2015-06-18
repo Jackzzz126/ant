@@ -18,6 +18,6 @@ public:
 	//static int GetSysTime();//time stamp in millisecond
 	static int GetProcTime();//time stamp in millisecond
 
-	static string GetTimeStr();
+	static string GetNowStr();
 };
 #endif//_TIME_H_

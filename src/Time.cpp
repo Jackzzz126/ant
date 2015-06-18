@@ -14,7 +14,7 @@ int Time::GetProcTime()
 	return time * 1000 / CLOCKS_PER_SEC;
 }
 
-string Time::GetTimeStr()
+string Time::GetNowStr()
 {
 	time_t rawTime;
 	struct tm * timeInfo;

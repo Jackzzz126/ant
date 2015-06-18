@@ -135,8 +135,7 @@ int main( int argc, char* argv[] )
 	}
 	else
 	{
-		string timeStr = Time::GetTimeStr();
-		Log::Out("Server start at %s:%d %s\n", gConfig->mIp.c_str(), gConfig->mPort, timeStr.c_str());
+		Log::Out("Server start at %s:%d.\n", gConfig->mIp.c_str(), gConfig->mPort);
 	}
 
 	//thread
