@@ -14,7 +14,7 @@ CPPPATH=../src
 HPATH=-I ../include -I ../libuv/include -I ../libjson -I ../proto
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-LIBS = -luv -lrt -ldl -lm -ljson -lproto
+LIBS = -luv -lrt -ldl -lm -ljson
 LIBPATH = -L .
 TARGET = ant
 
