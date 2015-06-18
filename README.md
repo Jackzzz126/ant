@@ -1,7 +1,7 @@
 only for learn and test, not ready for use yet!
 ## build
-* build libuv
+* build [libuv](https://github.com/libuv/libuv.git)
 * copy libuv.a to build
-* build libjson
+* build [libjson](http://sourceforge.net/projects/libjson/)
 * copy libjson.a to build
 
