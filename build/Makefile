@@ -16,7 +16,7 @@ SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -luv -lrt -ldl -lm -ljson -lproto
 LIBPATH = -L .
-TARGET = server
+TARGET = ant
 
 all:$(TARGET)
 

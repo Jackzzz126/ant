@@ -1,7 +1,7 @@
 build/*.o
 build/*.d
 build/*.a
-build/server
+build/ant
 
 proto/*.o
 proto/*.d
