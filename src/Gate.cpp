@@ -3,8 +3,8 @@
 #include "Config.h"
 #include "Log.h"
 
-#include "ReqRegCombatServer.h"
-#include "ResRegCombatServer.h"
+//#include "ReqRegCombatServer.h"
+//#include "ResRegCombatServer.h"
 
 extern Config* gConfig;
 extern uv_loop_t *loop;
@@ -16,15 +16,15 @@ Gate::Gate()
 
 void Gate::Reg(uv_timer_t *handle, int status)
 {
-	HttpConn conn;
-	conn.mSocket = new uv_tcp_t;
-	uv_tcp_init(loop, conn.mSocket);
+	//HttpConn conn;
+	//conn.mSocket = new uv_tcp_t;
+	//uv_tcp_init(loop, conn.mSocket);
 
-	conn.mConn = new uv_connect_t;
-	struct sockaddr_in server_addr;
-	uv_ip4_addr(gConfig->mGateIp.c_str(), gConfig->mGatePort, &server_addr);
-	uv_tcp_connect(conn.mConn, conn.mSocket, (sockaddr*)&server_addr, OnRegConn);
-	gHttpConns.push_back(conn);
+	//conn.mConn = new uv_connect_t;
+	//struct sockaddr_in server_addr;
+	//uv_ip4_addr(gConfig->mGateIp.c_str(), gConfig->mGatePort, &server_addr);
+	//uv_tcp_connect(conn.mConn, conn.mSocket, (sockaddr*)&server_addr, OnRegConn);
+	//gHttpConns.push_back(conn);
 }
 
 void Gate::OnRegConn(uv_connect_t* conn, int status)

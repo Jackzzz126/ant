@@ -4,8 +4,8 @@
 #include "Player.h"
 #include "Client.h"
 
-#include "ReqValidCharacter.h"
-#include "ResValidCharacter.h"
+//#include "ReqValidCharacter.h"
+//#include "ResValidCharacter.h"
 
 extern uv_loop_t *loop;
 extern vector<HttpConn> gHttpConns;

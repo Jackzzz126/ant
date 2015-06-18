@@ -10,7 +10,6 @@ use like this:
 	Json json;
 	if(!json.Parse(string(buff, size)))
 	{
-		UserMgr::CloseUser(mConn, User::UNKNOWN_DATA);
 		return;
 	}
 	int id = 0;
@@ -21,11 +20,7 @@ use like this:
 		|| !json.GetValue("test:equip", equip)
 		)
 	{
-		UserMgr::CloseUser(mConn, User::UNKNOWN_DATA);
 		return;
-	}
-	else
-	{
 	}
 */
 class Json

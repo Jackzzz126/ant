@@ -8,19 +8,11 @@ public:
 	~Config(){};
 
 	bool Load(char* file);
-private:
-	bool Parse(const string& str, string& key, string& value);
+	//bool Parse(const string& str, string& key, string& value);
 
 public:
 	string mIp;
 	int mPort;
-	int mBackLog;
-
-	string mAuthIp;
-	int mAuthPort;
-	string mGateIp;
-	int mGatePort;
-
-	int mRegInterval;
+	int mBacklog;
 };
 #endif//_CONFIG_H_

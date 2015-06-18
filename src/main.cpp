@@ -110,7 +110,7 @@ int main( int argc, char* argv[] )
 {
 	//config
 	gConfig = new Config();
-	char configFileName[] = "config.conf";
+	char configFileName[] = "config.json";
 	if(!gConfig->Load(configFileName))
 	{
 		Log::Error("Error when parse config file.\n");
@@ -126,7 +126,7 @@ int main( int argc, char* argv[] )
 	struct sockaddr_in bind_addr;
 	uv_ip4_addr(gConfig->mIp.c_str(), gConfig->mPort, &bind_addr);
 	uv_tcp_bind(&listener, (sockaddr*)&bind_addr, 0);
-	int r = uv_listen((uv_stream_t*) &listener, gConfig->mBackLog, on_new_connection);
+	int r = uv_listen((uv_stream_t*) &listener, gConfig->mBacklog, on_new_connection);
 	if(r < 0)
 	{
 		Log::Error( "Error when listen at%s:%d: %s.\n", gConfig->mIp.c_str(), gConfig->mPort,

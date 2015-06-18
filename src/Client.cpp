@@ -8,9 +8,9 @@
 #include "Json.h"
 #include "Game.h"
 
-#include "ReqJoinRoom.h"
-#include "ReqBenchMark.h"
-#include "ReqTest.h"
+//#include "ReqJoinRoom.h"
+//#include "ReqBenchMark.h"
+//#include "ReqTest.h"
 
 int Client::BUFF_UNIT = 1024;
 int Client::HEAD_LENGTH = 8;
