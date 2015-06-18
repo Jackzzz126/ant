@@ -1,5 +1,5 @@
-# build
-
+only for learn and test, not ready for use yet!
+## build
 * build libuv
 * copy libuv.a to build
 * build libjson
