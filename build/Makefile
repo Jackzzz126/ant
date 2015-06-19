@@ -4,9 +4,9 @@
 mode = debug
 
 ifeq ($(mode), debug)
-	CPPFLAGS=-O0 -Wall -g -D debug $(HPATH)
+	CPPFLAGS=-O0 -Wall -g $(HPATH)
 else
-	CPPFLAGS=-O3 -Wall $(HPATH)
+	CPPFLAGS=-O3 -Wall $(HPATH) -DNDEBUG
 endif
 CC=g++
 
@@ -28,7 +28,7 @@ $(TARGET):$(OBJS)
 
 .PHONY:clean
 clean:
-	@rm *.o *.d
+	@rm *.o $(TARGET)
 
 include $(notdir $(patsubst %.cpp,%.d,$(SOURCES)))
 %.d:$(CPPPATH)/%.cpp

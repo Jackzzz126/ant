@@ -1,6 +1,13 @@
 #ifndef _JSON_H_
 #define _JSON_H_
+#ifndef NDEBUG
+#define NDEBUG
 #include "libjson.h"
+#undef NDEBUG
+#else
+#include "libjson.h"
+#endif
+
 
 //all value must have a key, array only with int
 /*
