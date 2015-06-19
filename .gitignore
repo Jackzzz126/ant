@@ -1,6 +1,5 @@
 build/*.o
 build/*.d
-build/*.a
 build/ant
 
 proto/*.o
