@@ -13,20 +13,28 @@ string GetClientAddr(uv_stream_t *conn)
 	return String::Format("%s:%d", ip, ntohs(inetAddr->sin_port));
 }
 
-uv_buf_t NewBuffer(int size)
+uv_buf_t NewUvBuff(int size)
 {
 	uv_buf_t buff;
-	buff.base = new char[size];
+	buff.base = NewBuff(size);
 	//memset(buff.base, 0, size);
 	buff.len = size;
 	return buff;
 }
 
-void DelBuffer(uv_buf_t& buff)
+void DelUvBuff(uv_buf_t& buff)
 {
-	delete [](char*)buff.base;
-	buff.base = NULL;
+	DelBuff(&buff.base);
 	buff.len = 0;
 }
 
+char* NewBuff(int size)
+{
+	return (char*)malloc(size);
+}
+void DelBuff(char** pp)
+{
+	free(*pp);
+	*pp = NULL;
+}
 

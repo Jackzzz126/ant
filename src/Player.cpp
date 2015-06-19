@@ -1,6 +1,6 @@
 #include "comm.h"
 #include "Player.h"
-#include "Client.h"
+#include "Conn.h"
 
 Player::Player(uv_stream_t *conn)
 {
@@ -13,7 +13,7 @@ void Player::OnValidChar(bool success)
 	}
 	else
 	{
-		ClientMgr::CloseClient(mConn, Client::VALID_FAIL);
+		ConnMgr::CloseConn(mConn, Conn::VALID_FAIL);
 	}
 }
 

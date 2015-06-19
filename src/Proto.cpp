@@ -80,7 +80,7 @@ bool Proto::ReadBuffer(Buffer& buff)
 	if((mCurPos + buffLen - mBuff) > mSize)
 		return false;
 
-	buff.mBuff = new char[(buffLen/Proto::BUFF_UNIT + 1) * Proto::BUFF_UNIT];
+	buff.mBuff = NewBuff((buffLen/Proto::BUFF_UNIT + 1) * Proto::BUFF_UNIT);
 	memcpy(buff.mBuff, mCurPos, buffLen);
 	buff.mSize = buffLen;
 

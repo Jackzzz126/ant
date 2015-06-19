@@ -3,7 +3,7 @@
 #include "Define.h"
 #include "Time.h"
 #include "Config.h"
-#include "Client.h"
+#include "Conn.h"
 #include "Gate.h"
 
 uv_loop_t* loop = NULL;
@@ -11,41 +11,38 @@ Config* gConfig = NULL;
 
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff)
 {
-	buff->base = ClientMgr::mAllClients[handle]->mReceiveBuff.base;
-	buff->len = ClientMgr::mAllClients[handle]->mReceiveBuff.len;
+	//suggested_size always be 65536
+	buff->base = ConnMgr::mAllConns[handle]->mRecvBuff.base;
+	buff->len = ConnMgr::mAllConns[handle]->mRecvBuff.len;
 }
 
 void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff)
 {
+	//pRecvBuff: same buff in cb
 	if (nread < 0)
 	{
 		if (nread != UV_EOF)
 		{
 			Log::Error("Error when read :%s.\n", uv_err_name(nread));
-			ClientMgr::CloseClient(conn, Client::SOCK_ERROR);
+			ConnMgr::CloseConn(conn, Conn::SOCK_ERROR);
 		}
 		else
 		{
 			//EOF means close;
-			ClientMgr::CloseClient(conn, Client::CLIENT_CLOSE);
+			ConnMgr::CloseConn(conn, Conn::CLIENT_CLOSE);
 		}
 		return;
 	}
 
-	string clientAddr = GetClientAddr(conn);
-	if( nread < 4 )
+	map<void*, Conn*>::iterator iter;
+	iter = ConnMgr::mAllConns.find(conn);
+	if(iter != ConnMgr::mAllConns.end())
 	{
-		ClientMgr::CloseClient(conn, Client::UNKNOWN_DATA);
-	}
-	map<void*, Client*>::iterator iter;
-	iter = ClientMgr::mAllClients.find(conn);
-	if(iter != ClientMgr::mAllClients.end())
-	{
-		iter->second->ReceiveData(pRecvBuff->base, nread);
+		iter->second->RecvData(pRecvBuff->base, nread);
 	}
 	else
 	{
-		Log::Error("Unknown client.\n");
+		Log::Error("Read data from unknown conn.\n");
 		uv_close((uv_handle_t*)conn, NULL);
 	}
 }
@@ -59,11 +56,13 @@ void on_new_connection(uv_stream_t *listener, int status)
 
 	uv_tcp_t *conn = new uv_tcp_t;
 	uv_tcp_init(loop, conn);
-	if (uv_accept(listener, (uv_stream_t*) conn) == 0)
+	if (uv_accept(listener, (uv_stream_t*)conn) == 0)
 	{
+		assert(conn->type == UV_TCP || conn->type == UV_NAMED_PIPE ||
+      conn->type == UV_TTY);
 		string clientAddr = GetClientAddr((uv_stream_t*)conn);
-		Client* user = new Client((uv_stream_t*)conn, clientAddr);
-		ClientMgr::mAllClients[conn] = user;
+		Conn* connObj = new Conn((uv_stream_t*)conn, clientAddr);
+		ConnMgr::mAllConns[conn] = connObj;
 		uv_read_start((uv_stream_t*)conn, alloc_buffer_cb, on_read);
 	}
 	else
@@ -72,41 +71,41 @@ void on_new_connection(uv_stream_t *listener, int status)
 	}
 }
 
-//void console(void* arg )
+//void console(void* arg)
 //{
 //	char buff[256];
 //	while(true)
 //	{
 //		if(gets(buff))
 //		{
-//			printf( "error when read from console.\n" );
+//			printf("error when read from console.\n");
 //			break;
 //		}
-//		if(strcmp( buff, "exit" )  == 0)
+//		if(strcmp(buff, "exit")  == 0)
 //		{
-//			printf( "quit console...\n" );
+//			printf("quit console...\n");
 //			break;
 //		}
-//		else if(strcmp( buff, "time" )  == 0)
+//		else if(strcmp(buff, "time")  == 0)
 //		{
 //			string timeStr = Time::GetTimeStr();
 //			printf("%s\n", timeStr.c_str());
 //		}
-//		else if(strcmp( buff, "users" )  == 0)
+//		else if(strcmp(buff, "users")  == 0)
 //		{
-//			for(map<void*, Client*>::iterator iter = ClientMgr::mAllClients.begin(); iter != ClientMgr::mAllClients.end(); iter++)
+//			for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
 //			{
-//				printf( "%s\n", iter->second->mAddr.c_str());
+//				printf("%s\n", iter->second->mAddr.c_str());
 //			}
 //		}
 //		else
 //		{
-//			printf( "unknown command.\n" );
+//			printf("unknown command.\n");
 //		}
 //	}
 //}
 
-int main( int argc, char* argv[] )
+int main(int argc, char* argv[])
 {
 	//config
 	gConfig = new Config();
@@ -129,8 +128,8 @@ int main( int argc, char* argv[] )
 	int r = uv_listen((uv_stream_t*) &listener, gConfig->mBacklog, on_new_connection);
 	if(r < 0)
 	{
-		Log::Error( "Error when listen at%s:%d: %s.\n", gConfig->mIp.c_str(), gConfig->mPort,
-					uv_err_name(r));
+		Log::Error("Error when listen at%s:%d: %s.\n", gConfig->mIp.c_str(),
+			gConfig->mPort, uv_err_name(r));
 		return 1;
 	}
 	else
@@ -157,11 +156,11 @@ int main( int argc, char* argv[] )
 	DELETE(gConfig);
 
 	//user
-	for(map<void*, Client*>::iterator iter = ClientMgr::mAllClients.begin(); iter != ClientMgr::mAllClients.end(); iter++)
+	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		iter->second->Destroy(Client::SERVER_DOWN);
+		iter->second->Destroy(Conn::SERVER_DOWN);
 	}
-	ClientMgr::mAllClients.clear();
+	ConnMgr::mAllConns.clear();
 
 	return rtn;
 }

@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "Client.h"
+#include "Conn.h"
 
 #include "Log.h"
 #include "Define.h"
@@ -12,41 +12,55 @@
 //#include "ReqBenchMark.h"
 //#include "ReqTest.h"
 
-int Client::BUFF_UNIT = 1024;
-int Client::HEAD_LENGTH = 8;
+int Conn::BUFF_UNIT = 1024;
+int Conn::HEAD_LENGTH = 8;
 
-Client::Client(uv_stream_t *conn, const string& addr )
+Conn::Conn(uv_stream_t *conn, const string& addr )
 {
 	mConn = conn;
 	mAddr = addr;
-	mReceiveBuff.base = new char[1024 * 16];
-	mReceiveBuff.len = 1024 * 16;
-	mDataBuff.base = new char[Client::BUFF_UNIT];
-	mDataBuff.len = Client::BUFF_UNIT;
+	mRecvBuff.base = NewBuff(Conn::BUFF_UNIT);
+	mRecvBuff.len = Conn::BUFF_UNIT;
+	mDataBuff.base = NewBuff(Conn::BUFF_UNIT);
+	mDataBuff.len = Conn::BUFF_UNIT;
 	mValidSize = 0;
-
-	mPlayer = new Player(conn);
 }
-Client::~Client()
+Conn::~Conn()
 {
-	delete [](char*)mReceiveBuff.base;
-	mReceiveBuff.len = 0;
-	delete [](char*)mDataBuff.base;
+	DelBuff(&mRecvBuff.base);
+	mRecvBuff.len = 0;
+	DelBuff(&mDataBuff.base);
 	mDataBuff.len = 0;
-
-	delete mPlayer;
+}
+void Conn::ExpandDataBuff(int newDataSize)
+{
+	char* oldBuff = mDataBuff.base;
+	int expandSize = (newDataSize / Conn::BUFF_UNIT + 1) * Conn::BUFF_UNIT;
+	mDataBuff.base = NewBuff(mDataBuff.len + expandSize);
+	mDataBuff.len += expandSize;
+	memcpy(mDataBuff.base, oldBuff, mValidSize);
+	DelBuff(&oldBuff);
+}
+void Conn::ShrinkDataBuff()
+{
+	if(mValidSize < 256)//< 1/4 of buff size
+	{
+		char* newBuff = NewBuff(Conn::BUFF_UNIT);
+		if(mValidSize > 0)
+		{
+			memcpy(newBuff, mDataBuff.base, mValidSize);
+		}
+		DelBuff(&mDataBuff.base);
+		mDataBuff.base = newBuff;
+		mDataBuff.len = BUFF_UNIT;
+	}
 }
 
-void Client::ReceiveData(char* buff, int size)
+void Conn::RecvData(char* buff, int size)
 {
-	if(((int)mDataBuff.len - mValidSize) < size)
+	if(((int)mDataBuff.len - mValidSize) < size)//no enough space
 	{
-		char* oldBuff = mDataBuff.base;
-	 	int expandSize = (size / Client::BUFF_UNIT + 1) * Client::BUFF_UNIT;
-		mDataBuff.base = new char[mDataBuff.len + expandSize];
-		mDataBuff.len += expandSize;
-		memcpy(mDataBuff.base, oldBuff, mValidSize);
-		delete []oldBuff;
+		ExpandDataBuff(size);
 	}
 	memcpy((char*)mDataBuff.base + mValidSize, buff, size);
 	mValidSize += size;
@@ -64,7 +78,7 @@ void Client::ReceiveData(char* buff, int size)
 		ParseNormalPack();
 	}
 }
-void Client::ParseHttpPack()
+void Conn::ParseHttpPack()
 {
 	vector<string> httpHead;
 
@@ -119,7 +133,7 @@ void Client::ParseHttpPack()
 	}
 	if(url == "" || method == "")
 	{
-		ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 		return;
 	}
 	if(method == "GET")
@@ -140,7 +154,7 @@ void Client::ParseHttpPack()
 	{
 		if(dataLen == -1 || dataLen == 0)
 		{
-			ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+			ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 			return;
 		}
 		else
@@ -164,7 +178,7 @@ void Client::ParseHttpPack()
 		}
 	}
 }
-void Client::ParseNormalPack()
+void Conn::ParseNormalPack()
 {
 	int packLen = *((int*)mDataBuff.base) ^ 0x79669966;
 	int packId = *((int*)(mDataBuff.base) + 1) ^ 0x79669966;
@@ -187,17 +201,17 @@ void Client::ParseNormalPack()
 	}
 }
 
-void Client::Destroy(Client::DisconnectReason reason)
+void Conn::Destroy(Conn::DisconnReason reason)
 {
-	if(reason == Client::UNKNOWN_DATA)
+	if(reason == Conn::UNKNOWN_DATA)
 	{
 		Log::Out("%s: disconnected[unknown data].\n", mAddr.c_str());
 	}
-	else if(reason == Client::SOCK_ERROR)
+	else if(reason == Conn::SOCK_ERROR)
 	{
 		Log::Out("%s: disconnected[socket error].\n", mAddr.c_str());
 	}
-	else if(reason == Client::VALID_FAIL)
+	else if(reason == Conn::VALID_FAIL)
 	{
 		Log::Out("%s: disconnected[valid fail].\n", mAddr.c_str());
 	}
@@ -208,7 +222,7 @@ void Client::Destroy(Client::DisconnectReason reason)
 	delete this;
 }
 
-void Client::HandleHttpPack(const string& url, char* buff, int size)
+void Conn::HandleHttpPack(const string& url, char* buff, int size)
 {
 	if(url == "/hello")
 	{
@@ -217,20 +231,20 @@ void Client::HandleHttpPack(const string& url, char* buff, int size)
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewBuffer(72/Client::BUFF_UNIT + Client::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
 		return;
 	}
 }
-void Client::HandleHttpPack(const string& url)
+void Conn::HandleHttpPack(const string& url)
 {
 	if(url == "/hello")
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 200 OK\r\nContent-Lenght:12\r\nContent-Type:'text/plain'\r\n\r\nHello world.";
-		uv_buf_t sendBuff = NewBuffer(77/Client::BUFF_UNIT + Client::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(77/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 77);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
@@ -240,7 +254,7 @@ void Client::HandleHttpPack(const string& url)
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewBuffer(72/Client::BUFF_UNIT + Client::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
@@ -248,7 +262,7 @@ void Client::HandleHttpPack(const string& url)
 	}
 }
 
-bool Client::IsHttpPack(char* buff)
+bool Conn::IsHttpPack(char* buff)
 {
 	char text[5];
 	memcpy(text, buff, 4);
@@ -267,7 +281,7 @@ bool Client::IsHttpPack(char* buff)
 	}
 }
 
-void Client::HandleNormalPack(int packId, char* buff, int size)
+void Conn::HandleNormalPack(int packId, char* buff, int size)
 {
 	switch(packId)
 	{
@@ -275,11 +289,11 @@ void Client::HandleNormalPack(int packId, char* buff, int size)
 		break;
 	case 12:
 		{
-			uv_buf_t sendBuff = NewBuffer(size + HEAD_LENGTH);
+			uv_buf_t sendBuff = NewUvBuff(size + HEAD_LENGTH);
 			memcpy(sendBuff.base + HEAD_LENGTH, buff, size);
 			*(int*)(sendBuff.base) = size ^ 0x79669966;
 			*((int*)(sendBuff.base) + 1) = 12 ^ 0x79669966;
-			ClientMgr::SendPackToAll(sendBuff);
+			ConnMgr::SendPackToAll(sendBuff);
 			break;
 		}
 	default:
@@ -287,7 +301,7 @@ void Client::HandleNormalPack(int packId, char* buff, int size)
 	}
 	//if( packId < PackId::MIN_PACKID || packId > PackId::MAX_PACKID )
 	//{
-	//	ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 	//	return;
 	//}
 	//if(packId == PackId::JOINROOM)
@@ -296,7 +310,7 @@ void Client::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parst())
 	//	{
-	//		ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	Game::ValidChar(req.m_session, req.m_charId, req.m_ip, req.m_port, mPlayer);
@@ -307,7 +321,7 @@ void Client::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	printf("%s\n", req.m_buff.mBuff);
@@ -329,34 +343,34 @@ void Client::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	uv_buf_t sendBuff;
 	//	req.Write(sendBuff);
-	//	ClientMgr::SendPackToAll(sendBuff);
+	//	ConnMgr::SendPackToAll(sendBuff);
 	//}
 	//else
 	//{
-	//	ClientMgr::CloseClient(mConn, Client::UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 	//	return;
 	//}
 }
 
 //************************************************
-map<void*, Client*> ClientMgr::mAllClients;
+map<void*, Conn*> ConnMgr::mAllConns;
 
-ClientMgr::ClientMgr()
+ConnMgr::ConnMgr()
 {
 }
 
-void ClientMgr::CloseClient(uv_stream_t* conn, Client::DisconnectReason reason)
+void ConnMgr::CloseConn(uv_stream_t* conn, Conn::DisconnReason reason)
 {
-	map<void*, Client*>::iterator iter = ClientMgr::mAllClients.find(conn);
-	if(iter != ClientMgr::mAllClients.end())
+	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.find(conn);
+	if(iter != ConnMgr::mAllConns.end())
 	{
 		iter->second->Destroy(reason);
-		ClientMgr::mAllClients.erase(conn);
+		ConnMgr::mAllConns.erase(conn);
 	}
 	else
 	{
@@ -364,12 +378,12 @@ void ClientMgr::CloseClient(uv_stream_t* conn, Client::DisconnectReason reason)
 		uv_close((uv_handle_t*)conn, NULL);
 	}
 }
-void ClientMgr::SendPackToAll(uv_buf_t buff)
+void ConnMgr::SendPackToAll(uv_buf_t buff)
 {
-	map<void*, Client*>::iterator iter = ClientMgr::mAllClients.begin();
-	for(; iter != ClientMgr::mAllClients.end(); iter++)
+	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
+	for(; iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		uv_buf_t sendBuff = NewBuffer(buff.len);
+		uv_buf_t sendBuff = NewUvBuff(buff.len);
 		memcpy(sendBuff.base, buff.base, buff.len);
 		//uv_write_t *req = new uv_write_t;
 		//req->data = buff.base;
@@ -378,7 +392,7 @@ void ClientMgr::SendPackToAll(uv_buf_t buff)
 		req->buf = sendBuff;
 		uv_write(&req->req, iter->second->mConn, &req->buf, 1, OnWrite);
 	}
-	delete [](char*)(buff.base);
+	DelBuff(&buff.base);
 }
 
 

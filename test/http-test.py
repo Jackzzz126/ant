@@ -31,7 +31,7 @@ if __name__ == '__main__':
 	url['log'] = '/log/add'
 	data['log'] = r'aaaaaaaaaaaaa aaaaaaaaaaaaaa aaaaaaaaaaaaa aaaaaaaaa aaaaaaaaaaaaa'
 
-	site_url = 'http://10.10.10.139:9003'
+	site_url = 'http://192.168.11.61:9000'
 	try:
 		key = 'log'
 		for i in xrange(0, 1000000):

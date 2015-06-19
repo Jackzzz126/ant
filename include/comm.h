@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <stdarg.h>
+#include <assert.h>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -20,5 +21,6 @@ using namespace std;
 #include "uv.h"
 //owen
 #include "String.h"
+#include "Define.h"
 
 #endif//_COMM_H_

@@ -74,7 +74,7 @@ void Gate::OnRegReturn(uv_stream_t *handle, ssize_t nread, uv_buf_t recvBuff)
 	//if(httpHead.substr(0, 12) != "HTTP/1.1 200")
 	//{
 	//	Log::Out("reg combat server faile.\n");
-	//	delete [](char*)(recvBuff.base);
+	//	DelBuff(&recvBuff.base);
 	//}
 	//else
 	//{
@@ -92,7 +92,7 @@ void Gate::OnRegReturn(uv_stream_t *handle, ssize_t nread, uv_buf_t recvBuff)
 	//			Log::Out("error when reg combat server.\n");
 	//		}
 	//	}
-	//	delete [](char*)(recvBuff.base);
+	//	DelBuff(&recvBuff.base);
 	//}
 }
 

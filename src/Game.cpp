@@ -2,7 +2,7 @@
 #include "Game.h"
 #include "Log.h"
 #include "Player.h"
-#include "Client.h"
+#include "Conn.h"
 
 //#include "ReqValidCharacter.h"
 //#include "ResValidCharacter.h"
@@ -80,7 +80,7 @@ void Game::OnValidCharReturn(uv_stream_t *handle, ssize_t nread, uv_buf_t recvBu
 	//if(httpHead.substr(0, 12) != "HTTP/1.1 200")
 	//{
 	//	Log::Out("error when valid char:500.\n");
-	//	delete [](char*)(recvBuff.base);
+	//	DelBuff(&recvBuff.base);
 	//	PlayerMgr::GetPlayer(handle)->OnValidChar(false);
 	//	PlayerMgr::DelPlayer(handle);
 	//}
@@ -109,7 +109,7 @@ void Game::OnValidCharReturn(uv_stream_t *handle, ssize_t nread, uv_buf_t recvBu
 	//			PlayerMgr::DelPlayer(handle);
 	//		}
 	//	}
-	//	delete [](char*)(recvBuff.base);
+	//	DelBuff(&recvBuff.base);
 	//}
 }
 
