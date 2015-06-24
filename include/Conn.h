@@ -37,13 +37,12 @@ private:
 	void HandleNormalPack(int packId, char* buff, int size);
 	
 	bool IsHttpPack(char* buff);
-	void ExpandDataBuff(int newDataSize);
-	void ShrinkDataBuff();
+	void ExpandRecvBuff();
+	void ShrinkRecvBuff();
 public:
 	uv_stream_t* mConn;
 	string mAddr;
 	uv_buf_t mRecvBuff;//buff to recv data
-	uv_buf_t mDataBuff;
 	int mValidSize;
 };
 

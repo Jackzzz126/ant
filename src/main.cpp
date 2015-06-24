@@ -12,8 +12,9 @@ Config* gConfig = NULL;
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff)
 {
 	//suggested_size always be 65536
-	buff->base = ConnMgr::mAllConns[handle]->mRecvBuff.base;
-	buff->len = ConnMgr::mAllConns[handle]->mRecvBuff.len;
+	Conn* connObj = ConnMgr::mAllConns[handle];
+	buff->base = connObj->mRecvBuff.base + connObj->mValidSize;
+	buff->len = connObj->mRecvBuff.len - connObj->mValidSize;
 }
 
 void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff)

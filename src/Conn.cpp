@@ -19,57 +19,47 @@ Conn::Conn(uv_stream_t *conn, const string& addr )
 {
 	mConn = conn;
 	mAddr = addr;
-	mRecvBuff.base = NewBuff(Conn::BUFF_UNIT);
-	mRecvBuff.len = Conn::BUFF_UNIT;
-	mDataBuff.base = NewBuff(Conn::BUFF_UNIT);
-	mDataBuff.len = Conn::BUFF_UNIT;
+	mRecvBuff.base = NewBuff(Conn::BUFF_UNIT * 2);
+	mRecvBuff.len = Conn::BUFF_UNIT * 2;
 	mValidSize = 0;
 }
 Conn::~Conn()
 {
 	DelBuff(&mRecvBuff.base);
 	mRecvBuff.len = 0;
-	DelBuff(&mDataBuff.base);
-	mDataBuff.len = 0;
 }
-void Conn::ExpandDataBuff(int newDataSize)
+void Conn::ExpandRecvBuff()
 {
-	char* oldBuff = mDataBuff.base;
-	int expandSize = (newDataSize / Conn::BUFF_UNIT + 1) * Conn::BUFF_UNIT;
-	mDataBuff.base = NewBuff(mDataBuff.len + expandSize);
-	mDataBuff.len += expandSize;
-	memcpy(mDataBuff.base, oldBuff, mValidSize);
+	char* oldBuff = mRecvBuff.base;
+	mRecvBuff.base = NewBuff(mRecvBuff.len * 2);
+	mRecvBuff.len *= 2;
+	if(mValidSize > 0)
+	{
+		memcpy(mRecvBuff.base, oldBuff, mValidSize);
+	}
 	DelBuff(&oldBuff);
 }
-void Conn::ShrinkDataBuff()
+void Conn::ShrinkRecvBuff()
 {
-	if(mValidSize < 256)//< 1/4 of buff size
+	char* newBuff = NewBuff(Conn::BUFF_UNIT * 2);
+	if(mValidSize > 0)
 	{
-		char* newBuff = NewBuff(Conn::BUFF_UNIT);
-		if(mValidSize > 0)
-		{
-			memcpy(newBuff, mDataBuff.base, mValidSize);
-		}
-		DelBuff(&mDataBuff.base);
-		mDataBuff.base = newBuff;
-		mDataBuff.len = BUFF_UNIT;
+		memcpy(newBuff, mRecvBuff.base, mValidSize);
 	}
+	DelBuff(&mRecvBuff.base);
+	mRecvBuff.base = newBuff;
+	mRecvBuff.len = BUFF_UNIT * 2;
 }
 
 void Conn::RecvData(char* buff, int size)
 {
-	if(((int)mDataBuff.len - mValidSize) < size)//no enough space
-	{
-		ExpandDataBuff(size);
-	}
-	memcpy((char*)mDataBuff.base + mValidSize, buff, size);
 	mValidSize += size;
 
 	if(mValidSize < HEAD_LENGTH)
 	{
 		return;
 	}
-	if(IsHttpPack(mDataBuff.base))
+	if(IsHttpPack(mRecvBuff.base))
 	{
 		ParseHttpPack();
 	}
@@ -77,14 +67,23 @@ void Conn::RecvData(char* buff, int size)
 	{
 		ParseNormalPack();
 	}
+
+	if((mRecvBuff.len - mValidSize) < (uint)BUFF_UNIT / 2)//no enough space
+	{
+		ExpandRecvBuff();
+	}
+	if(mValidSize < BUFF_UNIT / 2)
+	{
+		ShrinkRecvBuff();
+	}
 }
 void Conn::ParseHttpPack()
 {
 	vector<string> httpHead;
 
-	char* head = mDataBuff.base;
-	char* end = mDataBuff.base;
-	while(end < ((char*)mDataBuff.base + mValidSize))
+	char* head = mRecvBuff.base;
+	char* end = mRecvBuff.base;
+	while(end < ((char*)mRecvBuff.base + mValidSize))
 	{
 		if(*end == '\n' && *(end-1) == '\r')
 		{
@@ -139,14 +138,14 @@ void Conn::ParseHttpPack()
 	if(method == "GET")
 	{
 		HandleHttpPack(url);
-		int excessDataLen = ((char*)mDataBuff.base + mValidSize) - end;
+		int excessDataLen = ((char*)mRecvBuff.base + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
 			mValidSize = 0;
 		}
 		else
 		{
-			memcpy(mDataBuff.base, end, excessDataLen);
+			memcpy(mRecvBuff.base, end, excessDataLen);
 			mValidSize = excessDataLen;
 		}
 	}
@@ -159,7 +158,7 @@ void Conn::ParseHttpPack()
 		}
 		else
 		{
-			int excessDataLen = ((char*)mDataBuff.base + mValidSize) - end - dataLen;
+			int excessDataLen = ((char*)mRecvBuff.base + mValidSize) - end - dataLen;
 			if(excessDataLen < 0)
 			{
 				return;
@@ -172,7 +171,7 @@ void Conn::ParseHttpPack()
 			{
 				HandleHttpPack(url, end, dataLen);
 
-				memcpy(mDataBuff.base, end + dataLen, excessDataLen);
+				memcpy(mRecvBuff.base, end + dataLen, excessDataLen);
 				mValidSize = excessDataLen;
 			}
 		}
@@ -180,8 +179,8 @@ void Conn::ParseHttpPack()
 }
 void Conn::ParseNormalPack()
 {
-	int packLen = *((int*)mDataBuff.base) ^ 0x79669966;
-	int packId = *((int*)(mDataBuff.base) + 1) ^ 0x79669966;
+	int packLen = *((int*)mRecvBuff.base) ^ 0x79669966;
+	int packId = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
 	int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
 	if(excessDataLen < 0)
 	{
@@ -189,14 +188,14 @@ void Conn::ParseNormalPack()
 	}
 	else if(excessDataLen == 0)
 	{
-		HandleNormalPack(packId, mDataBuff.base + HEAD_LENGTH, packLen);
+		HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
 		mValidSize = 0;
 	}
 	else//excessDataLen > 0
 	{
-		HandleNormalPack(packId, mDataBuff.base + HEAD_LENGTH, packLen);
+		HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
 
-		memcpy(mDataBuff.base, (char*)mDataBuff.base + mValidSize, excessDataLen);
+		memcpy(mRecvBuff.base, (char*)mRecvBuff.base + mValidSize, excessDataLen);
 		mValidSize = excessDataLen;
 	}
 }
