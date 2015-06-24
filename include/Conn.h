@@ -32,8 +32,8 @@ public:
 private:
 	void ParseHttpPack();
 	void ParseNormalPack();
-	void HandleHttpPack(const string& url, char* buff, int size);
-	void HandleHttpPack(const string& url);
+	void HandleHttpPost(const string& url, char* buff, int size);
+	void HandleHttpGet(const string& url);
 	void HandleNormalPack(int packId, char* buff, int size);
 	
 	bool IsHttpPack(char* buff);

@@ -101,8 +101,18 @@ void Conn::ParseHttpPack()
 		end++;
 	}
 
-	if(*(end-1) != '\n' || *(end-2) != '\r' )
-		return;
+	if(*(end-1) != '\n' || *(end-2) != '\r' )//not found http head end
+	{
+		if(end > 512)
+		{
+			ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+			return;
+		}
+		else
+		{
+			return;
+		}
+	}
 	
 	string url;
 	string method;
@@ -137,7 +147,7 @@ void Conn::ParseHttpPack()
 	}
 	if(method == "GET")
 	{
-		HandleHttpPack(url);
+		HandleHttpGet(url);
 		int excessDataLen = ((char*)mRecvBuff.base + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
@@ -149,7 +159,7 @@ void Conn::ParseHttpPack()
 			mValidSize = excessDataLen;
 		}
 	}
-	else
+	else//post
 	{
 		if(dataLen == -1 || dataLen == 0)
 		{
@@ -165,11 +175,11 @@ void Conn::ParseHttpPack()
 			}
 			else if(excessDataLen == 0)
 			{
-				HandleHttpPack(url, end, dataLen);
+				HandleHttpPost(url, end, dataLen);
 			}
 			else//excessDataLen > 0
 			{
-				HandleHttpPack(url, end, dataLen);
+				HandleHttpPost(url, end, dataLen);
 
 				memcpy(mRecvBuff.base, end + dataLen, excessDataLen);
 				mValidSize = excessDataLen;
@@ -179,24 +189,27 @@ void Conn::ParseHttpPack()
 }
 void Conn::ParseNormalPack()
 {
-	int packId = *((int*)mRecvBuff.base) ^ 0x79669966;
-	int packLen = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
-	int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
-	if(excessDataLen < 0)
+	while(!(mValidSize < HEAD_LENGTH))
 	{
-		return;
-	}
-	else if(excessDataLen == 0)
-	{
-		HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
-		mValidSize = 0;
-	}
-	else//excessDataLen > 0
-	{
-		HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
+		int packId = *((int*)mRecvBuff.base) ^ 0x79669966;
+		int packLen = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
+		int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
+		if(excessDataLen < 0)
+		{
+			break;
+		}
+		else if(excessDataLen == 0)
+		{
+			HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
+			mValidSize = 0;
+		}
+		else//excessDataLen > 0
+		{
+			HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
 
-		memcpy(mRecvBuff.base, (char*)mRecvBuff.base + mValidSize, excessDataLen);
-		mValidSize = excessDataLen;
+			memcpy(mRecvBuff.base, (char*)mRecvBuff.base + mValidSize, excessDataLen);
+			mValidSize = excessDataLen;
+		}
 	}
 }
 
@@ -221,7 +234,7 @@ void Conn::Destroy(Conn::DisconnReason reason)
 	delete this;
 }
 
-void Conn::HandleHttpPack(const string& url, char* buff, int size)
+void Conn::HandleHttpPost(const string& url, char* buff, int size)
 {
 	if(url == "/hello")
 	{
@@ -237,7 +250,7 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 		return;
 	}
 }
-void Conn::HandleHttpPack(const string& url)
+void Conn::HandleHttpGet(const string& url)
 {
 	if(url == "/hello")
 	{
@@ -282,6 +295,9 @@ bool Conn::IsHttpPack(char* buff)
 
 void Conn::HandleNormalPack(int packId, char* buff, int size)
 {
+	char* pack = NewBuff(size);
+	memcpy(pack, buff, size);
+	DELETE(pack);
 	switch(packId)
 	{
 	case 11:
