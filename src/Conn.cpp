@@ -68,7 +68,7 @@ void Conn::RecvData(char* buff, int size)
 		ParseNormalPack();
 	}
 
-	if((mRecvBuff.len - mValidSize) < (uint)BUFF_UNIT / 2)//no enough space
+	if((mRecvBuff.len - mValidSize) < (size_t)BUFF_UNIT / 2)//no enough space
 	{
 		ExpandRecvBuff();
 	}
@@ -107,11 +107,11 @@ void Conn::ParseHttpPack()
 	string url;
 	string method;
 	int dataLen = -1;
-	for(uint i = 0; i < httpHead.size(); i++)
+	for(size_t i = 0; i < httpHead.size(); i++)
 	{
 		if(httpHead[i].substr(0, 4) == "GET ")
 		{
-			uint nextBlankPos = httpHead[i].find(' ',4);
+			size_t nextBlankPos = httpHead[i].find(' ',4);
 			if(nextBlankPos == string::npos)
 				break;
 			url = httpHead[i].substr(4, nextBlankPos - 4);
@@ -119,7 +119,7 @@ void Conn::ParseHttpPack()
 		}
 		else if(httpHead[i].substr(0, 4) == "POST")
 		{
-			uint nextBlankPos = httpHead[i].find(' ',5);
+			size_t nextBlankPos = httpHead[i].find(' ',5);
 			if(nextBlankPos == string::npos)
 				break;
 			url = httpHead[i].substr(5, nextBlankPos - 5);
@@ -179,8 +179,8 @@ void Conn::ParseHttpPack()
 }
 void Conn::ParseNormalPack()
 {
-	int packLen = *((int*)mRecvBuff.base) ^ 0x79669966;
-	int packId = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
+	int packId = *((int*)mRecvBuff.base) ^ 0x79669966;
+	int packLen = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
 	int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
 	if(excessDataLen < 0)
 	{
@@ -325,12 +325,12 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	}
 	//	printf("%s\n", req.m_buff.mBuff);
 	//	printf("%s\n", req.m_buff.mBuff + 5);
-	//	for(uint i = 0; i < req.m_array1.size(); i++)
+	//	for(size_t i = 0; i < req.m_array1.size(); i++)
 	//	{
 	//		printf("%d, ", req.m_array1[i]);
 	//	}
 	//	printf("\n");
-	//	for(uint i = 0; i < req.m_array2.size(); i++)
+	//	for(size_t i = 0; i < req.m_array2.size(); i++)
 	//	{
 	//		printf("%f, ", req.m_array2[i]);
 	//	}

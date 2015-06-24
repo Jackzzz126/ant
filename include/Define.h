@@ -12,7 +12,7 @@
 #endif
 */
 
-typedef unsigned int uint;
+//typedef unsigned int uint;
 # if __WORDSIZE == 64
 typedef long int		int64;
 typedef unsigned long int	uint64;
