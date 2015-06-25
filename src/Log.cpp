@@ -1,6 +1,7 @@
 #include "comm.h"
 #include "Log.h"
 #include "Time.h"
+#include "Config.h"
 
 void Log::Out(const char* str, ...)
 {

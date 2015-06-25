@@ -4,5 +4,10 @@
 		"ip" : "192.168.11.61",
 		"port" : 9000,
 		"backlog" : 128
+	},
+	"log" :
+	{
+		"logFile" : "log.log",
+		"errFile" : "err.log"
 	}
 }

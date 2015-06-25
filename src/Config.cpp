@@ -38,7 +38,9 @@ bool Config::Load(char* fileName)
 	}
 	if( !json.GetValue("server:port", &mPort) ||
 		!json.GetValue("server:ip", mIp) ||
-		!json.GetValue("server:backlog", &mBacklog)
+		!json.GetValue("server:backlog", &mBacklog) ||
+		!json.GetValue("log:logFile", mLogFile) ||
+		!json.GetValue("log:errFile", mErrFile)
 	  )
 	{
 		Log::Error( "Error when parse %s: %s.\n", fileName, strerror(errno) );
