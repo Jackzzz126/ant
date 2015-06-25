@@ -103,7 +103,7 @@ void Conn::ParseHttpPack()
 
 	if(*(end-1) != '\n' || *(end-2) != '\r' )//not found http head end
 	{
-		if(end > 512)
+		if((end - mRecvBuff.base) > 512)
 		{
 			ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
 			return;
