@@ -19,13 +19,13 @@ void String::Trim(string& str)
 	}
 }
 
-char String::mBuff[1024];
 string String::Format(const char* str, ...)
 {
+	char buff[1024];
 	va_list arg;
 	va_start(arg, str);
-	vsnprintf(mBuff, 1024, str, arg);
+	vsnprintf(buff, 1024, str, arg);
 	va_end(arg);
-	return string(String::mBuff);
+	return string(buff);
 }
 
