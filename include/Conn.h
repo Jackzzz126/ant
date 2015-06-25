@@ -9,18 +9,6 @@ class BuffList
 class Conn
 {
 public:
-	enum DisconnReason
-	{
-		UNKNOWN_DATA,
-		CLIENT_CLOSE,//close coon by client
-
-		SERVER_CLOSE,//close conn by server
-		SERVER_DOWN,//shutdown server
-
-		SOCK_ERROR,
-		VALID_FAIL,
-	};
-public:
 	static int BUFF_UNIT;
 	static int HEAD_LENGTH;
 public:
@@ -28,7 +16,7 @@ public:
 	~Conn();
 public:
 	void RecvData(char* buff, int size);
-	void Destroy(Conn::DisconnReason reason);
+	void Destroy(bool logErr);
 private:
 	void ParseHttpPack();
 	void ParseNormalPack();
@@ -52,7 +40,7 @@ class ConnMgr
 public:
 	static map<void*, Conn*> mAllConns;
 public:
-	static void CloseConn(uv_stream_t* conn, Conn::DisconnReason reason);
+	static void CloseConn(uv_stream_t* conn, bool logErr);
 	static void SendPackToAll(uv_buf_t buff);
 public:
 	ConnMgr();

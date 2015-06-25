@@ -13,7 +13,7 @@ void Player::OnValidChar(bool success)
 	}
 	else
 	{
-		ConnMgr::CloseConn(mConn, Conn::VALID_FAIL);
+		//ConnMgr::CloseConn(mConn, Conn::VALID_FAIL);
 	}
 }
 

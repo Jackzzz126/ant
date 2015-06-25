@@ -105,7 +105,8 @@ void Conn::ParseHttpPack()
 	{
 		if((end - mRecvBuff.base) > 512)
 		{
-			ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+			Log::Error("Http head > %d.\n", 512);
+			ConnMgr::CloseConn(mConn, true);
 			return;
 		}
 		else
@@ -142,7 +143,13 @@ void Conn::ParseHttpPack()
 	}
 	if(url == "" || method == "")
 	{
-		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+		Log::Error("Unkown http head.\n");
+		for(size_t i = 0; i < httpHead.size(); i++)
+		{
+			Log::Error("%s.\n", httpHead[i].c_str());
+		}
+
+		ConnMgr::CloseConn(mConn, true);
 		return;
 	}
 	if(method == "GET")
@@ -163,7 +170,14 @@ void Conn::ParseHttpPack()
 	{
 		if(dataLen == -1 || dataLen == 0)
 		{
-			ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+			Log::Error("Error post data: dataLen: %d.\n", dataLen);
+			ConnMgr::CloseConn(mConn, true);
+			return;
+		}
+		else if(dataLen > 2048)
+		{
+			Log::Error("Error post data, dataLen: %d bigger than: %d.\n", dataLen, 2048);
+			ConnMgr::CloseConn(mConn, true);
 			return;
 		}
 		else
@@ -213,23 +227,13 @@ void Conn::ParseNormalPack()
 	}
 }
 
-void Conn::Destroy(Conn::DisconnReason reason)
+void Conn::Destroy(bool logErr)
 {
-	if(reason == Conn::UNKNOWN_DATA)
+	if(logErr)
 	{
-		Log::Out("%s: disconnected[unknown data].\n", mAddr.c_str());
+		Log::Error("%s: disconnected.\n", mAddr.c_str());
 	}
-	else if(reason == Conn::SOCK_ERROR)
-	{
-		Log::Out("%s: disconnected[socket error].\n", mAddr.c_str());
-	}
-	else if(reason == Conn::VALID_FAIL)
-	{
-		Log::Out("%s: disconnected[valid fail].\n", mAddr.c_str());
-	}
-	else//server down or client close or server close
-	{
-	}
+
 	uv_close((uv_handle_t*)mConn, NULL);
 	delete this;
 }
@@ -379,17 +383,17 @@ ConnMgr::ConnMgr()
 {
 }
 
-void ConnMgr::CloseConn(uv_stream_t* conn, Conn::DisconnReason reason)
+void ConnMgr::CloseConn(uv_stream_t* conn, bool logErr)
 {
 	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.find(conn);
 	if(iter != ConnMgr::mAllConns.end())
 	{
-		iter->second->Destroy(reason);
+		iter->second->Destroy(logErr);
 		ConnMgr::mAllConns.erase(conn);
 	}
 	else
 	{
-		Log::Error("Unknown client.\n");
+		Log::Error("Close unknown conn.\n");
 		uv_close((uv_handle_t*)conn, NULL);
 	}
 }

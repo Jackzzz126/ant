@@ -25,12 +25,12 @@ void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff)
 		if (nread != UV_EOF)
 		{
 			Log::Error("Error when read :%s.\n", uv_err_name(nread));
-			ConnMgr::CloseConn(conn, Conn::SOCK_ERROR);
+			ConnMgr::CloseConn(conn, true);
 		}
 		else
 		{
 			//EOF means close;
-			ConnMgr::CloseConn(conn, Conn::CLIENT_CLOSE);
+			ConnMgr::CloseConn(conn, false);
 		}
 		return;
 	}
@@ -159,7 +159,7 @@ int main(int argc, char* argv[])
 	//user
 	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		iter->second->Destroy(Conn::SERVER_DOWN);
+		iter->second->Destroy(false);
 	}
 	ConnMgr::mAllConns.clear();
 
