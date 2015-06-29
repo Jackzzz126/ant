@@ -5,9 +5,11 @@
 #include "Config.h"
 #include "Conn.h"
 #include "Gate.h"
+#include "Msg.h"
 
 uv_loop_t* loop = NULL;
 Config* gConfig = NULL;
+MsgQueue* gMsgQueue = NULL;
 
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff)
 {
@@ -116,6 +118,8 @@ int main(int argc, char* argv[])
 		Log::Error("Error when parse config file, exit.\n");
 		return 1;
 	}
+
+	gMsgQueue = new MsgQueue();
 
 	//socket
 	loop = uv_default_loop();
