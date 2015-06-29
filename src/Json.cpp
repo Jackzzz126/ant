@@ -16,6 +16,12 @@ bool Json::Parse(const string& str)
 	while (iter != json_end(node))
 	{
 		json_char* nodeName = json_name(*iter);
+		if(string(nodeName) == "" || json_type(*iter) == JSON_NULL)
+		{
+			json_free(nodeName);
+			break;
+		}
+
 		if (json_type(*iter) == JSON_NODE)
 		{
 			if(!Parse(nodeName, *iter))
@@ -55,6 +61,12 @@ bool Json::Parse(const string& key, JSONNODE* node)
 	while (iter != json_end(node))
 	{
 		json_char* nodeName = json_name(*iter);
+		if(string(nodeName) == "" || json_type(*iter) == JSON_NULL)
+		{
+			json_free(nodeName);
+			break;
+		}
+
 		if (json_type(*iter) == JSON_NODE)
 		{
 			if(!Parse(key + ":" + nodeName, *iter))

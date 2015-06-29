@@ -43,7 +43,7 @@ bool Config::Load(char* fileName)
 		!json.GetValue("log:errFile", mErrFile)
 	  )
 	{
-		Log::Error( "Error when parse %s: %s.\n", fileName, strerror(errno) );
+		Log::Error( "Error when parse %s: some value miss.\n", fileName);
 		return false;
 	}
 	//read txt file code, save for reference.
@@ -70,6 +70,7 @@ bool Config::Load(char* fileName)
 		mIp == ""
 	  )
 	{
+		Log::Error( "Error when parse %s: some value invalid.\n", fileName);
 		return false;
 	}
 
