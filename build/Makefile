@@ -3,10 +3,11 @@
 
 mode = debug
 
+CPPFLAGS=-Wall $(HPATH) -pthread
 ifeq ($(mode), debug)
-	CPPFLAGS=-O0 -Wall -g $(HPATH)
+	CPPFLAGS+=-O0 -g
 else
-	CPPFLAGS=-O3 -Wall $(HPATH) -DNDEBUG
+	CPPFLAGS+=-O3 -DNDEBUG
 endif
 CC=g++
 
@@ -21,7 +22,7 @@ TARGET = ant
 all:$(TARGET)
 
 $(TARGET):$(OBJS)
-	@$(CC) -o $(TARGET) $(CPPFLAGS) $(OBJS) $(LIBS) $(LIBPATH) -pthread 
+	@$(CC) -o $(TARGET) $(CPPFLAGS) $(OBJS) $(LIBS) $(LIBPATH)
 
 %.o:$(CPPPATH)/%.cpp
 	@$(CC) -c $(CPPFLAGS) $<
