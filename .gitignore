@@ -1,6 +1,8 @@
 build/*.o
 build/*.d
 build/ant
+build/log.log
+build/err.log
 
 proto/*.o
 proto/*.d
