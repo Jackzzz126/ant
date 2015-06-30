@@ -117,6 +117,14 @@ int main(int argc, char* argv[])
 	{
 		return 1;
 	}
+	if(gConfig->mDaemon)
+	{
+		if(daemon(1,0)) 
+		{
+			printf("Daemonize error.\n");
+			return 1;
+		}
+	}
 
 	gMsgQueue = new MsgQueue();
 

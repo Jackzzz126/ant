@@ -6,6 +6,7 @@ Config::Config()
 {
 	mPort = 0;
 	mBacklog = 128;
+	mDaemon = false;
 }
 
 bool Config::Load(char* fileName)
@@ -38,6 +39,7 @@ bool Config::Load(char* fileName)
 	if( !json.GetValue("server:port", &mPort) ||
 		!json.GetValue("server:ip", mIp) ||
 		!json.GetValue("server:backlog", &mBacklog) ||
+		!json.GetValue("server:daemon", &mDaemon) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
 		!json.GetValue("log:errFile", mErrFileName)
 	  )
@@ -62,11 +64,14 @@ bool Config::Load(char* fileName)
 		}
 	}
 
-	if( mPort == 0 ||
-		mIp == ""
-	  )
+	if(mPort == 0 || mIp == "")
 	{
-		printf( "Error when parse %s: some value invalid.\n", fileName);
+		printf( "Error when parse %s: ip, port invalid.\n", fileName);
+		return false;
+	}
+	if((mLogFileName == "" || mErrFileName == "") && mDaemon)
+	{
+		printf( "Error when parse %s: must set log file in daemon mode.\n", fileName);
 		return false;
 	}
 	return true;

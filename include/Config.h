@@ -16,6 +16,7 @@ public:
 	//log
 	FILE* mLogFileHanle;
 	FILE* mErrFileHanle;
+	bool mDaemon;
 
 private:
 	//log
