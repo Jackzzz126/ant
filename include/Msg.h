@@ -26,7 +26,7 @@ private:
 	MsgNode* mHead;
 	MsgNode* mTail;
 
-	pthread_mutex_t* mMutex;
+	pthread_mutex_t mMutex;
 };
 
 #endif//_MSG_H_
