@@ -138,6 +138,27 @@ bool Json::GetValue(const string& key, string& str)
 		return true;
 	}
 }
+bool Json::GetValue(const string& key, bool* pBool)
+{
+	map<string, string>::iterator iter = mDataString.find(key);
+	if(iter == mDataString.end())
+	{
+		return false;
+	}
+	else
+	{
+		string str = mDataString[key];
+		if(str == "true")
+		{
+			*pBool = true;
+		}
+		else
+		{
+			*pBool = false;
+		}
+		return true;
+	}
+}
 bool Json::GetValue(const string& key, vector<int>& array)
 {
 	map<string, vector<int> >::iterator iter = mDataArray.find(key);

@@ -41,6 +41,7 @@ public:
 	bool GetValue(const string& key, float* value);
 	bool GetValue(const string& key, string& str);
 	bool GetValue(const string& key, vector<int>& array);
+	bool GetValue(const string& key, bool* pBool);
 private:
 	bool Parse(const string& key, JSONNODE* node);
 public:
