@@ -1,5 +1,4 @@
 #include "comm.h"
-#include "Log.h"
 #include "Config.h"
 #include "Json.h"
 
@@ -14,7 +13,7 @@ bool Config::Load(char* fileName)
 	FILE* pFile = fopen(fileName, "r");
 	if(pFile == NULL)
 	{
-		Log::Error( "Error when open %s: %s.\n", fileName, strerror(errno) );
+		printf("Error when open %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 
@@ -25,7 +24,7 @@ bool Config::Load(char* fileName)
 	size_t readLen = fread(buff, 1, fileLen, pFile);
 	if(readLen != fileLen)
 	{
-		Log::Error( "Error when read %s: %s.\n", fileName, strerror(errno) );
+		printf("Error when read %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 	buff[fileLen] = '\0';
@@ -33,58 +32,36 @@ bool Config::Load(char* fileName)
 	Json json;
 	if(!json.Parse(buff))
 	{
-		Log::Error( "Error when parse %s: %s.\n", fileName, strerror(errno) );
+		printf("Error when parse %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 	if( !json.GetValue("server:port", &mPort) ||
 		!json.GetValue("server:ip", mIp) ||
 		!json.GetValue("server:backlog", &mBacklog) ||
-		!json.GetValue("log:logFile", mLogFile) ||
-		!json.GetValue("log:errFile", mErrFile)
+		!json.GetValue("log:logFile", mLogFileName) ||
+		!json.GetValue("log:errFile", mErrFileName)
 	  )
 	{
-		Log::Error( "Error when parse %s: some value miss.\n", fileName);
+		printf("Error when parse %s: some value miss.\n", fileName);
 		return false;
 	}
-	//read txt file code, save for reference.
-	//while(!feof(filePtr) && fgets( buff, 128, filePtr ) != NULL)
-	//{
-	//	string key;
-	//	string value;
-	//	if(!Parse(string(buff), key, value))
-	//	{
-	//		Log::Error( "Error when parsing: %s.\n", buff );
-	//		return false;
-	//	}
-	//	if(key == "ip")
-	//	{
-	//		mIp = value;
-	//	}
-	//	else if(key == "port")
-	//	{
-	//		mPort = atoi(value.c_str());
-	//	}
-	//}
+	mLogFileHanle = fopen(mLogFileName.c_str(), "ab");
+	mErrFileHanle = fopen(mErrFileName.c_str(), "ab");
+	if(mLogFileHanle == NULL || mErrFileHanle == NULL)
+	{
+		printf("Error when open log files:%s, %s.\n", mLogFileName.c_str(), mErrFileName.c_str());
+		return false;
+	}
 
 	if( mPort == 0 ||
 		mIp == ""
 	  )
 	{
-		Log::Error( "Error when parse %s: some value invalid.\n", fileName);
+		printf( "Error when parse %s: some value invalid.\n", fileName);
 		return false;
 	}
-
 	return true;
 }
 
-//bool Config::Parse(const string& str, string& key, string& value)
-//{
-//	int equalPos = str.find("=");
-//	key = str.substr(0, equalPos);
-//	value = str.substr(equalPos + 1, str.length() - equalPos - 2);
-//
-//	String::Trim(key);
-//	String::Trim(value);
-//
-//	return true;
-//}
+
+

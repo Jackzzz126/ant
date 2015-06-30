@@ -115,7 +115,6 @@ int main(int argc, char* argv[])
 	char configFileName[] = "config.json";
 	if(!gConfig->Load(configFileName))
 	{
-		Log::Error("Error when parse config file, exit.\n");
 		return 1;
 	}
 

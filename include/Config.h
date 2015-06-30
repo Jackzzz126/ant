@@ -8,16 +8,18 @@ public:
 	~Config(){};
 
 	bool Load(char* file);
-	//bool Parse(const string& str, string& key, string& value);
-
 public:
 	//server
 	string mIp;
 	int mPort;
 	int mBacklog;
-
 	//log
-	string mLogFile;
-	string mErrFile;
+	FILE* mLogFileHanle;
+	FILE* mErrFileHanle;
+
+private:
+	//log
+	string mLogFileName;
+	string mErrFileName;
 };
 #endif//_CONFIG_H_
