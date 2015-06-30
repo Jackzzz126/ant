@@ -12,6 +12,8 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 
+#include<pthread.h>
+
 //stl
 #include<string>
 #include<vector>
