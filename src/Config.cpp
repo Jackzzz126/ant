@@ -45,12 +45,21 @@ bool Config::Load(char* fileName)
 		printf("Error when parse %s: some value miss.\n", fileName);
 		return false;
 	}
-	mLogFileHanle = fopen(mLogFileName.c_str(), "ab");
-	mErrFileHanle = fopen(mErrFileName.c_str(), "ab");
-	if(mLogFileHanle == NULL || mErrFileHanle == NULL)
+	if(mLogFileName == "" || mErrFileName == "")
 	{
-		printf("Error when open log files:%s, %s.\n", mLogFileName.c_str(), mErrFileName.c_str());
-		return false;
+		mLogFileHanle = stdout;
+		mErrFileHanle = stderr;
+	}
+	else
+	{
+		mLogFileHanle = fopen(mLogFileName.c_str(), "ab");
+		mErrFileHanle = fopen(mErrFileName.c_str(), "ab");
+		if(mLogFileHanle == NULL || mErrFileHanle == NULL)
+		{
+			printf("Error when open log files:%s, %s.\n",
+					mLogFileName.c_str(), mErrFileName.c_str());
+			return false;
+		}
 	}
 
 	if( mPort == 0 ||
