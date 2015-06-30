@@ -2,6 +2,15 @@
 #include "Config.h"
 #include "Json.h"
 
+Config* Config::mGlobalConfig = NULL;
+Config* Config::Singleton()
+{
+	if(mGlobalConfig == NULL)
+	{
+		mGlobalConfig = new Config();
+	}
+	return mGlobalConfig;
+}
 Config::Config()
 {
 	mPort = 0;
@@ -49,14 +58,14 @@ bool Config::Load(char* fileName)
 	}
 	if(mLogFileName == "" || mErrFileName == "")
 	{
-		mLogFileHanle = stdout;
-		mErrFileHanle = stderr;
+		mLogFileHandle = stdout;
+		mErrFileHandle = stderr;
 	}
 	else
 	{
-		mLogFileHanle = fopen(mLogFileName.c_str(), "ab");
-		mErrFileHanle = fopen(mErrFileName.c_str(), "ab");
-		if(mLogFileHanle == NULL || mErrFileHanle == NULL)
+		mLogFileHandle = fopen(mLogFileName.c_str(), "ab");
+		mErrFileHandle = fopen(mErrFileName.c_str(), "ab");
+		if(mLogFileHandle == NULL || mErrFileHandle == NULL)
 		{
 			printf("Error when open log files:%s, %s.\n",
 					mLogFileName.c_str(), mErrFileName.c_str());

@@ -4,11 +4,11 @@
 		"ip" : "192.168.11.61",
 		"port" : 9000,
 		"backlog" : 128,
-		"daemon" : true
+		"daemon" : false
 	},
 	"log" :
 	{
-		"logFile" : "log.log",
-		"errFile" : "err.log"
+		"logFile" : "",
+		"errFile" : ""
 	}
 }

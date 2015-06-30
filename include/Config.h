@@ -8,19 +8,22 @@ public:
 	~Config(){};
 
 	bool Load(char* file);
+	static Config* Singleton();
 public:
 	//server
 	string mIp;
 	int mPort;
 	int mBacklog;
 	//log
-	FILE* mLogFileHanle;
-	FILE* mErrFileHanle;
+	FILE* mLogFileHandle;
+	FILE* mErrFileHandle;
 	bool mDaemon;
 
 private:
 	//log
 	string mLogFileName;
 	string mErrFileName;
+
+	static Config* mGlobalConfig;
 };
 #endif//_CONFIG_H_
