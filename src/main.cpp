@@ -10,6 +10,77 @@
 uv_loop_t* loop = NULL;
 MsgQueue* gMsgQueue = NULL;
 
+void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff);
+void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff);
+void on_new_connection(uv_stream_t *listener, int status);
+
+int main(int argc, char* argv[])
+{
+	//config
+	Config* config = Config::Singleton();
+	char configFileName[] = "config.json";
+	if(!config->Load(configFileName))
+	{
+		return 1;
+	}
+	if(config->mDaemon)
+	{
+		if(daemon(1,0)) 
+		{
+			printf("Daemonize error.\n");
+			return 1;
+		}
+	}
+
+	gMsgQueue = new MsgQueue();
+
+	//socket
+	loop = uv_default_loop();
+
+	uv_tcp_t listener;
+	uv_tcp_init(loop, &listener);
+
+	struct sockaddr_in bind_addr;
+	uv_ip4_addr(config->mIp.c_str(), config->mPort, &bind_addr);
+	uv_tcp_bind(&listener, (sockaddr*)&bind_addr, 0);
+	int r = uv_listen((uv_stream_t*) &listener, config->mBacklog, on_new_connection);
+	if(r < 0)
+	{
+		Log::Error("Error when listen at%s:%d: %s.\n", config->mIp.c_str(),
+			config->mPort, uv_err_name(r));
+		return 1;
+	}
+	else
+	{
+		Log::Out("Server start at %s:%d.\n", config->mIp.c_str(), config->mPort);
+	}
+
+	//thread
+	//uv_thread_t consoleId;
+	//uv_thread_create(&consoleId, console, NULL);
+
+	//timer
+	//uv_timer_t regTimer;
+	//uv_timer_init(loop, &regTimer);
+	//uv_timer_start(&regTimer, Gate::Reg, 3000, config->mRegInterval * 1000);
+
+	int rtn = uv_run(loop, UV_RUN_DEFAULT);
+
+	//timer
+	//uv_timer_stop(&regTimer);
+	//thread
+	//uv_thread_join(&consoleId);
+
+	//user
+	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
+	{
+		iter->second->Destroy(false);
+	}
+	ConnMgr::mAllConns.clear();
+
+	return rtn;
+}
+
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff)
 {
 	//suggested_size always be 65536
@@ -106,72 +177,5 @@ void on_new_connection(uv_stream_t *listener, int status)
 //		}
 //	}
 //}
-
-int main(int argc, char* argv[])
-{
-	//config
-	Config* config = Config::Singleton();
-	char configFileName[] = "config.json";
-	if(!config->Load(configFileName))
-	{
-		return 1;
-	}
-	if(config->mDaemon)
-	{
-		if(daemon(1,0)) 
-		{
-			printf("Daemonize error.\n");
-			return 1;
-		}
-	}
-
-	gMsgQueue = new MsgQueue();
-
-	//socket
-	loop = uv_default_loop();
-
-	uv_tcp_t listener;
-	uv_tcp_init(loop, &listener);
-
-	struct sockaddr_in bind_addr;
-	uv_ip4_addr(config->mIp.c_str(), config->mPort, &bind_addr);
-	uv_tcp_bind(&listener, (sockaddr*)&bind_addr, 0);
-	int r = uv_listen((uv_stream_t*) &listener, config->mBacklog, on_new_connection);
-	if(r < 0)
-	{
-		Log::Error("Error when listen at%s:%d: %s.\n", config->mIp.c_str(),
-			config->mPort, uv_err_name(r));
-		return 1;
-	}
-	else
-	{
-		Log::Out("Server start at %s:%d.\n", config->mIp.c_str(), config->mPort);
-	}
-
-	//thread
-	//uv_thread_t consoleId;
-	//uv_thread_create(&consoleId, console, NULL);
-
-	//timer
-	//uv_timer_t regTimer;
-	//uv_timer_init(loop, &regTimer);
-	//uv_timer_start(&regTimer, Gate::Reg, 3000, config->mRegInterval * 1000);
-
-	int rtn = uv_run(loop, UV_RUN_DEFAULT);
-
-	//timer
-	//uv_timer_stop(&regTimer);
-	//thread
-	//uv_thread_join(&consoleId);
-
-	//user
-	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
-	{
-		iter->second->Destroy(false);
-	}
-	ConnMgr::mAllConns.clear();
-
-	return rtn;
-}
 
 
