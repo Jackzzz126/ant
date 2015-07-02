@@ -16,6 +16,8 @@ public:
 class MsgQueue
 {
 public:
+	static MsgQueue* Singleton();
+public:
 	MsgQueue();
 	~MsgQueue();
 public:
@@ -27,6 +29,8 @@ private:
 	MsgNode* mTail;
 
 	pthread_mutex_t mMutex;
+
+	static MsgQueue* mGlobalMsgQueue;
 };
 
 #endif//_MSG_H_

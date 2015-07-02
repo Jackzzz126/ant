@@ -8,7 +8,6 @@
 #include "Msg.h"
 
 uv_loop_t* loop = NULL;
-MsgQueue* gMsgQueue = NULL;
 
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff);
 void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff);
@@ -34,8 +33,6 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 	}
-
-	gMsgQueue = new MsgQueue();
 
 	//socket
 	loop = uv_default_loop();

@@ -11,6 +11,16 @@ MsgNode::~MsgNode()
 {
 }
 
+MsgQueue* MsgQueue::mGlobalMsgQueue = NULL;
+MsgQueue* MsgQueue::Singleton()
+{
+	if(mGlobalMsgQueue == NULL)
+	{
+		mGlobalMsgQueue = new MsgQueue();
+	}
+	return mGlobalMsgQueue;
+}
+
 MsgQueue::MsgQueue()
 {
 	mHead = NULL;
