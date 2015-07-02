@@ -157,39 +157,6 @@ void on_new_connection(uv_stream_t *listener, int status)
 	}
 }
 
-//void console(void* arg)
-//{
-//	char buff[256];
-//	while(true)
-//	{
-//		if(gets(buff))
-//		{
-//			printf("error when read from console.\n");
-//			break;
-//		}
-//		if(strcmp(buff, "exit")  == 0)
-//		{
-//			printf("quit console...\n");
-//			break;
-//		}
-//		else if(strcmp(buff, "time")  == 0)
-//		{
-//			string timeStr = Time::GetTimeStr();
-//			printf("%s\n", timeStr.c_str());
-//		}
-//		else if(strcmp(buff, "users")  == 0)
-//		{
-//			for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
-//			{
-//				printf("%s\n", iter->second->mAddr.c_str());
-//			}
-//		}
-//		else
-//		{
-//			printf("unknown command.\n");
-//		}
-//	}
-//}
 void signal_term(uv_signal_t *handle, int signum)
 {
 	uv_stop(loop);
