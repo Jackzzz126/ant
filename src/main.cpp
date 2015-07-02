@@ -14,6 +14,9 @@ void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff)
 void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff);
 void on_new_connection(uv_stream_t *listener, int status);
 
+void signal_term(uv_signal_t *handle, int signum);
+void signal_int(uv_signal_t *handle, int signum);
+
 int main(int argc, char* argv[])
 {
 	//config
@@ -63,6 +66,16 @@ int main(int argc, char* argv[])
 	//uv_timer_t regTimer;
 	//uv_timer_init(loop, &regTimer);
 	//uv_timer_start(&regTimer, Gate::Reg, 3000, config->mRegInterval * 1000);
+
+	//signal handle, normal way can't stop uv properly.
+	uv_signal_t sigTerm;
+	uv_signal_init(loop, &sigTerm);
+	uv_signal_start(&sigTerm, signal_term, SIGTERM);
+
+	uv_signal_t sigInt;
+	uv_signal_init(loop, &sigInt);
+	uv_signal_start(&sigInt, signal_int, SIGINT);
+
 
 	int rtn = uv_run(loop, UV_RUN_DEFAULT);
 
@@ -177,5 +190,15 @@ void on_new_connection(uv_stream_t *listener, int status)
 //		}
 //	}
 //}
+void signal_term(uv_signal_t *handle, int signum)
+{
+	uv_stop(loop);
+	uv_signal_stop(handle);
+}
+void signal_int(uv_signal_t *handle, int signum)
+{
+	uv_stop(loop);
+	uv_signal_stop(handle);
+}
 
 
