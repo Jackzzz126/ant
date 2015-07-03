@@ -1,12 +1,10 @@
-build/*.o
-build/*.d
-build/ant
-build/log.log
-build/err.log
+*/build/*.o
+*/build/*.d
+*/build/handle.a
 
-proto/*.o
-proto/*.d
-proto/*.a
+ant
+log.log
+err.log
 
 test/*.o
 test/*.a
