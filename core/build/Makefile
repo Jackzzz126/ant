@@ -1,5 +1,6 @@
-CPPPATH=../src
-HPATH=-I ../include -I ../../handle/include -I ../../libuv/include -I ../../libjson
+CPPPATH=../
+HPATH=-I ../../include -I ../../libuv/include -I ../../libjson
+HPATH+=-I ../../include/handle
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -luv -lrt -ldl -lm -ljson -lhandle

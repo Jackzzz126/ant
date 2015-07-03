@@ -1,6 +1,7 @@
 
-CPPPATH=../src
-HPATH=-I ../include -I ../../core/include
+CPPPATH=../
+HPATH=-I ../../include
+HPATH+=-I ../../include/handle
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 TARGET = libhandle.a
