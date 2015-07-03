@@ -1,4 +1,4 @@
-CPPPATH=../
+CPPPATH=..
 HPATH=-I ../../include -I ../../libuv/include -I ../../libjson
 HPATH+=-I ../../include/handle
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)

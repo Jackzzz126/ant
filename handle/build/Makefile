@@ -1,5 +1,5 @@
 
-CPPPATH=../
+CPPPATH=..
 HPATH=-I ../../include
 HPATH+=-I ../../include/handle
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
