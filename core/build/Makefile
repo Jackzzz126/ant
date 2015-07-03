@@ -6,11 +6,12 @@ OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -luv -lrt -ldl -lm -ljson -lhandle
 LIBPATH = -L .
 TARGET = ant
+DEPLIBS = libuv.a libjson.a libhandle.a
 
 .PHONY:all
 all:$(TARGET)
 
-$(TARGET):$(OBJS) $(LIBS)
+$(TARGET):$(OBJS) $(DEPLIBS)
 	@$(CC) -o $(TARGET) $(CPPFLAGS) $(OBJS) $(LIBS) $(LIBPATH)
 	@cp $(TARGET) ../../
 
