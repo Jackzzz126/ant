@@ -1,9 +1,7 @@
-#vpath %.c ./src
-#VPATH=../src:../inlude
 
 mode = debug
 
-CPPFLAGS=-Wall $(HPATH) -pthread
+CPPFLAGS=-Wall -pthread
 ifeq ($(mode), debug)
 	CPPFLAGS+=-O0 -g
 else
@@ -12,29 +10,36 @@ endif
 CC=g++
 
 CPPPATH=../src
-HPATH=-I ../include -I ../libuv/include -I ../libjson -I ../proto
+HPATH=-I ../include -I ../libuv/include -I ../libjson
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -luv -lrt -ldl -lm -ljson
 LIBPATH = -L .
 TARGET = ant
 
-all:$(TARGET)
+#use in child make
+export CPPFLAGS
+export CC
+
+all:$(TARGET) HANDLE
+
+HANDLE:
+	@cd ../handle; make; cp handle.a ../build/
 
 $(TARGET):$(OBJS)
 	@$(CC) -o $(TARGET) $(CPPFLAGS) $(OBJS) $(LIBS) $(LIBPATH)
 
 %.o:$(CPPPATH)/%.cpp
-	@$(CC) -c $(CPPFLAGS) $<
+	@$(CC) -c $(CPPFLAGS) $(HPATH) $<
 
 .PHONY:clean
 clean:
-	@rm *.o $(TARGET)
+	@rm *.o $(TARGET) *.d
 
 include $(notdir $(patsubst %.cpp,%.d,$(SOURCES)))
 %.d:$(CPPPATH)/%.cpp
 #rm -f $@;
-	@$(CC) -MM $(CPPFLAGS) $< > $@.$$$$;\
+	@$(CC) -MM $(CPPFLAGS) $(HPATH) $< > $@.$$$$;\
 	sed 's,\($*\).o[ :]*,\1.o $@ : ,g' < $@.$$$$ > $@; \
 	rm -f $@.$$$$;
 
