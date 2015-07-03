@@ -1,10 +1,13 @@
 */build/*.o
 */build/*.d
-*/build/handle.a
 
-ant
-log.log
-err.log
+handle/build/handle.a
+core/build/handle.a
+
+core/build/ant
+/ant
+/log.log
+/err.log
 
 test/*.o
 test/*.a
