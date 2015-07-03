@@ -15,10 +15,9 @@
 int Conn::BUFF_UNIT = 1024;
 int Conn::HEAD_LENGTH = 8;
 
-Conn::Conn(uv_stream_t *conn, const string& addr )
+Conn::Conn(void* conn)
 {
 	mConn = conn;
-	mAddr = addr;
 	mRecvBuff.base = NewBuff(Conn::BUFF_UNIT * 2);
 	mRecvBuff.len = Conn::BUFF_UNIT * 2;
 	mValidSize = 0;
@@ -231,7 +230,8 @@ void Conn::Destroy(bool logErr)
 {
 	if(logErr)
 	{
-		Log::Error("%s: disconnected.\n", mAddr.c_str());
+		string clientAddr = GetClientAddr((uv_stream_t*)mConn);
+		Log::Error("%s: disconnected.\n", clientAddr.c_str());
 	}
 
 	uv_close((uv_handle_t*)mConn, NULL);
@@ -250,7 +250,7 @@ void Conn::HandleHttpPost(const string& url, char* buff, int size)
 		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
-		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
+		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
 		return;
 	}
 }
@@ -263,7 +263,7 @@ void Conn::HandleHttpGet(const string& url)
 		uv_buf_t sendBuff = NewUvBuff(77/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 77);
 		req->data = (void*)sendBuff.base;
-		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
+		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
 		return;
 	}
 	else
@@ -273,7 +273,7 @@ void Conn::HandleHttpGet(const string& url)
 		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
-		uv_write( req, mConn, &sendBuff, 1, OnWriteClose);
+		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
 		return;
 	}
 }
@@ -383,7 +383,7 @@ ConnMgr::ConnMgr()
 {
 }
 
-void ConnMgr::CloseConn(uv_stream_t* conn, bool logErr)
+void ConnMgr::CloseConn(void* conn, bool logErr)
 {
 	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.find(conn);
 	if(iter != ConnMgr::mAllConns.end())
@@ -407,9 +407,10 @@ void ConnMgr::SendPackToAll(uv_buf_t buff)
 		//uv_write_t *req = new uv_write_t;
 		//req->data = buff.base;
 		//uv_write( req, iter->second->mConn, &buff, 1, OnWrite);
-		write_req_t* req = new write_req_t;
-		req->buf = sendBuff;
-		uv_write(&req->req, iter->second->mConn, &req->buf, 1, OnWrite);
+		
+		//write_req_t* req = new write_req_t;
+		//req->buf = sendBuff;
+		//uv_write(&req->req, iter->second->mConn, &req->buf, 1, OnWrite);
 	}
 	DelBuff(&buff.base);
 }

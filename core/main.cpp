@@ -143,8 +143,7 @@ void on_new_connection(uv_stream_t *listener, int status)
 	{
 		assert(conn->type == UV_TCP || conn->type == UV_NAMED_PIPE ||
       conn->type == UV_TTY);
-		string clientAddr = GetClientAddr((uv_stream_t*)conn);
-		Conn* connObj = new Conn((uv_stream_t*)conn, clientAddr);
+		Conn* connObj = new Conn(conn);
 		ConnMgr::mAllConns[conn] = connObj;
 		uv_read_start((uv_stream_t*)conn, alloc_buffer_cb, on_read);
 	}

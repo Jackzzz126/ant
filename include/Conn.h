@@ -1,18 +1,13 @@
 #ifndef _CONN_H_
 #define _CONN_H_
 
-class BuffList
-{
-	char* buff;
-	int len;
-};
 class Conn
 {
 public:
 	static int BUFF_UNIT;
 	static int HEAD_LENGTH;
 public:
-	Conn(uv_stream_t *conn, const string& addr );
+	Conn(void *conn);
 	~Conn();
 public:
 	void RecvData(char* buff, int size);
@@ -28,8 +23,7 @@ private:
 	void ExpandRecvBuff();
 	void ShrinkRecvBuff();
 public:
-	uv_stream_t* mConn;
-	string mAddr;
+	void* mConn;
 	uv_buf_t mRecvBuff;//buff to recv data
 	int mValidSize;
 };
@@ -40,7 +34,7 @@ class ConnMgr
 public:
 	static map<void*, Conn*> mAllConns;
 public:
-	static void CloseConn(uv_stream_t* conn, bool logErr);
+	static void CloseConn(void* conn, bool logErr);
 	static void SendPackToAll(uv_buf_t buff);
 public:
 	ConnMgr();

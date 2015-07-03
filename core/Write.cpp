@@ -14,23 +14,23 @@ void OnWriteClose(uv_write_t *req, int status)
 
 void OnWrite(uv_write_t *req, int status)
 {
-	if (status < 0)
-	{
-		Log::Error("Error when write :%s.\n", uv_err_name(status));
-		ConnMgr::CloseConn(req->handle, true);
-	}
-	write_req_t* wr = (write_req_t*) req;;
-	DelBuff(&wr->buf.base);
-	DELETE(wr);
+	//if (status < 0)
+	//{
+	//	Log::Error("Error when write :%s.\n", uv_err_name(status));
+	//	ConnMgr::CloseConn(req->handle, true);
+	//}
+	//write_req_t* wr = (write_req_t*) req;;
+	//DelBuff(&wr->buf.base);
+	//DELETE(wr);
 }
 
 void OnWriteNoFree(uv_write_t *req, int status)
 {
-	if (status < 0)
-	{
-		Log::Error("Error when write :%s.\n", uv_err_name(status));
-		ConnMgr::CloseConn(req->handle, true);
-	}
-	DELETE(req);
+	//if (status < 0)
+	//{
+	//	Log::Error("Error when write :%s.\n", uv_err_name(status));
+	//	ConnMgr::CloseConn(req->handle, true);
+	//}
+	//DELETE(req);
 }
 

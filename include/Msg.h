@@ -4,9 +4,10 @@
 class MsgNode
 {
 public:
-	MsgNode(int msgId, char* data);
+	MsgNode(void* conn, int msgId, char* data);
 	~MsgNode();
 private:
+	void* mConn;
 	int mId;
 	char* mData;
 public:
@@ -21,7 +22,7 @@ public:
 	MsgQueue();
 	~MsgQueue();
 public:
-	void PushMsg(int msgId, char* data);
+	void PushMsg(void* conn, int msgId, char* data);
 	MsgNode* PopMsg();
 public:
 private:

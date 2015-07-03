@@ -1,8 +1,9 @@
 #include "comm.h"
 #include "Msg.h"
 
-MsgNode::MsgNode(int msgId, char* data)
+MsgNode::MsgNode(void* conn, int msgId, char* data)
 {
+	mConn = conn;
 	mId = msgId;
 	mData = data;
 	mNext = NULL;
@@ -31,10 +32,10 @@ MsgQueue::~MsgQueue()
 {
 }
 
-void MsgQueue::PushMsg(int msgId, char* data)
+void MsgQueue::PushMsg(void* conn, int msgId, char* data)
 {
 	pthread_mutex_lock(&mMutex);
-	MsgNode* pNode = new MsgNode(msgId, data);
+	MsgNode* pNode = new MsgNode(conn, msgId, data);
 	if(mTail == NULL)
 	{
 		mHead = mTail = pNode;
