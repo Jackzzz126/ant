@@ -1,12 +1,10 @@
 #ifndef _TEST_H_
 #define _TEST_H_
 
-class Test
+namespace Test
 {
-public:
-	Test();
-	~Test();
-};
+	void Echo(int packId, char* data, int len);
+}
 
 #endif//_TEST_H_
 

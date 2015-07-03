@@ -1,10 +1,12 @@
 #include "Test.h"
+#include "Log.h"
 
-Test::Test()
+namespace Test
+{//begin of name space
+
+void Echo(int packId, char* data, int len)
 {
 }
 
-Test::~Test()
-{
-}
+}//end of name space
 
