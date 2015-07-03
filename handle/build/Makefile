@@ -1,9 +1,9 @@
 
 CPPPATH=../src
-HPATH=-I ../include
+HPATH=-I ../include -I ../../core/include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-TARGET = handle.a
+TARGET = libhandle.a
 AR = ar
 
 .PHONY:all

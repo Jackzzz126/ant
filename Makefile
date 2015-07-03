@@ -15,10 +15,10 @@ export CC
 
 .PHONY:all
 all:
-	@cd handle/build; make; cd ../../;
-	@cd core/build; make; cd ../../;
+	@cd handle/build && make;
+	@cd core/build && make;
 
 .PHONY:clean
 clean:
-	@cd handle/build; make clean; cd ../../;
-	@cd core/build; make clean; cd ../../;
+	@cd handle/build && make clean;
+	@cd core/build && make clean;

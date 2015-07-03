@@ -1,8 +1,8 @@
 */build/*.o
 */build/*.d
 
-handle/build/handle.a
-core/build/handle.a
+handle/build/libhandle.a
+core/build/libhandle.a
 
 core/build/ant
 /ant
