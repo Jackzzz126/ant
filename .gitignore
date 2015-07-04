@@ -1,13 +1,12 @@
 */build/*.o
 */build/*.d
+*/build/*.so
 
-handle/build/libhandle.a
-core/build/libhandle.a
+build/*.o
+build/*.d
+build/*.so
 
-core/build/ant
-/ant
-/log.log
-/err.log
+/build/ant
 
 test/*.o
 test/*.a

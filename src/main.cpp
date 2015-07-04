@@ -20,7 +20,7 @@ int main(int argc, char* argv[])
 {
 	//config
 	Config* config = Config::Singleton();
-	char configFileName[] = "config.json";
+	char configFileName[] = "config/config.json";
 	if(!config->Load(configFileName))
 	{
 		return 1;

@@ -28,7 +28,7 @@ $(TARGET):$(OBJS)
 
 .PHONY:install
 install:
-	@cp $(TARGET) ../../build/
+	@cp $(TARGET) ../../build/modeules
 
 .PHONY:clean
 clean:
