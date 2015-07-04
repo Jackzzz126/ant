@@ -41,13 +41,15 @@ public:
 	bool GetValue(const string& key, float* value);
 	bool GetValue(const string& key, string& str);
 	bool GetValue(const string& key, vector<int>& array);
+	bool GetValue(const string& key, vector<float>& array);
 	bool GetValue(const string& key, bool* pBool);
 private:
 	bool Parse(const string& key, JSONNODE* node);
 public:
-	map<string, float> mDataFloat;
-	map<string, string> mDataString;
-	map<string, vector<int> > mDataArray;
+	map<string, float> mDataNum;
+	map<string, string> mDataStr;
+	map<string, vector<float> > mDataNumArray;
+	map<string, vector<string> > mDataStrArray;
 };
 #endif//_JSON_H_
 
