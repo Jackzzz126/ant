@@ -2,8 +2,6 @@
 #include "Router.h"
 #include "Log.h"
 
-#include "Test.h"
-
 map<int, MsgHandler> Router::mGlobalRouter;
 void Router::AddHandler(int packId, MsgHandler handler)
 {
@@ -22,7 +20,6 @@ void Router::AddHandler(int packId, MsgHandler handler)
 }
 void Router::Init()
 {
-	mGlobalRouter[-1] = &Test::Echo;
 }
 
 

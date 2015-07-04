@@ -9,9 +9,9 @@ else
 endif
 CC=g++
 
-CPPPATH=..
+CPPPATH=../src
 HPATH=-I ../../include
-HPATH+=-I ../../include/handle
+HPATH+=-I ../include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 TARGET = libhandle.a
@@ -22,15 +22,19 @@ all:$(TARGET)
 
 $(TARGET):$(OBJS)
 	@$(AR) cqs $(TARGET) $(OBJS)
-	@cp $(TARGET) ../../core/build/
 
 %.o:$(CPPPATH)/%.cpp
 	@$(CC) -c $(CPPFLAGS) $(HPATH) $<
 
+.PHONY:install
+install:
+	@cp $(TARGET) ../../build/
+
 .PHONY:clean
 clean:
-	@rm -f *.o $(TARGET)
+	@rm -f *.o $(TARGET) *.d
 
+#------------------------------------------
 include $(notdir $(patsubst %.cpp,%.d,$(SOURCES)))
 %.d:$(CPPPATH)/%.cpp
 #rm -f $@;
