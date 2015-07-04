@@ -203,3 +203,16 @@ bool Json::GetValue(const string& key, vector<float>& array)
 		return true;
 	}
 }
+bool Json::GetValue(const string& key, vector<string>& array)
+{
+	map<string, vector<string> >::iterator iter = mDataStrArray.find(key);
+	if(iter == mDataStrArray.end())
+	{
+		return false;
+	}
+	else
+	{
+		array = mDataStrArray[key];
+		return true;
+	}
+}
