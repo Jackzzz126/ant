@@ -4,7 +4,7 @@
 
 build/*.o
 build/*.d
-build/*.so
+build/modules/*.so
 
 /build/ant
 

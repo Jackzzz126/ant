@@ -1,7 +1,7 @@
 
 mode = debug
 
-CPPFLAGS=-Wall -pthread
+CPPFLAGS=-Wall -pthread -fPIC
 ifeq ($(mode), debug)
 	CPPFLAGS+=-O0 -g
 else
@@ -14,14 +14,13 @@ HPATH=-I ../../include
 HPATH+=-I ../include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-TARGET = libhandle.a
-AR = ar
+TARGET = libbenchMark.so
 
 .PHONY:all
 all:$(TARGET)
 
 $(TARGET):$(OBJS)
-	@$(AR) cqs $(TARGET) $(OBJS)
+	@$(CC) -shared -o $(TARGET) $(OBJS)
 
 %.o:$(CPPPATH)/%.cpp
 	@$(CC) -c $(CPPFLAGS) $(HPATH) $<
