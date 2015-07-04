@@ -11,4 +11,8 @@
 		"logFile" : "",
 		"errFile" : ""
 	}
+	"modules" :
+	[
+		"libbenchMark",
+	]
 }

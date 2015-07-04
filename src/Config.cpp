@@ -50,7 +50,8 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:backlog", &mBacklog) ||
 		!json.GetValue("server:daemon", &mDaemon) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
-		!json.GetValue("log:errFile", mErrFileName)
+		!json.GetValue("log:errFile", mErrFileName) ||
+		!json.GetValue("modules", mModuleNames)
 	  )
 	{
 		printf("Error when parse %s: some value miss.\n", fileName);

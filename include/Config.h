@@ -18,6 +18,8 @@ public:
 	FILE* mLogFileHandle;
 	FILE* mErrFileHandle;
 	bool mDaemon;
+	//modules
+	vector<string> mModuleNames;
 
 private:
 	//log
