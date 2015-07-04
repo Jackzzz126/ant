@@ -1,4 +1,14 @@
 
+mode = debug
+
+CPPFLAGS=-Wall -pthread
+ifeq ($(mode), debug)
+	CPPFLAGS+=-O0 -g
+else
+	CPPFLAGS+=-O3 -DNDEBUG
+endif
+CC=g++
+
 CPPPATH=..
 HPATH=-I ../../include
 HPATH+=-I ../../include/handle
