@@ -15,6 +15,8 @@
 
 #include<pthread.h>
 
+#include <dlfcn.h>
+
 //stl
 #include<string>
 #include<vector>

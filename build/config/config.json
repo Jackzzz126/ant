@@ -10,9 +10,9 @@
 	{
 		"logFile" : "",
 		"errFile" : ""
-	}
+	},
 	"modules" :
 	[
-		"libbenchMark",
+		"libbenchMark.so"
 	]
 }

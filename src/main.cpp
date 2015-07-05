@@ -6,6 +6,7 @@
 #include "Conn.h"
 #include "Gate.h"
 #include "Msg.h"
+#include "Module.h"
 
 uv_loop_t* loop = NULL;
 
@@ -32,6 +33,10 @@ int main(int argc, char* argv[])
 			printf("Daemonize error.\n");
 			return 1;
 		}
+	}
+	if(!Module::LoadModules())
+	{
+		return 1;
 	}
 
 	//socket
@@ -87,6 +92,8 @@ int main(int argc, char* argv[])
 		iter->second->Destroy(false);
 	}
 	ConnMgr::mAllConns.clear();
+
+	Module::ReleaseModules();
 
 	return rtn;
 }
