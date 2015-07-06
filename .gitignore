@@ -1,12 +1,13 @@
-*/build/*.o
-*/build/*.d
-*/build/*.so
+handle/build/*.o
+handle/build/*.d
+handle/build/*.a
 
 build/*.o
 build/*.d
-build/modules/*.so
-
+build/*.a
 /build/ant
+
+ant
 
 test/*.o
 test/*.a

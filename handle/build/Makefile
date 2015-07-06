@@ -1,33 +1,21 @@
 
-mode = debug
-
-CPPFLAGS=-Wall -pthread -fPIC
-ifeq ($(mode), debug)
-	CPPFLAGS+=-O0 -g
-else
-	CPPFLAGS+=-O3 -DNDEBUG
-endif
-CC=g++
-
 CPPPATH=../src
 HPATH=-I ../../include
 HPATH+=-I ../include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-TARGET = libbenchMark.so
+TARGET = libhandle.a
+AR = ar
 
 .PHONY:all
 all:$(TARGET)
 
 $(TARGET):$(OBJS)
-	@$(CC) -shared -o $(TARGET) $(OBJS)
+	@$(AR) cqs $(TARGET) $(OBJS)
+	@cp $(TARGET) ../../build
 
 %.o:$(CPPPATH)/%.cpp
 	@$(CC) -c $(CPPFLAGS) $(HPATH) $<
-
-.PHONY:install
-install:
-	@cp $(TARGET) ../../build/modules
 
 .PHONY:clean
 clean:

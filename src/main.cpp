@@ -93,8 +93,6 @@ int main(int argc, char* argv[])
 	}
 	ConnMgr::mAllConns.clear();
 
-	Module::ReleaseModules();
-
 	return rtn;
 }
 

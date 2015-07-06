@@ -1,28 +1,19 @@
 
-mode = debug
-
-CPPFLAGS=-Wall -pthread
-ifeq ($(mode), debug)
-	CPPFLAGS+=-O0 -g
-else
-	CPPFLAGS+=-O3 -DNDEBUG
-endif
-CC=g++
-
 CPPPATH=../src
 HPATH=-I ../include -I ../libuv/include -I ../libjson
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-LIBS = -luv -lrt -ldl -lm -ljson
+LIBS = -luv -lrt -ldl -lm -ljson -lhandle
 LIBPATH = -L .
 TARGET = ant
-DEPLIBS = libuv.a libjson.a
+DEPLIBS = libuv.a libjson.a libhandle.a
 
 .PHONY:all
 all:$(TARGET)
 
 $(TARGET):$(OBJS) $(DEPLIBS)
 	@$(CC) -o $(TARGET) $(CPPFLAGS) $(OBJS) $(LIBS) $(LIBPATH)
+	@cp $(TARGET) ../
 
 %.o:$(CPPPATH)/%.cpp
 	@$(CC) -c $(CPPFLAGS) $(HPATH) $<
