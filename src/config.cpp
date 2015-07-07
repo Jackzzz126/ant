@@ -16,6 +16,7 @@ Config::Config()
 	mPort = 0;
 	mBacklog = 128;
 	mDaemon = false;
+	mWorkerThreads = 0;
 }
 
 bool Config::Load(char* fileName)
@@ -49,14 +50,33 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:ip", mIp) ||
 		!json.GetValue("server:backlog", &mBacklog) ||
 		!json.GetValue("server:daemon", &mDaemon) ||
+		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
-		!json.GetValue("log:errFile", mErrFileName) ||
-		!json.GetValue("modules", mModuleNames)
+		!json.GetValue("log:errFile", mErrFileName)
 	  )
 	{
 		printf("Error when parse %s: some value miss.\n", fileName);
 		return false;
 	}
+
+	//check
+	if(mPort == 0 || mIp == "")
+	{
+		printf( "Error when parse %s: ip, port invalid.\n", fileName);
+		return false;
+	}
+	if((mLogFileName == "" || mErrFileName == "") && mDaemon)
+	{
+		printf( "Error when parse %s: must set log file in daemon mode.\n", fileName);
+		return false;
+	}
+	if(mWorkerThreads < 1)
+	{
+		printf( "Error when parse %s: worker threads must > 1.\n", fileName);
+		return false;
+	}
+
+	//init
 	if(mLogFileName == "" || mErrFileName == "")
 	{
 		mLogFileHandle = stdout;
@@ -74,16 +94,6 @@ bool Config::Load(char* fileName)
 		}
 	}
 
-	if(mPort == 0 || mIp == "")
-	{
-		printf( "Error when parse %s: ip, port invalid.\n", fileName);
-		return false;
-	}
-	if((mLogFileName == "" || mErrFileName == "") && mDaemon)
-	{
-		printf( "Error when parse %s: must set log file in daemon mode.\n", fileName);
-		return false;
-	}
 	return true;
 }
 
