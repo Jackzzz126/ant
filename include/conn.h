@@ -4,9 +4,6 @@
 class Conn
 {
 public:
-	static int BUFF_UNIT;
-	static int HEAD_LENGTH;
-public:
 	Conn(void *conn);
 	~Conn();
 public:

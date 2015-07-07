@@ -31,7 +31,6 @@ public:
 		FLOAT_ARRAY = 4,//floatArray
 		BIT32 = 5,//float
 	};
-	static int BUFF_UNIT;
 public:
 	Proto();
 	~Proto(){};

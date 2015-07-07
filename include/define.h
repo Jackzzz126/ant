@@ -22,9 +22,10 @@ typedef long long int		int64;
 typedef unsigned long long int	uint64;
 # endif
 
-#define MAX_INT 2147483647;
-#define MIN_INT -2147483648;
-
+#define MAX_INT 2147483647
+#define MIN_INT -2147483648
+#define BUFF_UNIT 1024
+#define HEAD_LENGTH 8
 
 #define DELETE(p)		{ delete p; p = NULL; }
 
@@ -34,11 +35,5 @@ uv_buf_t NewUvBuff(int size);
 void DelUvBuff(uv_buf_t& buff);
 char* NewBuff(int size);
 void DelBuff(char** pp);
-
-typedef struct {
-  uv_write_t req;
-  uv_buf_t buf;
-} write_req_t;
-
 
 #endif//_DEFINE_H_

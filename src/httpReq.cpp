@@ -31,8 +31,8 @@ void HttpReq::ClearConn(uv_stream_t* handle)
 uv_buf_t HttpReq::OnAllocBuffer(uv_handle_t *handle, size_t suggested_size)
 {
 	uv_buf_t receiveBuff;
-	receiveBuff.base = NewBuff(Proto::BUFF_UNIT * 4);
-	receiveBuff.len = Proto::BUFF_UNIT * 4;
+	receiveBuff.base = NewBuff(BUFF_UNIT * 4);
+	receiveBuff.len = BUFF_UNIT * 4;
 	return receiveBuff;
 }
 
@@ -46,7 +46,7 @@ void HttpReq::SendHttpPack(uv_connect_t* conn, const string& url, uv_buf_t buff)
 	httpHead += "\r\n";
 	
 	uv_buf_t httpBuff;
-	httpBuff.base = NewBuff((httpHead.length() + buff.len + Proto::BUFF_UNIT) / Proto::BUFF_UNIT * Proto::BUFF_UNIT);
+	httpBuff.base = NewBuff((httpHead.length() + buff.len + BUFF_UNIT) / BUFF_UNIT * BUFF_UNIT);
 	memcpy(httpBuff.base, httpHead.c_str(), httpHead.length());
 	memcpy((char*)httpBuff.base + httpHead.length(), buff.base, buff.len);
 	httpBuff.len = httpHead.length() + buff.len;

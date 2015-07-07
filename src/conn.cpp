@@ -13,14 +13,11 @@
 //#include "ReqBenchMark.h"
 //#include "ReqTest.h"
 
-int Conn::BUFF_UNIT = 1024;
-int Conn::HEAD_LENGTH = 8;
-
 Conn::Conn(void* conn)
 {
 	mConn = conn;
-	mRecvBuff.base = NewBuff(Conn::BUFF_UNIT * 2);
-	mRecvBuff.len = Conn::BUFF_UNIT * 2;
+	mRecvBuff.base = NewBuff(BUFF_UNIT * 2);
+	mRecvBuff.len = BUFF_UNIT * 2;
 	mValidSize = 0;
 }
 Conn::~Conn()
@@ -41,7 +38,7 @@ void Conn::ExpandRecvBuff()
 }
 void Conn::ShrinkRecvBuff()
 {
-	char* newBuff = NewBuff(Conn::BUFF_UNIT * 2);
+	char* newBuff = NewBuff(BUFF_UNIT * 2);
 	if(mValidSize > 0)
 	{
 		memcpy(newBuff, mRecvBuff.base, mValidSize);
@@ -248,7 +245,7 @@ void Conn::HandleHttpPost(const string& url, char* buff, int size)
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(72/BUFF_UNIT + BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
@@ -261,7 +258,7 @@ void Conn::HandleHttpGet(const string& url)
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 200 OK\r\nContent-Lenght:12\r\nContent-Type:'text/plain'\r\n\r\nHello world.";
-		uv_buf_t sendBuff = NewUvBuff(77/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(77/BUFF_UNIT + BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 77);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
@@ -271,7 +268,7 @@ void Conn::HandleHttpGet(const string& url)
 	{
 		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewUvBuff(72/Conn::BUFF_UNIT + Conn::BUFF_UNIT);
+		uv_buf_t sendBuff = NewUvBuff(72/BUFF_UNIT + BUFF_UNIT);
 		memcpy(sendBuff.base, buff, 72);
 		req->data = (void*)sendBuff.base;
 		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
@@ -321,7 +318,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//}
 	//if( packId < PackId::MIN_PACKID || packId > PackId::MAX_PACKID )
 	//{
-	//	ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
 	//	return;
 	//}
 	//if(packId == PackId::JOINROOM)
@@ -330,7 +327,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parst())
 	//	{
-	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	Game::ValidChar(req.m_session, req.m_charId, req.m_ip, req.m_port, mPlayer);
@@ -341,7 +338,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	printf("%s\n", req.m_buff.mBuff);
@@ -363,7 +360,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	uv_buf_t sendBuff;
@@ -372,7 +369,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//}
 	//else
 	//{
-	//	ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
 	//	return;
 	//}
 }

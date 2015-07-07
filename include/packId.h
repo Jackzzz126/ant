@@ -4,7 +4,7 @@
 class PackId
 {
 public:
-	enum PackIdDefien
+	enum PackIdDefine
 	{
 		MIN_PACKID = 1,
 		//1-50
