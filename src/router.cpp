@@ -1,27 +1,44 @@
 #include "comm.h"
 #include "router.h"
 #include "log.h"
+
 #include "benchMark.h"
 
-map<int, MsgHandler> Router::mGlobalRouter;
-void Router::AddHandler(int packId, MsgHandler handler)
+map<int, MsgHandler> Router::mAllHandlers;
+void Router::AddHandler(int msgId, MsgHandler handler)
 {
 	assert(handler);
 
 	map<int, MsgHandler>::iterator iter;
-	iter = Router::mGlobalRouter.find(packId);
-	if(iter != Router::mGlobalRouter.end())
+	iter = mAllHandlers.find(msgId);
+	if(iter != mAllHandlers.end())
 	{
-		Log::Error("Duplicate packid added.", packId);
+		Log::Error("Duplicate msgId added.", msgId);
 	}
 	else
 	{
-		Router::mGlobalRouter[packId] = handler;
+		mAllHandlers[msgId] = handler;
+	}
+}
+void Router::Handle(void* conn, int msgId, char* data, int size)
+{
+	map<int, MsgHandler>::iterator iter;
+	iter = mAllHandlers.find(msgId);
+	if(iter != mAllHandlers.end())
+	{
+		mAllHandlers[msgId](conn, data, size);
+	}
+	else
+	{
+		Log::Error("Unknown msg id: %d.\n", msgId);
+		DelBuff(&data);
 	}
 }
 void Router::Init()
 {
 	AddHandler(-1, &BenchMark::Echo);
 }
+
+
 
 

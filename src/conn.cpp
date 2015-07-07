@@ -7,6 +7,7 @@
 #include "write.h"
 #include "json.h"
 #include "game.h"
+#include "msg.h"
 
 //#include "ReqJoinRoom.h"
 //#include "ReqBenchMark.h"
@@ -299,25 +300,25 @@ bool Conn::IsHttpPack(char* buff)
 
 void Conn::HandleNormalPack(int packId, char* buff, int size)
 {
-	char* pack = NewBuff(size);
-	memcpy(pack, buff, size);
-	DELETE(pack);
-	switch(packId)
-	{
-	case 11:
-		break;
-	case 12:
-		{
-			uv_buf_t sendBuff = NewUvBuff(size + HEAD_LENGTH);
-			memcpy(sendBuff.base + HEAD_LENGTH, buff, size);
-			*(int*)(sendBuff.base) = size ^ 0x79669966;
-			*((int*)(sendBuff.base) + 1) = 12 ^ 0x79669966;
-			ConnMgr::SendPackToAll(sendBuff);
-			break;
-		}
-	default:
-		break;
-	}
+	char* data = NewBuff(size);
+	memcpy(data, buff, size);
+	MsgQueue::Singleton()->PushMsg(mConn, packId, data, size);
+	//switch(packId)
+	//{
+	//case 11:
+	//	break;
+	//case 12:
+	//	{
+	//		uv_buf_t sendBuff = NewUvBuff(size + HEAD_LENGTH);
+	//		memcpy(sendBuff.base + HEAD_LENGTH, buff, size);
+	//		*(int*)(sendBuff.base) = size ^ 0x79669966;
+	//		*((int*)(sendBuff.base) + 1) = 12 ^ 0x79669966;
+	//		ConnMgr::SendPackToAll(sendBuff);
+	//		break;
+	//	}
+	//default:
+	//	break;
+	//}
 	//if( packId < PackId::MIN_PACKID || packId > PackId::MAX_PACKID )
 	//{
 	//	ConnMgr::CloseConn(mConn, Conn::UNKNOWN_DATA);

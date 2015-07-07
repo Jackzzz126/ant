@@ -3,7 +3,7 @@
 
 namespace BenchMark
 {
-	void Echo(int packId, char* data, int len);
+	void Echo(void* conn, char* data, int size);
 }
 
 #endif//_BENCHMARK_H_

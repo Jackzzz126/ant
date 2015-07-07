@@ -22,16 +22,23 @@ void worker_func(void* arg)
 {
 	while(true)
 	{
-		if(gGotQuitSignal)
+		MsgNode* pMsgNode = MsgQueue::Singleton()->PopMsg();
+		if(pMsgNode == NULL)
 		{
-			Log::Out("Thread quiting.\n");
-			break;
+			if(gGotQuitSignal)
+			{
+				break;
+			}
+			else
+			{
+				usleep(1000 * 200);//sleep use seconds, usleep use 10^-6 seconds
+				continue;
+			}
 		}
 		else
 		{
-			Log::Out("I'm in thread.\n");
-			sleep(1);
-			//sleep use seconds, usleep use 10^-6 seconds
+			Router::Handle(pMsgNode->mConn, pMsgNode->mId, pMsgNode->mData, pMsgNode->mSize);
+			DELETE(pMsgNode);
 		}
 	};
 }
