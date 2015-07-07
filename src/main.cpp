@@ -6,7 +6,7 @@
 #include "conn.h"
 #include "gate.h"
 #include "msg.h"
-#include "module.h"
+#include "router.h"
 
 uv_loop_t* loop = NULL;
 
@@ -34,10 +34,7 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 	}
-	if(!Module::LoadModules())
-	{
-		return 1;
-	}
+	Router::Init();
 
 	//socket
 	loop = uv_default_loop();

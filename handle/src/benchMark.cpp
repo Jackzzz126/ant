@@ -10,7 +10,4 @@ void Echo(int packId, char* data, int len)
 
 
 }//end of name space
-void Init()
-{
-}
 

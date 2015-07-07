@@ -1,6 +1,7 @@
 #include "comm.h"
 #include "router.h"
 #include "log.h"
+#include "benchMark.h"
 
 map<int, MsgHandler> Router::mGlobalRouter;
 void Router::AddHandler(int packId, MsgHandler handler)
@@ -20,6 +21,7 @@ void Router::AddHandler(int packId, MsgHandler handler)
 }
 void Router::Init()
 {
+	AddHandler(-1, &BenchMark::Echo);
 }
 
 
