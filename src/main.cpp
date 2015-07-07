@@ -9,6 +9,7 @@
 #include "router.h"
 
 uv_loop_t* loop = NULL;
+bool gGotQuitSignal = false;
 
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff);
 void on_read(uv_stream_t *conn, ssize_t nread, const uv_buf_t* pRecvBuff);
@@ -16,6 +17,24 @@ void on_new_connection(uv_stream_t *listener, int status);
 
 void signal_term(uv_signal_t *handle, int signum);
 void signal_int(uv_signal_t *handle, int signum);
+
+void worker_func(void* arg)
+{
+	while(true)
+	{
+		if(gGotQuitSignal)
+		{
+			Log::Out("Thread quiting.\n");
+			break;
+		}
+		else
+		{
+			Log::Out("I'm in thread.\n");
+			sleep(1);
+			//sleep use seconds, usleep use 10^-6 seconds
+		}
+	};
+}
 
 int main(int argc, char* argv[])
 {
@@ -26,6 +45,7 @@ int main(int argc, char* argv[])
 	{
 		return 1;
 	}
+	//init
 	if(config->mDaemon)
 	{
 		if(daemon(1,0)) 
@@ -57,9 +77,14 @@ int main(int argc, char* argv[])
 		Log::Out("Server start at %s:%d.\n", config->mIp.c_str(), config->mPort);
 	}
 
-	//thread
-	//uv_thread_t consoleId;
-	//uv_thread_create(&consoleId, console, NULL);
+	//thread start
+	vector<uv_thread_t> threadIds;
+	for(int i = 0; i < config->mWorkerThreads; i++)
+	{
+		uv_thread_t workerThreadId;
+		uv_thread_create(&workerThreadId, worker_func, NULL);
+		threadIds.push_back(workerThreadId);
+	}
 
 	//timer
 	//uv_timer_t regTimer;
@@ -80,8 +105,11 @@ int main(int argc, char* argv[])
 
 	//timer
 	//uv_timer_stop(&regTimer);
-	//thread
-	//uv_thread_join(&consoleId);
+	//thread end
+	for(int i = 0; i < config->mWorkerThreads; i++)
+	{
+		uv_thread_join(&threadIds[i]);
+	}
 
 	//user
 	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
@@ -158,11 +186,13 @@ void on_new_connection(uv_stream_t *listener, int status)
 void signal_term(uv_signal_t *handle, int signum)
 {
 	uv_stop(loop);
+	gGotQuitSignal = true;
 	uv_signal_stop(handle);
 }
 void signal_int(uv_signal_t *handle, int signum)
 {
 	uv_stop(loop);
+	gGotQuitSignal = true;
 	uv_signal_stop(handle);
 }
 
