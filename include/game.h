@@ -1,8 +1,8 @@
 #ifndef _GAME_H_
 #define _GAME_H_
 
-#include "HttpReq.h"
-#include "Player.h"
+#include "httpReq.h"
+#include "player.h"
 
 class Game : public HttpReq
 {

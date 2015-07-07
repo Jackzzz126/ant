@@ -1,7 +1,7 @@
 #include "comm.h"
-#include "String.h"
+#include "strUtil.h"
 
-void String::Trim(string& str)
+void StrUtil::Trim(string& str)
 {
 	string::size_type pos = str.find_last_not_of(' ');
 	if(pos != string::npos)
@@ -19,7 +19,7 @@ void String::Trim(string& str)
 	}
 }
 
-string String::Format(const char* str, ...)
+string StrUtil::Format(const char* str, ...)
 {
 	char buff[1024];
 	va_list arg;

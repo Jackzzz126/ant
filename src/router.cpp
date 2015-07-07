@@ -1,6 +1,6 @@
 #include "comm.h"
-#include "Router.h"
-#include "Log.h"
+#include "router.h"
+#include "log.h"
 
 map<int, MsgHandler> Router::mGlobalRouter;
 void Router::AddHandler(int packId, MsgHandler handler)

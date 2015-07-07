@@ -1,11 +1,11 @@
 #include "comm.h"
-#include "Log.h"
-#include "Time.h"
-#include "Config.h"
+#include "log.h"
+#include "dateTime.h"
+#include "config.h"
 
 void Log::Out(const char* str, ...)
 {
-	string nowStr = Time::GetNowStr();
+	string nowStr = DateTime::GetNowStr();
 
 	va_list arg;
 	va_start(arg, str);
@@ -19,7 +19,7 @@ void Log::Out(const char* str, ...)
 }
 void Log::Error(const char* str, ...)
 {
-	string nowStr = Time::GetNowStr();
+	string nowStr = DateTime::GetNowStr();
 
 	va_list arg;
 	va_start(arg, str);
@@ -33,7 +33,7 @@ void Log::Error(const char* str, ...)
 }
 //void Log::Debug(const char* str, ...)
 //{
-//	string nowStr = Time::GetNowStr();
+//	string nowStr = DateTime::GetNowStr();
 //	va_list arg;
 //	va_start(arg, str);
 //	fprintf("[DBG %s] ", nowStr.c_str());

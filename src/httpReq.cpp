@@ -1,8 +1,8 @@
 #include "comm.h"
-#include "HttpReq.h"
-#include "Proto.h"
-#include "Log.h"
-#include "Define.h"
+#include "httpReq.h"
+#include "proto.h"
+#include "log.h"
+#include "define.h"
 
 vector<HttpConn> gHttpConns;
 
@@ -40,7 +40,7 @@ void HttpReq::SendHttpPack(uv_connect_t* conn, const string& url, uv_buf_t buff)
 {
 	string httpHead;
 	httpHead += ("POST " + url + " HTTP/1.1\r\n");
-	httpHead += ("Content-Length: " + String::Format("%d", buff.len) + "\r\n");
+	httpHead += ("Content-Length: " + StrUtil::Format("%d", buff.len) + "\r\n");
 	//"Host: 192.168.61.3:8079"
 	httpHead += "Connection: close\r\n";
 	httpHead += "\r\n";

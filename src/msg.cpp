@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "Msg.h"
+#include "msg.h"
 
 MsgNode::MsgNode(void* conn, int msgId, char* data)
 {

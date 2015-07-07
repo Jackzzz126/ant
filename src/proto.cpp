@@ -1,6 +1,6 @@
 #include "comm.h"
-#include "Log.h"
-#include "Proto.h"
+#include "log.h"
+#include "proto.h"
 
 int Proto::BUFF_UNIT = 512;
 

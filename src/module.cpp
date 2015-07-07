@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "Module.h"
+#include "module.h"
 
 bool Module::LoadModules()
 {

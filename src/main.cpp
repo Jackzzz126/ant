@@ -1,12 +1,12 @@
 #include "comm.h"
-#include "Log.h"
-#include "Define.h"
-#include "Time.h"
-#include "Config.h"
-#include "Conn.h"
-#include "Gate.h"
-#include "Msg.h"
-#include "Module.h"
+#include "log.h"
+#include "define.h"
+#include "time.h"
+#include "config.h"
+#include "conn.h"
+#include "gate.h"
+#include "msg.h"
+#include "module.h"
 
 uv_loop_t* loop = NULL;
 

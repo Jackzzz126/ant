@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "Define.h"
+#include "define.h"
 
 string GetClientAddr(uv_stream_t *conn)
 {
@@ -10,7 +10,7 @@ string GetClientAddr(uv_stream_t *conn)
 	struct sockaddr_in* inetAddr = (struct sockaddr_in*)(&clientAddr);
 	char ip[17];
 	uv_ip4_name(inetAddr, ip, sizeof(ip));
-	return String::Format("%s:%d", ip, ntohs(inetAddr->sin_port));
+	return StrUtil::Format("%s:%d", ip, ntohs(inetAddr->sin_port));
 }
 
 uv_buf_t NewUvBuff(int size)

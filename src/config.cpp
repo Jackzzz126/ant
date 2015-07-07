@@ -1,6 +1,6 @@
 #include "comm.h"
-#include "Config.h"
-#include "Json.h"
+#include "config.h"
+#include "json.h"
 
 Config* Config::mGlobalConfig = NULL;
 Config* Config::Singleton()

@@ -1,8 +1,8 @@
 #include "comm.h"
-#include "Write.h"
-#include "Define.h"
-#include "Conn.h"
-#include "Log.h"
+#include "write.h"
+#include "define.h"
+#include "conn.h"
+#include "log.h"
 
 extern uv_loop_t *loop;
 

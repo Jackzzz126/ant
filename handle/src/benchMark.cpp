@@ -1,5 +1,5 @@
-#include "BenchMark.h"
-#include "Log.h"
+#include "benchMark.h"
+#include "log.h"
 
 namespace BenchMark
 {//begin of name space

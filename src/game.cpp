@@ -1,8 +1,8 @@
 #include "comm.h"
-#include "Game.h"
-#include "Log.h"
-#include "Player.h"
-#include "Conn.h"
+#include "game.h"
+#include "log.h"
+#include "player.h"
+#include "conn.h"
 
 //#include "ReqValidCharacter.h"
 //#include "ResValidCharacter.h"

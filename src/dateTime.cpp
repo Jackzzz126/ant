@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "Time.h"
+#include "dateTime.h"
 
 //int Time::GetSysTime()
 //{
@@ -8,13 +8,13 @@
 //	return time.tv_sec * 1000 + time.tv_usec / 1000;
 //}
 
-int Time::GetProcTime()
+int DateTime::GetProcTime()
 {
 	clock_t time = clock( );
 	return time * 1000 / CLOCKS_PER_SEC;
 }
 
-string Time::GetNowStr()
+string DateTime::GetNowStr()
 {
 	time_t rawTime;
 	struct tm * timeInfo;

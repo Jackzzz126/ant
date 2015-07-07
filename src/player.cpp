@@ -1,6 +1,6 @@
 #include "comm.h"
-#include "Player.h"
-#include "Conn.h"
+#include "player.h"
+#include "conn.h"
 
 Player::Player(uv_stream_t *conn)
 {

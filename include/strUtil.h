@@ -1,7 +1,8 @@
 #ifndef _STRING_H_
 #define _STRING_H_
+#include "comm.h"
 
-class String
+class StrUtil
 {
 public:
 	static void Trim(string& str);

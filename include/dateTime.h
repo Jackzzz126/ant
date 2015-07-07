@@ -1,9 +1,10 @@
 #ifndef _TIME_H_
 #define _TIME_H_
+#include "comm.h"
 #include <time.h>
 #include <sys/time.h>
 
-class Time
+class DateTime
 {
 public:
 	/*

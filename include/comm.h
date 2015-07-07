@@ -25,7 +25,7 @@ using namespace std;
 
 #include "uv.h"
 //owen
-#include "String.h"
-#include "Define.h"
+#include "strUtil.h"
+#include "define.h"
 
 #endif//_COMM_H_

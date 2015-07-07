@@ -1,7 +1,7 @@
 #include "comm.h"
-#include "Room.h"
+#include "room.h"
 
-#include "Player.h"
+#include "player.h"
 
 Room::Room(int id, Player* player1, Player* player2)
 {
