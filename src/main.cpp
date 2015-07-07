@@ -8,7 +8,7 @@
 #include "msg.h"
 #include "router.h"
 
-uv_loop_t* loop = NULL;
+uv_loop_t* gLoop = NULL;
 bool gGotQuitSignal = false;
 
 void alloc_buffer_cb(uv_handle_t *handle, size_t suggested_size, uv_buf_t* buff);
@@ -39,14 +39,14 @@ void worker_func(void* arg)
 int main(int argc, char* argv[])
 {
 	//config
-	Config* config = Config::Singleton();
+	Config* pConfig = Config::Singleton();
 	char configFileName[] = "config/config.json";
-	if(!config->Load(configFileName))
+	if(!pConfig->Load(configFileName))
 	{
 		return 1;
 	}
 	//init
-	if(config->mDaemon)
+	if(pConfig->mDaemon)
 	{
 		if(daemon(1,0)) 
 		{
@@ -57,58 +57,58 @@ int main(int argc, char* argv[])
 	Router::Init();
 
 	//socket
-	loop = uv_default_loop();
+	gLoop = uv_default_loop();
 
 	uv_tcp_t listener;
-	uv_tcp_init(loop, &listener);
+	uv_tcp_init(gLoop, &listener);
 
 	struct sockaddr_in bind_addr;
-	uv_ip4_addr(config->mIp.c_str(), config->mPort, &bind_addr);
+	uv_ip4_addr(pConfig->mIp.c_str(), pConfig->mPort, &bind_addr);
 	uv_tcp_bind(&listener, (sockaddr*)&bind_addr, 0);
-	int r = uv_listen((uv_stream_t*) &listener, config->mBacklog, on_new_connection);
+	int r = uv_listen((uv_stream_t*) &listener, pConfig->mBacklog, on_new_connection);
 	if(r < 0)
 	{
-		Log::Error("Error when listen at%s:%d: %s.\n", config->mIp.c_str(),
-			config->mPort, uv_err_name(r));
+		Log::Error("Error when listen at%s:%d: %s.\n", pConfig->mIp.c_str(),
+			pConfig->mPort, uv_err_name(r));
 		return 1;
 	}
 	else
 	{
-		Log::Out("Server start at %s:%d.\n", config->mIp.c_str(), config->mPort);
+		Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
 	}
 
 	//thread start
-	vector<uv_thread_t> threadIds;
-	for(int i = 0; i < config->mWorkerThreads; i++)
+	vector<uv_thread_t> threads;
+	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
 		uv_thread_t workerThreadId;
 		uv_thread_create(&workerThreadId, worker_func, NULL);
-		threadIds.push_back(workerThreadId);
+		threads.push_back(workerThreadId);
 	}
 
 	//timer
 	//uv_timer_t regTimer;
-	//uv_timer_init(loop, &regTimer);
-	//uv_timer_start(&regTimer, Gate::Reg, 3000, config->mRegInterval * 1000);
+	//uv_timer_init(gLoop, &regTimer);
+	//uv_timer_start(&regTimer, Gate::Reg, 3000, pConfig->mRegInterval * 1000);
 
 	//signal handle, normal way can't stop uv properly.
 	uv_signal_t sigTerm;
-	uv_signal_init(loop, &sigTerm);
+	uv_signal_init(gLoop, &sigTerm);
 	uv_signal_start(&sigTerm, signal_term, SIGTERM);
 
 	uv_signal_t sigInt;
-	uv_signal_init(loop, &sigInt);
+	uv_signal_init(gLoop, &sigInt);
 	uv_signal_start(&sigInt, signal_int, SIGINT);
 
 
-	int rtn = uv_run(loop, UV_RUN_DEFAULT);
+	int rtn = uv_run(gLoop, UV_RUN_DEFAULT);
 
 	//timer
 	//uv_timer_stop(&regTimer);
 	//thread end
-	for(int i = 0; i < config->mWorkerThreads; i++)
+	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
-		uv_thread_join(&threadIds[i]);
+		uv_thread_join(&threads[i]);
 	}
 
 	//user
@@ -168,7 +168,7 @@ void on_new_connection(uv_stream_t *listener, int status)
 	}
 
 	uv_tcp_t *conn = new uv_tcp_t;
-	uv_tcp_init(loop, conn);
+	uv_tcp_init(gLoop, conn);
 	if (uv_accept(listener, (uv_stream_t*)conn) == 0)
 	{
 		assert(conn->type == UV_TCP || conn->type == UV_NAMED_PIPE ||
@@ -185,13 +185,13 @@ void on_new_connection(uv_stream_t *listener, int status)
 
 void signal_term(uv_signal_t *handle, int signum)
 {
-	uv_stop(loop);
+	uv_stop(gLoop);
 	gGotQuitSignal = true;
 	uv_signal_stop(handle);
 }
 void signal_int(uv_signal_t *handle, int signum)
 {
-	uv_stop(loop);
+	uv_stop(gLoop);
 	gGotQuitSignal = true;
 	uv_signal_stop(handle);
 }
