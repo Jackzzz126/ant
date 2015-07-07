@@ -11,7 +11,7 @@ AR = ar
 all:$(TARGET)
 
 $(TARGET):$(OBJS)
-	@$(AR) cqs $(TARGET) $(OBJS)
+	@$(AR) crs $(TARGET) $(OBJS)
 	@cp $(TARGET) ../../build
 
 %.o:$(CPPPATH)/%.cpp
