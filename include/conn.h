@@ -1,6 +1,8 @@
 #ifndef _CONN_H_
 #define _CONN_H_
 
+#include "packId.h"
+
 class Conn
 {
 public:
@@ -32,7 +34,8 @@ public:
 	static map<void*, Conn*> mAllConns;
 public:
 	static void CloseConn(void* conn, bool logErr);
-	static void SendPackToAll(uv_buf_t buff);
+	static void SendPackToAll(PackId::PackIdType packId, uv_buf_t buff);
+	static void SendPack(void* conn, PackId::PackIdType packId, uv_buf_t buff);
 public:
 	ConnMgr();
 	~ConnMgr(){};

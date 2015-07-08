@@ -1,9 +1,9 @@
 #include "comm.h"
+#include "packId.h"
 #include "conn.h"
 
 #include "log.h"
 #include "define.h"
-#include "packId.h"
 #include "write.h"
 #include "json.h"
 #include "game.h"
@@ -395,22 +395,32 @@ void ConnMgr::CloseConn(void* conn, bool logErr)
 		uv_close((uv_handle_t*)conn, NULL);
 	}
 }
-void ConnMgr::SendPackToAll(uv_buf_t buff)
+void ConnMgr::SendPackToAll(PackId::PackIdType packId, uv_buf_t buff)
 {
+	WriteReq* pWriteReq = new WriteReq();
+
+	*(int*)(buff.base) = packId ^ 0x79669966;
+	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
+	pWriteReq->mBuff = buff;
+
+	pWriteReq->mRef = mAllConns.size();
 	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
 	for(; iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		uv_buf_t sendBuff = NewUvBuff(buff.len);
-		memcpy(sendBuff.base, buff.base, buff.len);
-		//uv_write_t *req = new uv_write_t;
-		//req->data = buff.base;
-		//uv_write( req, iter->second->mConn, &buff, 1, OnWrite);
-		
-		//write_req_t* req = new write_req_t;
-		//req->buf = sendBuff;
-		//uv_write(&req->req, iter->second->mConn, &req->buf, 1, OnWrite);
+		uv_write(&pWriteReq->mWrite, (uv_stream_t*)iter->second->mConn, &pWriteReq->mBuff, 1, OnWrite);
 	}
 	DelBuff(&buff.base);
+}
+
+void ConnMgr::SendPack(void* conn, PackId::PackIdType packId, uv_buf_t buff)
+{
+	WriteReq* pWriteReq = new WriteReq();
+
+	*(int*)(buff.base) = packId ^ 0x79669966;
+	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
+	pWriteReq->mBuff = buff;
+
+	uv_write(&pWriteReq->mWrite, (uv_stream_t*)conn, &pWriteReq->mBuff, 1, OnWrite);
 }
 
 

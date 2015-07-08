@@ -37,6 +37,7 @@ void Router::Handle(void* conn, int msgId, char* data, int size)
 void Router::Init()
 {
 	AddHandler(-1, &BenchMark::Echo);
+	AddHandler(-2, &BenchMark::DoubleEcho);
 }
 
 
