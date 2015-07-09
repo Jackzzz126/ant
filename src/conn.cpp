@@ -395,7 +395,7 @@ void ConnMgr::CloseConn(void* conn, bool logErr)
 		uv_close((uv_handle_t*)conn, NULL);
 	}
 }
-void ConnMgr::SendPackToAll(PackId::PackIdType packId, uv_buf_t buff)
+void ConnMgr::SendToAll(PackId::PackIdType packId, uv_buf_t buff)
 {
 	WriteReq* pWriteReq = new WriteReq();
 
@@ -409,10 +409,9 @@ void ConnMgr::SendPackToAll(PackId::PackIdType packId, uv_buf_t buff)
 	{
 		uv_write(&pWriteReq->mWrite, (uv_stream_t*)iter->second->mConn, &pWriteReq->mBuff, 1, OnWrite);
 	}
-	DelBuff(&buff.base);
 }
 
-void ConnMgr::SendPack(void* conn, PackId::PackIdType packId, uv_buf_t buff)
+void ConnMgr::SendToOne(void* conn, PackId::PackIdType packId, uv_buf_t buff)
 {
 	WriteReq* pWriteReq = new WriteReq();
 
@@ -421,6 +420,22 @@ void ConnMgr::SendPack(void* conn, PackId::PackIdType packId, uv_buf_t buff)
 	pWriteReq->mBuff = buff;
 
 	uv_write(&pWriteReq->mWrite, (uv_stream_t*)conn, &pWriteReq->mBuff, 1, OnWrite);
+}
+
+void ConnMgr::SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, uv_buf_t buff)
+{
+	WriteReq* pWriteReq = new WriteReq();
+
+	*(int*)(buff.base) = packId ^ 0x79669966;
+	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
+	pWriteReq->mBuff = buff;
+
+	pWriteReq->mRef = conns.size();
+	vector<void*>::const_iterator iter = conns.begin();
+	for(; iter != conns.end(); iter++)
+	{
+		uv_write(&pWriteReq->mWrite, (uv_stream_t*)(*iter), &pWriteReq->mBuff, 1, OnWrite);
+	}
 }
 
 

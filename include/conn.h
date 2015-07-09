@@ -34,8 +34,9 @@ public:
 	static map<void*, Conn*> mAllConns;
 public:
 	static void CloseConn(void* conn, bool logErr);
-	static void SendPackToAll(PackId::PackIdType packId, uv_buf_t buff);
-	static void SendPack(void* conn, PackId::PackIdType packId, uv_buf_t buff);
+	static void SendToAll(PackId::PackIdType packId, uv_buf_t buff);
+	static void SendToOne(void* conn, PackId::PackIdType packId, uv_buf_t buff);
+	static void SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, uv_buf_t buff);
 public:
 	ConnMgr();
 	~ConnMgr(){};
