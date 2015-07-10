@@ -12,10 +12,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
-
+//thread lib
 #include<pthread.h>
-
-#include <dlfcn.h>
 
 //stl
 #include<string>
@@ -23,7 +21,6 @@
 #include<map>
 using namespace std;
 
-#include "uv.h"
 //owen
 #include "strUtil.h"
 #include "define.h"

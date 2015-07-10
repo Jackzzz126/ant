@@ -29,10 +29,6 @@ typedef unsigned long long int	uint64;
 
 #define DELETE(p)		{ delete p; p = NULL; }
 
-string GetClientAddr(uv_stream_t *conn);
-
-uv_buf_t NewUvBuff(int size);
-void DelUvBuff(uv_buf_t& buff);
 char* NewBuff(int size);
 void DelBuff(char** pp);
 

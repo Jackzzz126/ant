@@ -15,7 +15,6 @@ test/*/*
 !test/*/*.cpp
 
 libjson/
-libuv/
 
 tags
 *.swp
