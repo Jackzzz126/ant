@@ -6,7 +6,7 @@
 class Conn
 {
 public:
-	Conn(void *conn);
+	Conn();
 	~Conn();
 public:
 	void RecvData(char* buff, int size);
@@ -25,6 +25,10 @@ public:
 	void* mConn;
 	uv_buf_t mRecvBuff;//buff to recv data
 	int mValidSize;
+
+	int mSock;
+	bool mRead;
+	bool mWrite;
 };
 
 //***********************************************************

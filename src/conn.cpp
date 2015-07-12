@@ -19,6 +19,12 @@ Conn::Conn(void* conn)
 	mRecvBuff.base = NewBuff(BUFF_UNIT * 2);
 	mRecvBuff.len = BUFF_UNIT * 2;
 	mValidSize = 0;
+
+	mSock = socket(AF_INET, SOCK_STREAM, 0);
+	int flag = fcntl(mSock, F_GETFL, 0);
+	fcntl(mSock, F_SETFL, flag | O_NONBLOCK);
+	mRead = false;
+	mWrite = true;
 }
 Conn::~Conn()
 {
