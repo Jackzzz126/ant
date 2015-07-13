@@ -4,7 +4,6 @@
 
 #include "log.h"
 #include "define.h"
-#include "write.h"
 #include "json.h"
 #include "game.h"
 #include "msg.h"
@@ -278,7 +277,7 @@ void Conn::Destroy(bool logErr)
 		Log::Error("%s: disconnected.\n", clientAddr.c_str());
 	}
 
-	uv_close((uv_handle_t*)mConn, NULL);
+	close(mSock);
 	delete this;
 }
 

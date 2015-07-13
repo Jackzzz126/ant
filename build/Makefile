@@ -1,6 +1,6 @@
 
 CPPPATH=../src
-HPATH=-I ../libuv/include -I ../libjson
+HPATH=-I ../libjson
 HPATH+=-I ../include
 HPATH+=-I ../handle/include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
@@ -8,7 +8,7 @@ OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -luv -lrt -ldl -lm -ljson -lhandle
 LIBPATH = -L .
 TARGET = ant
-DEPLIBS = libuv.a libjson.a libhandle.a
+DEPLIBS = libjson.a libhandle.a
 
 .PHONY:all
 all:$(TARGET)

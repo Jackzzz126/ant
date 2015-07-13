@@ -4,24 +4,24 @@
 #include "packId.h"
 #include "sock.h"
 
+struct RefBuff
+{
+	char* mBuff;
+	int mLen;
+	int mRef;
+	RefBuff(int len, int ref)
+	{
+		mBuff = NewBuff(len);
+		mLen = len;
+		mRef = ref;
+	};
+	~RefBuff()
+	{
+		DelBuff(&mBuff);
+	};
+};
 class Conn : Sock
 {
-	struct RefBuff
-	{
-		char* mBuff;
-		int mLen;
-		int mRef;
-		RefBuff(int len, int ref)
-		{
-			mBuff = NewBuff(len);
-			mLen = len;
-			mRef = ref;
-		}
-		~RefBuff()
-		{
-			DelBuff(&mBuff);
-		}
-	}
 	struct SendBuffNode
 	{
 		RefBuff* mRefBuff;
@@ -29,11 +29,11 @@ class Conn : Sock
 		SendBuffNode* mNext;
 		SendBuffNode(RefBuff* refBuff)
 		{
-			mSendBuff = refBuff;
+			mRefBuff = refBuff;
 			mOffset = 0;
 			mNext = NULL;
-		}
-	}
+		};
+	};
 public:
 	Conn(int sock);
 	~Conn();
@@ -67,9 +67,9 @@ public:
 	static map<int, Conn*> mAllConns;
 public:
 	static void CloseConn(void* conn, bool logErr);
-	static void SendToAll(PackId::PackIdType packId, uv_buf_t buff);
-	static void SendToOne(void* conn, PackId::PackIdType packId, uv_buf_t buff);
-	static void SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, uv_buf_t buff);
+	static void SendToAll(PackId::PackIdType packId, RefBuff* pRefBuff);
+	static void SendToOne(void* conn, PackId::PackIdType packId, RefBuff* pRefBuff);
+	static void SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, RefBuff* pRefBuff);
 public:
 	ConnMgr();
 	~ConnMgr(){};
