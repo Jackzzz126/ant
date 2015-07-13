@@ -4,9 +4,8 @@
 #include "poll.h"
 #include "conn.h"
 
-Listen::Listen(int sock)
+Listen::Listen(int sock) : Sock(sock)
 {
-	Sock(sock);
 }
 Listen::~Listen()
 {
@@ -15,7 +14,8 @@ Listen::~Listen()
 void Listen::OnRead()
 {
 	sockaddr_in sin;
-	int sock = accept(mSock, (struct sockaddr*)&sin, sizeof(sockaddr_in))
+	socklen_t len = sizeof(sockaddr_in);
+	int sock = accept(mSock, (struct sockaddr*)&sin, &len);
 	if(sock == -1)
 	{
 		Log::Error("Error when accept connection: %d.\n", errno);

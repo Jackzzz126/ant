@@ -3,7 +3,7 @@
 
 #include "sock.h"
 
-class Listen : Sock
+class Listen : public Sock
 {
 public:
 	Listen(int sock);

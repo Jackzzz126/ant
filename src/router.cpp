@@ -20,13 +20,13 @@ void Router::AddHandler(int msgId, MsgHandler handler)
 		mAllHandlers[msgId] = handler;
 	}
 }
-void Router::Handle(void* conn, int msgId, char* data, int size)
+void Router::Handle(int sock, int msgId, char* data, int size)
 {
 	map<int, MsgHandler>::iterator iter;
 	iter = mAllHandlers.find(msgId);
 	if(iter != mAllHandlers.end())
 	{
-		mAllHandlers[msgId](conn, data, size);
+		mAllHandlers[msgId](sock, data, size);
 	}
 	else
 	{

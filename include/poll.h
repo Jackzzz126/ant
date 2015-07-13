@@ -15,7 +15,7 @@ public:
 
 	static Poll* Singleton();
 private:
-	int mPollFd;
+	int mPoll;
 
 	static Poll* mGlobalPoll;
 };

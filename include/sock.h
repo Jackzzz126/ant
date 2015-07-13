@@ -4,11 +4,7 @@
 class Sock 
 {
 public:
-	Sock(int sock)
-	{
-		mSock = sock;
-		SetNoBlock();
-	}
+	Sock(int sock);
 	virtual ~Sock();
 
 	virtual void OnRead();

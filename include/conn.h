@@ -20,7 +20,7 @@ struct RefBuff
 		DelBuff(&mBuff);
 	};
 };
-class Conn : Sock
+class Conn : public Sock
 {
 	struct SendBuffNode
 	{

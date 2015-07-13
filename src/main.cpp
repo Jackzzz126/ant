@@ -7,6 +7,8 @@
 #include "gate.h"
 #include "msg.h"
 #include "router.h"
+#include "poll.h"
+#include "conn.h"
 
 bool gGotQuitSignal = false;
 
@@ -48,19 +50,19 @@ int main(int argc, char* argv[])
 	sockaddr_in sin;
 	memset(&sin, 0, sizeof(sin));
 	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = inet_addr(pConfig->mIp);
+	sin.sin_addr.s_addr = inet_addr(pConfig->mIp.c_str());
 	sin.sin_port = htons(pConfig->mPort);
 	bind(pListener->mSock, (const sockaddr*)&sin, sizeof(sin));
 	listen(pListener->mSock, pConfig->mBacklog);
 
 	//thread start
-	vector<uv_thread_t> threads;
-	for(int i = 0; i < pConfig->mWorkerThreads; i++)
-	{
-		uv_thread_t workerThreadId;
-		uv_thread_create(&workerThreadId, worker_func, NULL);
-		threads.push_back(workerThreadId);
-	}
+	//vector<uv_thread_t> threads;
+	//for(int i = 0; i < pConfig->mWorkerThreads; i++)
+	//{
+	//	uv_thread_t workerThreadId;
+	//	uv_thread_create(&workerThreadId, worker_func, NULL);
+	//	threads.push_back(workerThreadId);
+	//}
 	//main loop
 	while(!gGotQuitSignal)
 	{
@@ -73,19 +75,19 @@ int main(int argc, char* argv[])
 	}
 
 	//thread end
-	for(int i = 0; i < pConfig->mWorkerThreads; i++)
-	{
-		uv_thread_join(&threads[i]);
-	}
+	//for(int i = 0; i < pConfig->mWorkerThreads; i++)
+	//{
+	//	uv_thread_join(&threads[i]);
+	//}
 
 	//user
-	for(map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
+	for(map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		iter->second->Destroy(false);
+		iter->second->Close(false);
 	}
 	ConnMgr::mAllConns.clear();
 
-	return rtn;
+	return 0;
 }
 
 //void signal_term(uv_signal_t *handle, int signum)
@@ -121,7 +123,7 @@ void worker_func(void* arg)
 		}
 		else
 		{
-			Router::Handle(pMsgNode->mConn, pMsgNode->mId, pMsgNode->mData, pMsgNode->mSize);
+			Router::Handle(pMsgNode->mSock, pMsgNode->mId, pMsgNode->mData, pMsgNode->mSize);
 			DELETE(pMsgNode);
 		}
 	};

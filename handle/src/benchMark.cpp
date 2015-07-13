@@ -7,11 +7,11 @@
 namespace BenchMark
 {//begin of name space
 
-void Echo(void* conn, char* data, int size)
+void Echo(int sock, char* data, int size)
 {
 	DelBuff(&data);
 }
-void DoubleEcho(void* conn, char* data, int size)
+void DoubleEcho(int sock, char* data, int size)
 {
 	DelBuff(&data);
 }

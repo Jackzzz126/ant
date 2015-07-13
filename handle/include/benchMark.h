@@ -3,8 +3,8 @@
 
 namespace BenchMark
 {
-	void Echo(void* conn, char* data, int size);
-	void DoubleEcho(void* conn, char* data, int size);
+	void Echo(int sock, char* data, int size);
+	void DoubleEcho(int sock, char* data, int size);
 }
 
 #endif//_BENCHMARK_H_
