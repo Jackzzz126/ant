@@ -13,6 +13,9 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+//sock
+#include <sys/socket.h>
+#include <sys/epoll.h>
 //thread lib
 #include<pthread.h>
 

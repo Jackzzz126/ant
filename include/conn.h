@@ -66,10 +66,10 @@ class ConnMgr
 public:
 	static map<int, Conn*> mAllConns;
 public:
-	static void CloseConn(void* conn, bool logErr);
-	static void SendToAll(PackId::PackIdType packId, RefBuff* pRefBuff);
-	static void SendToOne(void* conn, PackId::PackIdType packId, RefBuff* pRefBuff);
-	static void SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, RefBuff* pRefBuff);
+	static void CloseConn(int sock, bool logErr);
+	static void SendToAll(RefBuff* pRefBuff);
+	static void SendToOne(int sock, RefBuff* pRefBuff);
+	static void SendToMulti(const vector<int>& socks, RefBuff* pRefBuff);
 public:
 	ConnMgr();
 	~ConnMgr(){};

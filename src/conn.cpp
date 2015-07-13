@@ -12,10 +12,8 @@
 //#include "ReqBenchMark.h"
 //#include "ReqTest.h"
 
-Conn::Conn(int sock)
+Conn::Conn(int sock) : Sock(sock)
 {
-	Sock(sock);
-
 	mRecvLen = BUFF_UNIT * 2;
 	mRecvBuff = NewBuff(mRecvLen);
 	mValidSize = 0;
@@ -28,12 +26,12 @@ Conn::~Conn()
 }
 void Conn::ExpandRecvBuff()
 {
-	char* oldBuff = mRecvBuff.base;
-	mRecvBuff.base = NewBuff(mRecvBuff.len * 2);
-	mRecvBuff.len *= 2;
+	char* oldBuff = mRecvBuff;
+	mRecvBuff = NewBuff(mRecvLen * 2);
+	mRecvLen *= 2;
 	if(mValidSize > 0)
 	{
-		memcpy(mRecvBuff.base, oldBuff, mValidSize);
+		memcpy(mRecvBuff, oldBuff, mValidSize);
 	}
 	DelBuff(&oldBuff);
 }
@@ -42,11 +40,11 @@ void Conn::ShrinkRecvBuff()
 	char* newBuff = NewBuff(BUFF_UNIT * 2);
 	if(mValidSize > 0)
 	{
-		memcpy(newBuff, mRecvBuff.base, mValidSize);
+		memcpy(newBuff, mRecvBuff, mValidSize);
 	}
-	DelBuff(&mRecvBuff.base);
-	mRecvBuff.base = newBuff;
-	mRecvBuff.len = BUFF_UNIT * 2;
+	DelBuff(&mRecvBuff);
+	mRecvBuff = newBuff;
+	mRecvLen = BUFF_UNIT * 2;
 }
 
 void Conn::OnRead()
@@ -58,7 +56,7 @@ void Conn::OnRead()
 	{
 		return;
 	}
-	if(IsHttpPack(mRecvBuff.base))
+	if(IsHttpPack(mRecvBuff))
 	{
 		ParseHttpPack();
 	}
@@ -67,7 +65,7 @@ void Conn::OnRead()
 		ParseNormalPack();
 	}
 
-	if((mRecvBuff.len - mValidSize) < (size_t)BUFF_UNIT / 2)//no enough space
+	if((mRecvLen - mValidSize) < (int)BUFF_UNIT / 2)//no enough space
 	{
 		ExpandRecvBuff();
 	}
@@ -88,7 +86,7 @@ void Conn::OnWrite()
 			head->mRefBuff->mLen - head->mOffset,
 			0);
 	head->mOffset += sendLen;
-	if(!(head->mOffset < head->mRefBuff.mLen))
+	if(!(head->mOffset < head->mRefBuff->mLen))
 	{
 		head->mRefBuff->mRef--;
 		if(head->mRefBuff->mRef <= 0)
@@ -97,7 +95,7 @@ void Conn::OnWrite()
 		}
 		if(mSendBuffHead == mSendBuffTail)
 		{
-			mSendBuffHead = mSendBuffTail = NULL:
+			mSendBuffHead = mSendBuffTail = NULL;
 		}
 		else
 		{
@@ -108,14 +106,14 @@ void Conn::OnWrite()
 }
 void Conn::Write(RefBuff* refBuff)
 {
-	if(mSendBuffHead == null)
+	if(mSendBuffHead == NULL)
 	{
 		mSendBuffTail = mSendBuffHead = new SendBuffNode(refBuff);
 	}
 	else
 	{
 		SendBuffNode* node = new SendBuffNode(refBuff);
-		mSendBuffTail.mNext = node;
+		mSendBuffTail->mNext = node;
 		mSendBuffTail = node;
 	}
 }
@@ -123,9 +121,9 @@ void Conn::ParseHttpPack()
 {
 	vector<string> httpHead;
 
-	char* head = mRecvBuff.base;
-	char* end = mRecvBuff.base;
-	while(end < ((char*)mRecvBuff.base + mValidSize))
+	char* head = mRecvBuff;
+	char* end = mRecvBuff;
+	while(end < (mRecvBuff + mValidSize))
 	{
 		if(*end == '\n' && *(end-1) == '\r')
 		{
@@ -145,10 +143,10 @@ void Conn::ParseHttpPack()
 
 	if(*(end-1) != '\n' || *(end-2) != '\r' )//not found http head end
 	{
-		if((end - mRecvBuff.base) > 512)
+		if((end - mRecvBuff) > 512)
 		{
 			Log::Error("Http head > %d.\n", 512);
-			ConnMgr::CloseConn(mConn, true);
+			ConnMgr::CloseConn(mSock, true);
 			return;
 		}
 		else
@@ -191,20 +189,20 @@ void Conn::ParseHttpPack()
 			Log::Error("%s.\n", httpHead[i].c_str());
 		}
 
-		ConnMgr::CloseConn(mConn, true);
+		ConnMgr::CloseConn(mSock, true);
 		return;
 	}
 	if(method == "GET")
 	{
 		HandleHttpGet(url);
-		int excessDataLen = ((char*)mRecvBuff.base + mValidSize) - end;
+		int excessDataLen = ((char*)mRecvBuff + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
 			mValidSize = 0;
 		}
 		else
 		{
-			memcpy(mRecvBuff.base, end, excessDataLen);
+			memcpy(mRecvBuff, end, excessDataLen);
 			mValidSize = excessDataLen;
 		}
 	}
@@ -213,18 +211,18 @@ void Conn::ParseHttpPack()
 		if(dataLen == -1 || dataLen == 0)
 		{
 			Log::Error("Error post data: dataLen: %d.\n", dataLen);
-			ConnMgr::CloseConn(mConn, true);
+			ConnMgr::CloseConn(mSock, true);
 			return;
 		}
 		else if(dataLen > 2048)
 		{
 			Log::Error("Error post data, dataLen: %d bigger than: %d.\n", dataLen, 2048);
-			ConnMgr::CloseConn(mConn, true);
+			ConnMgr::CloseConn(mSock, true);
 			return;
 		}
 		else
 		{
-			int excessDataLen = ((char*)mRecvBuff.base + mValidSize) - end - dataLen;
+			int excessDataLen = (mRecvBuff + mValidSize) - end - dataLen;
 			if(excessDataLen < 0)
 			{
 				return;
@@ -237,7 +235,7 @@ void Conn::ParseHttpPack()
 			{
 				HandleHttpPost(url, end, dataLen);
 
-				memcpy(mRecvBuff.base, end + dataLen, excessDataLen);
+				memcpy(mRecvBuff, end + dataLen, excessDataLen);
 				mValidSize = excessDataLen;
 			}
 		}
@@ -247,8 +245,8 @@ void Conn::ParseNormalPack()
 {
 	while(!(mValidSize < HEAD_LENGTH))
 	{
-		int packId = *((int*)mRecvBuff.base) ^ 0x79669966;
-		int packLen = *((int*)(mRecvBuff.base) + 1) ^ 0x79669966;
+		int packId = *((int*)mRecvBuff) ^ 0x79669966;
+		int packLen = *((int*)(mRecvBuff) + 1) ^ 0x79669966;
 		int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
 		if(excessDataLen < 0)
 		{
@@ -256,14 +254,14 @@ void Conn::ParseNormalPack()
 		}
 		else if(excessDataLen == 0)
 		{
-			HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
+			HandleNormalPack(packId, mRecvBuff + HEAD_LENGTH, packLen);
 			mValidSize = 0;
 		}
 		else//excessDataLen > 0
 		{
-			HandleNormalPack(packId, mRecvBuff.base + HEAD_LENGTH, packLen);
+			HandleNormalPack(packId, mRecvBuff + HEAD_LENGTH, packLen);
 
-			memcpy(mRecvBuff.base, (char*)mRecvBuff.base + mValidSize, excessDataLen);
+			memcpy(mRecvBuff, (char*)mRecvBuff + mValidSize, excessDataLen);
 			mValidSize = excessDataLen;
 		}
 	}
@@ -273,8 +271,14 @@ void Conn::Destroy(bool logErr)
 {
 	if(logErr)
 	{
-		string clientAddr = GetClientAddr((uv_stream_t*)mConn);
-		Log::Error("%s: disconnected.\n", clientAddr.c_str());
+		sockaddr_in peerAddr;
+		int ret = getpeername(mSock, (sockaddr*)&peerAddr, NULL);
+		if(ret >= 0)
+		{
+			char ipStr[64];
+			inet_ntop(AF_INET, &peerAddr.sin_addr, ipStr, sizeof(ipStr));
+			Log::Error("%s:%d disconnected.\n", ipStr, ntohs(peerAddr.sin_port);
+		}
 	}
 
 	close(mSock);
@@ -288,37 +292,34 @@ void Conn::HandleHttpPost(const string& url, char* buff, int size)
 	}
 	else
 	{
-		uv_write_t *req = new uv_write_t;
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewUvBuff(72/BUFF_UNIT + BUFF_UNIT);
-		memcpy(sendBuff.base, buff, 72);
-		req->data = (void*)sendBuff.base;
-		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
+		RefBuff* refBuff = new RefBuff(sizeof(buff), 1);
+		ConnMgr::SendToOne(mSock, PackId::NULL_PACK, refBuff);
 		return;
 	}
 }
 void Conn::HandleHttpGet(const string& url)
 {
-	if(url == "/hello")
-	{
-		uv_write_t *req = new uv_write_t;
-		char buff[] = "HTTP/1.1 200 OK\r\nContent-Lenght:12\r\nContent-Type:'text/plain'\r\n\r\nHello world.";
-		uv_buf_t sendBuff = NewUvBuff(77/BUFF_UNIT + BUFF_UNIT);
-		memcpy(sendBuff.base, buff, 77);
-		req->data = (void*)sendBuff.base;
-		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
-		return;
-	}
-	else
-	{
-		uv_write_t *req = new uv_write_t;
-		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		uv_buf_t sendBuff = NewUvBuff(72/BUFF_UNIT + BUFF_UNIT);
-		memcpy(sendBuff.base, buff, 72);
-		req->data = (void*)sendBuff.base;
-		uv_write( req, (uv_stream_t*)mConn, &sendBuff, 1, OnWriteClose);
-		return;
-	}
+	//if(url == "/hello")
+	//{
+	//	uv_write_t *req = new uv_write_t;
+	//	char buff[] = "HTTP/1.1 200 OK\r\nContent-Lenght:12\r\nContent-Type:'text/plain'\r\n\r\nHello world.";
+	//	uv_buf_t sendBuff = NewUvBuff(77/BUFF_UNIT + BUFF_UNIT);
+	//	memcpy(sendBuff, buff, 77);
+	//	req->data = (void*)sendBuff;
+	//	uv_write( req, (uv_stream_t*)mSock, &sendBuff, 1, OnWriteClose);
+	//	return;
+	//}
+	//else
+	//{
+	//	uv_write_t *req = new uv_write_t;
+	//	char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
+	//	uv_buf_t sendBuff = NewUvBuff(72/BUFF_UNIT + BUFF_UNIT);
+	//	memcpy(sendBuff, buff, 72);
+	//	req->data = (void*)sendBuff;
+	//	uv_write( req, (uv_stream_t*)mSock, &sendBuff, 1, OnWriteClose);
+	//	return;
+	//}
 }
 
 bool Conn::IsHttpPack(char* buff)
@@ -344,7 +345,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 {
 	char* data = NewBuff(size);
 	memcpy(data, buff, size);
-	MsgQueue::Singleton()->PushMsg(mConn, packId, data, size);
+	MsgQueue::Singleton()->PushMsg(mSock, packId, data, size);
 	//switch(packId)
 	//{
 	//case 11:
@@ -352,9 +353,9 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//case 12:
 	//	{
 	//		uv_buf_t sendBuff = NewUvBuff(size + HEAD_LENGTH);
-	//		memcpy(sendBuff.base + HEAD_LENGTH, buff, size);
-	//		*(int*)(sendBuff.base) = size ^ 0x79669966;
-	//		*((int*)(sendBuff.base) + 1) = 12 ^ 0x79669966;
+	//		memcpy(sendBuff + HEAD_LENGTH, buff, size);
+	//		*(int*)(sendBuff) = size ^ 0x79669966;
+	//		*((int*)(sendBuff) + 1) = 12 ^ 0x79669966;
 	//		ConnMgr::SendPackToAll(sendBuff);
 	//		break;
 	//	}
@@ -363,7 +364,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//}
 	//if( packId < PackId::MIN_PACKID || packId > PackId::MAX_PACKID )
 	//{
-	//	ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
 	//	return;
 	//}
 	//if(packId == PackId::JOINROOM)
@@ -372,7 +373,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parst())
 	//	{
-	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	Game::ValidChar(req.m_session, req.m_charId, req.m_ip, req.m_port, mPlayer);
@@ -383,7 +384,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	printf("%s\n", req.m_buff.mBuff);
@@ -405,7 +406,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	req.InitBuff(buff, size);
 	//	if(!req.Parse())
 	//	{
-	//		ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
+	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
 	//		return;
 	//	}
 	//	uv_buf_t sendBuff;
@@ -414,7 +415,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//}
 	//else
 	//{
-	//	ConnMgr::CloseConn(mConn, UNKNOWN_DATA);
+	//	ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
 	//	return;
 	//}
 }
@@ -426,60 +427,58 @@ ConnMgr::ConnMgr()
 {
 }
 
-void ConnMgr::CloseConn(void* conn, bool logErr)
+void ConnMgr::CloseConn(int sock, bool logErr)
 {
-	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.find(conn);
+	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
 	if(iter != ConnMgr::mAllConns.end())
 	{
 		iter->second->Destroy(logErr);
-		ConnMgr::mAllConns.erase(conn);
+		ConnMgr::mAllConns.erase(sock);
 	}
 	else
 	{
 		Log::Error("Close unknown conn.\n");
-		uv_close((uv_handle_t*)conn, NULL);
+		close(sock);
 	}
 }
-void ConnMgr::SendToAll(PackId::PackIdType packId, uv_buf_t buff)
+void ConnMgr::SendToAll(RefBuff* pRefBuff)
 {
-	WriteReq* pWriteReq = new WriteReq();
-
-	*(int*)(buff.base) = packId ^ 0x79669966;
-	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
-	pWriteReq->mBuff = buff;
-
-	pWriteReq->mRef = mAllConns.size();
-	map<void*, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
+	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
 	for(; iter != ConnMgr::mAllConns.end(); iter++)
 	{
-		uv_write(&pWriteReq->mWrite, (uv_stream_t*)iter->second->mConn, &pWriteReq->mBuff, 1, OnWrite);
+		iter->second->Write(pRefBuff);
 	}
 }
 
-void ConnMgr::SendToOne(void* conn, PackId::PackIdType packId, uv_buf_t buff)
+void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 {
-	WriteReq* pWriteReq = new WriteReq();
-
-	*(int*)(buff.base) = packId ^ 0x79669966;
-	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
-	pWriteReq->mBuff = buff;
-
-	uv_write(&pWriteReq->mWrite, (uv_stream_t*)conn, &pWriteReq->mBuff, 1, OnWrite);
+	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
+	if(iter != ConnMgr::mAllConns.end())
+	{
+		iter->second->Write(pRefBuff);
+	}
+	else
+	{
+		Log::Error("Write to unknown conn.\n");
+		close(sock);
+	}
 }
 
-void ConnMgr::SendToMulti(const vector<void*>& conns, PackId::PackIdType packId, uv_buf_t buff)
+void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 {
-	WriteReq* pWriteReq = new WriteReq();
-
-	*(int*)(buff.base) = packId ^ 0x79669966;
-	*((int*)(buff.base) + 1) = (buff.len - HEAD_LENGTH) ^ 0x79669966;
-	pWriteReq->mBuff = buff;
-
-	pWriteReq->mRef = conns.size();
-	vector<void*>::const_iterator iter = conns.begin();
+	vector<int>::const_iterator iter = conns.begin();
 	for(; iter != conns.end(); iter++)
 	{
-		uv_write(&pWriteReq->mWrite, (uv_stream_t*)(*iter), &pWriteReq->mBuff, 1, OnWrite);
+		map<int, Conn*>::iterator connIter = ConnMgr::mAllConns.find(*inter);
+		if(connIter != ConnMgr::mAllConns.end())
+		{
+			connIter->second->Write(pRefBuff);
+		}
+		else
+		{
+			Log::Error("Write to unknown conn.\n");
+			close(sock);
+		}
 	}
 }
 

@@ -34,6 +34,8 @@ public:
 		//BENCHMARK = 300,
 		//MAX_PACKID = 300,
 	};
+public:
+	static void WritePackHead(char* buff, PackIdType packId, int len);
 };
 
 #endif//_PACKID_H_
