@@ -13,18 +13,13 @@
 //#include "ReqBenchMark.h"
 //#include "ReqTest.h"
 
-Conn::Conn(void* conn)
+Conn::Conn(int sock)
 {
-	mConn = conn;
-	mRecvBuff.base = NewBuff(BUFF_UNIT * 2);
-	mRecvBuff.len = BUFF_UNIT * 2;
-	mValidSize = 0;
+	Sock(sock);
 
-	mSock = socket(AF_INET, SOCK_STREAM, 0);
-	int flag = fcntl(mSock, F_GETFL, 0);
-	fcntl(mSock, F_SETFL, flag | O_NONBLOCK);
-	mRead = false;
-	mWrite = true;
+	mRecvLen = BUFF_UNIT * 2;
+	mRecvBuff = NewBuff(mRecvLen);
+	mRecvOffset = 0;
 }
 Conn::~Conn()
 {
@@ -54,7 +49,7 @@ void Conn::ShrinkRecvBuff()
 	mRecvBuff.len = BUFF_UNIT * 2;
 }
 
-void Conn::RecvData(char* buff, int size)
+void Conn::OnRead()
 {
 	mValidSize += size;
 
@@ -79,6 +74,9 @@ void Conn::RecvData(char* buff, int size)
 	{
 		ShrinkRecvBuff();
 	}
+}
+void Conn::OnWrite()
+{
 }
 void Conn::ParseHttpPack()
 {

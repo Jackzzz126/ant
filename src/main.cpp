@@ -3,7 +3,7 @@
 #include "define.h"
 #include "time.h"
 #include "config.h"
-#include "conn.h"
+#include "listen.h"
 #include "gate.h"
 #include "msg.h"
 #include "router.h"
@@ -41,8 +41,9 @@ int main(int argc, char* argv[])
 	}
 
 	//listener
-	Conn* pListener = new Conn();
-	poll.Add(pListener->mSock, pListener);
+	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
+	Listen* pListener = new Listen(listenSock);
+	poll.Add(listenSock, pListener);
 
 	sockaddr_in sin;
 	memset(&sin, 0, sizeof(sin));
@@ -68,16 +69,6 @@ int main(int argc, char* argv[])
 		{
 			Log::Error("Poll wait error: %d.", fdCount);
 			break;
-		}
-		for(int i = 0; i < fds; i++){
-			myevent_s *ev = (struct myevent_s*)events[i].data.ptr;
-			if((events[i].events&EPOLLIN)&&(ev->events&EPOLLIN))  read event
-			{
-				ev->call_back(ev->fd, events[i].events, ev->arg);    }
-			if((events[i].events&EPOLLOUT)&&(ev->events&EPOLLOUT))  write event
-			{
-				ev->call_back(ev->fd, events[i].events, ev->arg);
-			}
 		}
 	}
 

@@ -2,14 +2,16 @@
 #define _CONN_H_
 
 #include "packId.h"
+#include "sock.h"
 
-class Conn
+class Conn : Sock
 {
 public:
-	Conn();
+	Conn(int sock);
 	~Conn();
 public:
-	void RecvData(char* buff, int size);
+	void OnRead();
+	void OnWrite();
 	void Destroy(bool logErr);
 private:
 	void ParseHttpPack();
@@ -22,13 +24,9 @@ private:
 	void ExpandRecvBuff();
 	void ShrinkRecvBuff();
 public:
-	void* mConn;
-	uv_buf_t mRecvBuff;//buff to recv data
-	int mValidSize;
-
-	int mSock;
-	bool mRead;
-	bool mWrite;
+	char* mRecvBuff;//buff to recv data
+	int mRecvLen;
+	int mRecvOffset;
 };
 
 //***********************************************************

@@ -6,6 +6,16 @@
 #include "conn.h"
 
 
+Poll* Poll::mGlobalPoll = NULL;
+Poll* Poll::Singleton()
+{
+	if(mGlobalConfig == NULL)
+	{
+		mGlobalConfig = new Config();
+	}
+	return mGlobalConfig;
+}
+
 Poll::Poll()
 {
 	mPollFd = -1;
