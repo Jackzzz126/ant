@@ -9,7 +9,7 @@ public:
 		mSock = sock;
 		SetNoBlock();
 	}
-	~Sock();
+	virtual ~Sock();
 
 	virtual void OnRead();
 	virtual void OnWrite();

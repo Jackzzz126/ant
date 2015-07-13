@@ -7,6 +7,7 @@
 #include "json.h"
 #include "game.h"
 #include "msg.h"
+#include "poll.h"
 
 //#include "ReqJoinRoom.h"
 //#include "ReqBenchMark.h"
@@ -267,7 +268,7 @@ void Conn::ParseNormalPack()
 	}
 }
 
-void Conn::Destroy(bool logErr)
+void Conn::Close(bool logErr)
 {
 	if(logErr)
 	{
@@ -277,12 +278,11 @@ void Conn::Destroy(bool logErr)
 		{
 			char ipStr[64];
 			inet_ntop(AF_INET, &peerAddr.sin_addr, ipStr, sizeof(ipStr));
-			Log::Error("%s:%d disconnected.\n", ipStr, ntohs(peerAddr.sin_port);
+			Log::Error("%s:%d disconnected.\n", ipStr, ntohs(peerAddr.sin_port));
 		}
 	}
 
 	close(mSock);
-	delete this;
 }
 
 void Conn::HandleHttpPost(const string& url, char* buff, int size)
@@ -294,7 +294,7 @@ void Conn::HandleHttpPost(const string& url, char* buff, int size)
 	{
 		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
 		RefBuff* refBuff = new RefBuff(sizeof(buff), 1);
-		ConnMgr::SendToOne(mSock, PackId::NULL_PACK, refBuff);
+		ConnMgr::SendToOne(mSock, refBuff);
 		return;
 	}
 }
@@ -421,7 +421,7 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 }
 
 //************************************************
-map<void*, Conn*> ConnMgr::mAllConns;
+map<int, Conn*> ConnMgr::mAllConns;
 
 ConnMgr::ConnMgr()
 {
@@ -429,10 +429,12 @@ ConnMgr::ConnMgr()
 
 void ConnMgr::CloseConn(int sock, bool logErr)
 {
+	Poll::Singleton()->Del(sock);
 	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
 	if(iter != ConnMgr::mAllConns.end())
 	{
-		iter->second->Destroy(logErr);
+		iter->second->Close(logErr);
+		delete iter->second;
 		ConnMgr::mAllConns.erase(sock);
 	}
 	else
@@ -466,10 +468,10 @@ void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 
 void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 {
-	vector<int>::const_iterator iter = conns.begin();
-	for(; iter != conns.end(); iter++)
+	vector<int>::const_iterator iter = socks.begin();
+	for(; iter != socks.end(); iter++)
 	{
-		map<int, Conn*>::iterator connIter = ConnMgr::mAllConns.find(*inter);
+		map<int, Conn*>::iterator connIter = ConnMgr::mAllConns.find(*iter);
 		if(connIter != ConnMgr::mAllConns.end())
 		{
 			connIter->second->Write(pRefBuff);
@@ -477,7 +479,7 @@ void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 		else
 		{
 			Log::Error("Write to unknown conn.\n");
-			close(sock);
+			close(*iter);
 		}
 	}
 }

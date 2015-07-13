@@ -11,7 +11,7 @@ public:
 	bool Add(int sock, void *ud);
 	void SetWrite(int sock, void *ud);
 	void Del(int sock);
-	int Wait(Event* event, int size);
+	int Wait(int size);
 
 	static Poll* Singleton();
 private:

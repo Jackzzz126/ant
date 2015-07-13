@@ -41,7 +41,7 @@ public:
 	void OnRead();
 	void OnWrite();
 	void Write(RefBuff* refBuff);
-	void Destroy(bool logErr);
+	void Close(bool logErr);
 private:
 	void ParseHttpPack();
 	void ParseNormalPack();

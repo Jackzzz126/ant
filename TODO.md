@@ -11,3 +11,4 @@
 	http req
 	player
 	game
+	gate

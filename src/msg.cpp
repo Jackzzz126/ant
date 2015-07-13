@@ -1,9 +1,9 @@
 #include "comm.h"
 #include "msg.h"
 
-MsgNode::MsgNode(void* conn, int msgId, char* data, int size)
+MsgNode::MsgNode(int sock, int msgId, char* data, int size)
 {
-	mConn = conn;
+	mSock = sock;
 	mId = msgId;
 	mData = data;
 	mSize = size;
@@ -33,10 +33,10 @@ MsgQueue::~MsgQueue()
 {
 }
 
-void MsgQueue::PushMsg(void* conn, int msgId, char* data, int size)
+void MsgQueue::PushMsg(int sock, int msgId, char* data, int size)
 {
 	pthread_mutex_lock(&mMutex);
-	MsgNode* pNode = new MsgNode(conn, msgId, data, size);
+	MsgNode* pNode = new MsgNode(sock, msgId, data, size);
 	if(mTail == NULL)
 	{
 		mHead = mTail = pNode;
