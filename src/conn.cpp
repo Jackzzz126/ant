@@ -19,12 +19,13 @@ Conn::Conn(int sock)
 
 	mRecvLen = BUFF_UNIT * 2;
 	mRecvBuff = NewBuff(mRecvLen);
-	mRecvOffset = 0;
+	mValidSize = 0;
+
+	mSendBuffHead = mSendBuffTail = NULL;
 }
 Conn::~Conn()
 {
-	DelBuff(&mRecvBuff.base);
-	mRecvBuff.len = 0;
+	DelBuff(&mRecvBuff);
 }
 void Conn::ExpandRecvBuff()
 {
@@ -51,7 +52,8 @@ void Conn::ShrinkRecvBuff()
 
 void Conn::OnRead()
 {
-	mValidSize += size;
+	int recvLen = recv(mSock, mRecvBuff + mValidSize, mRecvLen - mValidSize, 0);
+	mValidSize += recvLen;
 
 	if(mValidSize < HEAD_LENGTH)
 	{
@@ -77,6 +79,46 @@ void Conn::OnRead()
 }
 void Conn::OnWrite()
 {
+	SendBuffNode* head = mSendBuffHead;
+	if(head == NULL)
+	{
+		return;
+	}
+	int sendLen = send(mSock,
+			head->mRefBuff->mBuff + head->mOffset,
+			head->mRefBuff->mLen - head->mOffset,
+			0);
+	head->mOffset += sendLen;
+	if(!(head->mOffset < head->mRefBuff.mLen))
+	{
+		head->mRefBuff->mRef--;
+		if(head->mRefBuff->mRef <= 0)
+		{
+			DELETE(head->mRefBuff);
+		}
+		if(mSendBuffHead == mSendBuffTail)
+		{
+			mSendBuffHead = mSendBuffTail = NULL:
+		}
+		else
+		{
+			mSendBuffHead = mSendBuffHead->mNext;
+			DELETE(mSendBuffHead);
+		}
+	}
+}
+void Conn::Write(RefBuff* refBuff)
+{
+	if(mSendBuffHead == null)
+	{
+		mSendBuffTail = mSendBuffHead = new SendBuffNode(refBuff);
+	}
+	else
+	{
+		SendBuffNode* node = new SendBuffNode(refBuff);
+		mSendBuffTail.mNext = node;
+		mSendBuffTail = node;
+	}
 }
 void Conn::ParseHttpPack()
 {

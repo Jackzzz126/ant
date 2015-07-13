@@ -6,12 +6,41 @@
 
 class Conn : Sock
 {
+	struct RefBuff
+	{
+		char* mBuff;
+		int mLen;
+		int mRef;
+		RefBuff(int len, int ref)
+		{
+			mBuff = NewBuff(len);
+			mLen = len;
+			mRef = ref;
+		}
+		~RefBuff()
+		{
+			DelBuff(&mBuff);
+		}
+	}
+	struct SendBuffNode
+	{
+		RefBuff* mRefBuff;
+		int mOffset;
+		SendBuffNode* mNext;
+		SendBuffNode(RefBuff* refBuff)
+		{
+			mSendBuff = refBuff;
+			mOffset = 0;
+			mNext = NULL;
+		}
+	}
 public:
 	Conn(int sock);
 	~Conn();
 public:
 	void OnRead();
 	void OnWrite();
+	void Write(RefBuff* refBuff);
 	void Destroy(bool logErr);
 private:
 	void ParseHttpPack();
@@ -26,14 +55,16 @@ private:
 public:
 	char* mRecvBuff;//buff to recv data
 	int mRecvLen;
-	int mRecvOffset;
+	int mValidSize;
+	SendBuffNode* mSendBuffHead;
+	SendBuffNode* mSendBuffTail;
 };
 
 //***********************************************************
 class ConnMgr
 {
 public:
-	static map<void*, Conn*> mAllConns;
+	static map<int, Conn*> mAllConns;
 public:
 	static void CloseConn(void* conn, bool logErr);
 	static void SendToAll(PackId::PackIdType packId, uv_buf_t buff);

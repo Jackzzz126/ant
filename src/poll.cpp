@@ -3,7 +3,7 @@
 #include <sys/epoll.h>
 
 #include "poll.h"
-#include "conn.h"
+#include "sock.h"
 
 
 Poll* Poll::mGlobalPoll = NULL;
@@ -72,10 +72,16 @@ int Wait(int size)
 	int n = epoll_wait(mPollFd, ev, size, -1);//-1 for block
 	for(int i=0; i<n; i++)
 	{
-		Conn* pConn = ev[i].data.ptr;
+		Sock* pSock = ev[i].data.ptr;
 		unsigned flag = ev[i].events;
-		pConn->mWrite = (flag & EPOLLOUT) != 0;
-		pConn->mRead = (flag & EPOLLIN) != 0;
+		if((flag & EPOLLOUT) != 0)
+		{
+			pSock->OnWrite();
+		}
+		if((flag & EPOLLIN) != 0)
+		{
+			pSock->OnRead();
+		}
 	}
 	return n;
 }
