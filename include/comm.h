@@ -13,6 +13,8 @@
 
 #include <sys/types.h>
 #include <sys/stat.h>
+//signal
+#include <signal.h>
 //sock
 #include <sys/socket.h>
 #include <sys/epoll.h>

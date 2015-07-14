@@ -12,7 +12,8 @@
 
 bool gGotQuitSignal = false;
 
-void* worker_func(void* arg);
+void* workerFunc(void* arg);
+void signalHanle(int signum);
 
 int main(int argc, char* argv[])
 {
@@ -42,6 +43,9 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
+	//signal
+	signal(SIGINT, signalHanle);
+	signal(SIGTERM, signalHanle);
 	//listener
 	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
 	Listen* pListener = new Listen(listenSock);
@@ -61,7 +65,7 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
 		pthread_t workerThreadId;
-		pthread_create(&workerThreadId, NULL, worker_func, NULL);
+		pthread_create(&workerThreadId, NULL, workerFunc, NULL);
 		threads.push_back(workerThreadId);
 	}
 	//main loop
@@ -70,8 +74,11 @@ int main(int argc, char* argv[])
 		int fdCount = poll.Wait(ConnMgr::mAllConns.size() + 1);
 		if(fdCount < 0)
 		{
-			Log::Error("Poll wait error: %d.", fdCount);
-			break;
+			if(errno != EINTR)
+			{
+				Log::Error("Poll wait error: %d.\n", fdCount);
+				break;
+			}
 		}
 	}
 
@@ -90,22 +97,12 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
+void signalHanle(int signum)
+{
+	gGotQuitSignal = true;
+}
 
-//void signal_term(uv_signal_t *handle, int signum)
-//{
-//	uv_stop(gLoop);
-//	gGotQuitSignal = true;
-//	uv_signal_stop(handle);
-//}
-//
-//void signal_int(uv_signal_t *handle, int signum)
-//{
-//	uv_stop(gLoop);
-//	gGotQuitSignal = true;
-//	uv_signal_stop(handle);
-//}
-
-void* worker_func(void* arg)
+void* workerFunc(void* arg)
 {
 	while(true)
 	{
