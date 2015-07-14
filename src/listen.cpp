@@ -21,12 +21,13 @@ void Listen::OnRead()
 		Log::Error("Error when accept connection: %d.\n", errno);
 		return;
 	}
+
 	Poll* pPoll = Poll::Singleton();
-	
 	Conn* pConn = new Conn(sock);
 	pPoll->Add(sock, pConn);
 	pPoll->SetWrite(sock, pConn);
-	//printf("new conn[%s:%d]", inet_ntoa(sin.sin_addr),ntohs(sin.sin_port));
+
+	ConnMgr::mAllConns[sock] = pConn;
 }
 void Listen::OnWrite()
 {
