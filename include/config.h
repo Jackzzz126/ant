@@ -3,10 +3,11 @@
 
 class Config
 {
-public:
+private:
 	Config();
 	~Config(){};
 
+public:
 	bool Load(char* file);
 	void Release();
 

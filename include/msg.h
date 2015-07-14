@@ -19,7 +19,7 @@ class MsgQueue
 {
 public:
 	static MsgQueue* Singleton();
-public:
+private:
 	MsgQueue();
 	~MsgQueue();
 public:

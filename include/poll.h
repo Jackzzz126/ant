@@ -3,9 +3,10 @@
 
 class Poll
 {
-public:
+private:
 	Poll();
 	~Poll();
+public:
 	bool Create();
 	void Close();
 	bool Add(int sock, void *ud);
