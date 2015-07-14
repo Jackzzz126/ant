@@ -52,12 +52,14 @@ private:
 	bool IsHttpPack(char* buff);
 	void ExpandRecvBuff();
 	void ShrinkRecvBuff();
-public:
+private:
 	char* mRecvBuff;//buff to recv data
 	int mRecvLen;
 	int mValidSize;
 	SendBuffNode* mSendBuffHead;
 	SendBuffNode* mSendBuffTail;
+
+	pthread_mutex_t mMutex;
 };
 
 //***********************************************************

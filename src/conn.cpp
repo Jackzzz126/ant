@@ -20,6 +20,7 @@ Conn::Conn(int sock) : Sock(sock)
 	mValidSize = 0;
 
 	mSendBuffHead = mSendBuffTail = NULL;
+	pthread_mutex_init(&mMutex, NULL);
 }
 Conn::~Conn()
 {
@@ -107,6 +108,7 @@ void Conn::OnWrite()
 }
 void Conn::Write(RefBuff* refBuff)
 {
+	pthread_mutex_lock(&mMutex);
 	if(mSendBuffHead == NULL)
 	{
 		mSendBuffTail = mSendBuffHead = new SendBuffNode(refBuff);
@@ -117,6 +119,7 @@ void Conn::Write(RefBuff* refBuff)
 		mSendBuffTail->mNext = node;
 		mSendBuffTail = node;
 	}
+	pthread_mutex_unlock(&mMutex);
 }
 void Conn::ParseHttpPack()
 {

@@ -35,7 +35,6 @@ MsgQueue::~MsgQueue()
 
 void MsgQueue::PushMsg(int sock, int msgId, char* data, int size)
 {
-	pthread_mutex_lock(&mMutex);
 	MsgNode* pNode = new MsgNode(sock, msgId, data, size);
 	if(mTail == NULL)
 	{
@@ -46,7 +45,6 @@ void MsgQueue::PushMsg(int sock, int msgId, char* data, int size)
 		mTail->mNext = pNode;
 		mTail = pNode;
 	}
-	pthread_mutex_unlock(&mMutex);
 }
 
 MsgNode* MsgQueue::PopMsg()
