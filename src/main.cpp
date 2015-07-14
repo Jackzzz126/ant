@@ -12,7 +12,7 @@
 
 bool gGotQuitSignal = false;
 
-void worker_func(void* arg);
+void* worker_func(void* arg);
 
 int main(int argc, char* argv[])
 {
@@ -54,15 +54,16 @@ int main(int argc, char* argv[])
 	sin.sin_port = htons(pConfig->mPort);
 	bind(pListener->mSock, (const sockaddr*)&sin, sizeof(sin));
 	listen(pListener->mSock, pConfig->mBacklog);
+	Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
 
 	//thread start
-	//vector<uv_thread_t> threads;
-	//for(int i = 0; i < pConfig->mWorkerThreads; i++)
-	//{
-	//	uv_thread_t workerThreadId;
-	//	uv_thread_create(&workerThreadId, worker_func, NULL);
-	//	threads.push_back(workerThreadId);
-	//}
+	vector<pthread_t> threads;
+	for(int i = 0; i < pConfig->mWorkerThreads; i++)
+	{
+		pthread_t workerThreadId;
+		pthread_create(&workerThreadId, NULL, worker_func, NULL);
+		threads.push_back(workerThreadId);
+	}
 	//main loop
 	while(!gGotQuitSignal)
 	{
@@ -75,10 +76,10 @@ int main(int argc, char* argv[])
 	}
 
 	//thread end
-	//for(int i = 0; i < pConfig->mWorkerThreads; i++)
-	//{
-	//	uv_thread_join(&threads[i]);
-	//}
+	for(int i = 0; i < pConfig->mWorkerThreads; i++)
+	{
+		pthread_join(threads[i], NULL);
+	}
 
 	//user
 	for(map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
@@ -104,7 +105,7 @@ int main(int argc, char* argv[])
 //	uv_signal_stop(handle);
 //}
 
-void worker_func(void* arg)
+void* worker_func(void* arg)
 {
 	while(true)
 	{
@@ -127,6 +128,7 @@ void worker_func(void* arg)
 			DELETE(pMsgNode);
 		}
 	};
+	return NULL;
 }
 
 
