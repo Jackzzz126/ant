@@ -84,6 +84,8 @@ int main(int argc, char* argv[])
 
 	//delete singleton
 	pPoll->Close();
+	pConfig->Release();
+
 	//thread end
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{

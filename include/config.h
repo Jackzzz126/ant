@@ -8,6 +8,8 @@ public:
 	~Config(){};
 
 	bool Load(char* file);
+	void Release();
+
 	static Config* Singleton();
 public:
 	//server

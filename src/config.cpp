@@ -39,6 +39,7 @@ bool Config::Load(char* fileName)
 		return false;
 	}
 	buff[fileLen] = '\0';
+	fclose(pFile);
 	
 	Json json;
 	if(!json.Parse(buff))
@@ -95,6 +96,18 @@ bool Config::Load(char* fileName)
 	}
 
 	return true;
+}
+
+void Config::Release()
+{
+	if(mLogFileHandle != stdout)
+	{
+		fclose(mLogFileHandle);
+	}
+	if(mErrFileHandle != stderr)
+	{
+		fclose(mErrFileHandle);
+	}
 }
 
 
