@@ -15,19 +15,21 @@ void Listen::OnRead()
 {
 	sockaddr_in sin;
 	socklen_t len = sizeof(sockaddr_in);
-	int sock = accept(mSock, (struct sockaddr*)&sin, &len);
-	if(sock == -1)
+	while(true)
 	{
-		Log::Error("Error when accept connection: %d.\n", errno);
-		return;
+		int sock = accept(mSock, (struct sockaddr*)&sin, &len);
+		if(sock <= 0)
+		{
+			break;
+		}
+
+		Poll* pPoll = Poll::Singleton();
+		Conn* pConn = new Conn(sock);
+		pPoll->Add(sock, pConn);
+		pPoll->SetWrite(sock, pConn);
+
+		ConnMgr::mAllConns[sock] = pConn;
 	}
-
-	Poll* pPoll = Poll::Singleton();
-	Conn* pConn = new Conn(sock);
-	pPoll->Add(sock, pConn);
-	pPoll->SetWrite(sock, pConn);
-
-	ConnMgr::mAllConns[sock] = pConn;
 }
 void Listen::OnWrite()
 {

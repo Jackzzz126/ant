@@ -58,7 +58,7 @@ bool Poll::Add(int sock, void *ud)
 void Poll::SetWrite(int sock, void *ud)
 {
 	epoll_event ev;
-	ev.events = EPOLLIN | EPOLLOUT;
+	ev.events = EPOLLIN | EPOLLOUT | EPOLLRDHUP;
 	ev.data.ptr = ud;
 	epoll_ctl(mPoll, EPOLL_CTL_MOD, sock, &ev);
 }
