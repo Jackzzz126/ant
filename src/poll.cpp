@@ -4,6 +4,8 @@
 
 #include "poll.h"
 #include "sock.h"
+#include "conn.h"
+#include "log.h"
 
 
 Poll* Poll::mGlobalPoll = NULL;
@@ -44,7 +46,7 @@ void Poll::Close()
 bool Poll::Add(int sock, void *ud)
 {
 	epoll_event ev;
-	ev.events = EPOLLIN;
+	ev.events = EPOLLIN | EPOLLRDHUP;
 	ev.data.ptr = ud;
 	if(epoll_ctl(mPoll, EPOLL_CTL_ADD, sock, &ev) == -1)
 	{
@@ -69,11 +71,15 @@ void Poll::Del(int sock)
 int Poll::Wait(int size)
 {
 	epoll_event ev[size];
-	int n = epoll_wait(mPoll, ev, size, -1);//-1 for block
+	int n = epoll_wait(mPoll, ev, size, 1000 * 1);//-1 for block
 	for(int i=0; i<n; i++)
 	{
 		Sock* pSock = (Sock*)(ev[i].data.ptr);
 		unsigned flag = ev[i].events;
+		if((flag & EPOLLRDHUP) != 0)
+		{
+			ConnMgr::CloseConn(pSock->mSock, true);
+		}
 		if((flag & EPOLLOUT) != 0)
 		{
 			pSock->OnWrite();

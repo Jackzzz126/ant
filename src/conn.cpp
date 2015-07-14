@@ -52,6 +52,10 @@ void Conn::ShrinkRecvBuff()
 void Conn::OnRead()
 {
 	int recvLen = recv(mSock, mRecvBuff + mValidSize, mRecvLen - mValidSize, 0);
+	if(recvLen <= 0)
+	{
+		ConnMgr::CloseConn(mSock, false);
+	}
 	mValidSize += recvLen;
 
 	if(mValidSize < HEAD_LENGTH)
@@ -87,6 +91,10 @@ void Conn::OnWrite()
 			head->mRefBuff->mBuff + head->mOffset,
 			head->mRefBuff->mLen - head->mOffset,
 			0);
+	if(sendLen <= 0)
+	{
+		ConnMgr::CloseConn(mSock, false);
+	}
 	head->mOffset += sendLen;
 	if(!(head->mOffset < head->mRefBuff->mLen))
 	{
