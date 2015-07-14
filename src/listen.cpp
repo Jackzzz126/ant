@@ -17,7 +17,7 @@ void Listen::OnRead()
 	socklen_t len = sizeof(sockaddr_in);
 	while(true)
 	{
-		int sock = accept(mSock, (struct sockaddr*)&sin, &len);
+		int sock = accept(mSock, (sockaddr*)&sin, &len);
 		if(sock <= 0)
 		{
 			break;

@@ -36,8 +36,8 @@ int main(int argc, char* argv[])
 	Router::Init();
 
 	//socket poll
-	Poll poll;
-	if(!poll.Create())
+	Poll* pPoll = Poll::Singleton();
+	if(!pPoll->Create())
 	{
 		printf("Create poll error.\n");
 		return 1;
@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
 	//listener
 	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
 	Listen* pListener = new Listen(listenSock);
-	poll.Add(listenSock, pListener);
+	pPoll->Add(listenSock, pListener);
 
 	sockaddr_in sin;
 	memset(&sin, 0, sizeof(sin));
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	//main loop
 	while(!gGotQuitSignal)
 	{
-		int fdCount = poll.Wait(ConnMgr::mAllConns.size() + 1);
+		int fdCount = pPoll->Wait(ConnMgr::mAllConns.size() + 1);
 		if(fdCount < 0)
 		{
 			if(errno != EINTR)
@@ -82,6 +82,8 @@ int main(int argc, char* argv[])
 		}
 	}
 
+	//delete singleton
+	pPoll->Close();
 	//thread end
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{

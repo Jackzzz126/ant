@@ -50,6 +50,7 @@ bool Poll::Add(int sock, void *ud)
 	ev.data.ptr = ud;
 	if(epoll_ctl(mPoll, EPOLL_CTL_ADD, sock, &ev) == -1)
 	{
+		Log::Error("Error when add sock(%d) to epoll (%d): %s.\n", sock, mPoll, strerror(errno));
 		return false;
 	}
 	return true;
