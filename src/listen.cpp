@@ -25,7 +25,13 @@ void Listen::OnRead()
 
 		Poll* pPoll = Poll::Singleton();
 		Conn* pConn = new Conn(sock);
-		pPoll->Add(sock, pConn);
+		if(!pPoll->Add(sock, pConn))
+		{
+			DELETE(pConn);
+			close(sock);
+			continue;
+		}
+
 		pPoll->SetWrite(sock, pConn);
 
 		ConnMgr::mAllConns[sock] = pConn;
