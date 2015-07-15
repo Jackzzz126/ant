@@ -81,13 +81,16 @@ int Poll::Wait(int size)
 		{
 			ConnMgr::CloseConn(pSock->mSock, true);
 		}
-		if((flag & EPOLLOUT) != 0)
+		else
 		{
-			pSock->OnWrite();
-		}
-		if((flag & EPOLLIN) != 0)
-		{
-			pSock->OnRead();
+			if((flag & EPOLLOUT) != 0)
+			{
+				pSock->OnWrite();
+			}
+			if((flag & EPOLLIN) != 0)
+			{
+				pSock->OnRead();
+			}
 		}
 	}
 	return n;
