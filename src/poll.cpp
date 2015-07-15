@@ -79,7 +79,7 @@ int Poll::Wait(int size)
 		unsigned flag = ev[i].events;
 		if((flag & EPOLLRDHUP) != 0)
 		{
-			ConnMgr::CloseConn(pSock->mSock, true);
+			ConnMgr::CloseConn(pSock->mSock, false);
 		}
 		else
 		{

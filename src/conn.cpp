@@ -291,6 +291,10 @@ void Conn::Close(bool logErr)
 			inet_ntop(AF_INET, &peerAddr.sin_addr, ipStr, sizeof(ipStr));
 			Log::Error("%s:%d disconnected.\n", ipStr, ntohs(peerAddr.sin_port));
 		}
+		else
+		{
+			Log::Error("Sock %d disconnected.\n", mSock);
+		}
 	}
 
 	close(mSock);
