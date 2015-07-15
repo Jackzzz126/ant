@@ -4,22 +4,6 @@
 #include "packId.h"
 #include "sock.h"
 
-struct RefBuff
-{
-	char* mBuff;
-	int mLen;
-	int mRef;
-	RefBuff(int len, int ref)
-	{
-		mBuff = NewBuff(len);
-		mLen = len;
-		mRef = ref;
-	};
-	~RefBuff()
-	{
-		DelBuff(&mBuff);
-	};
-};
 class Conn : public Sock
 {
 	struct SendBuffNode

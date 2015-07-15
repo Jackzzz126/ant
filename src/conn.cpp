@@ -98,11 +98,7 @@ void Conn::OnWrite()
 	head->mOffset += sendLen;
 	if(!(head->mOffset < head->mRefBuff->mLen))
 	{
-		head->mRefBuff->mRef--;
-		if(head->mRefBuff->mRef <= 0)
-		{
-			DELETE(head->mRefBuff);
-		}
+		head->mRefBuff->Unref();
 		if(mSendBuffHead == mSendBuffTail)
 		{
 			mSendBuffHead = mSendBuffTail = NULL;
@@ -474,15 +470,15 @@ void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 	{
 		iter->second->Write(pRefBuff);
 	}
-	else
+	else//client disconnect
 	{
-		Log::Error("Write to unknown conn.\n");
-		close(sock);
+		pRefBuff->Unref();
 	}
 }
 
 void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 {
+	assert(pRefBuff->mRef >= socks.size());
 	vector<int>::const_iterator iter = socks.begin();
 	for(; iter != socks.end(); iter++)
 	{
@@ -493,8 +489,7 @@ void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 		}
 		else
 		{
-			Log::Error("Write to unknown conn.\n");
-			close(*iter);
+			pRefBuff->Unref();
 		}
 	}
 }
