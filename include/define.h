@@ -32,7 +32,7 @@ typedef unsigned long long int	uint64;
 char* NewBuff(int size);
 void DelBuff(char** pp);
 
-class RefBuff
+struct RefBuff
 {
 	char* mBuff;
 	int mLen;
@@ -47,7 +47,7 @@ class RefBuff
 	{
 		DelBuff(&mBuff);
 	};
-	void UnRef()
+	void Unref()
 	{
 		mRef--;
 		if(mRef<=0)

@@ -25,6 +25,13 @@ Conn::Conn(int sock) : Sock(sock)
 Conn::~Conn()
 {
 	DelBuff(&mRecvBuff);
+	while(mSendBuffHead != NULL)
+	{
+		mSendBuffHead->mRefBuff->Unref();
+		SendBuffNode* old = mSendBuffHead;
+		mSendBuffHead = mSendBuffHead->mNext;
+		delete old;
+	}
 }
 void Conn::ExpandRecvBuff()
 {
@@ -478,7 +485,7 @@ void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 
 void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 {
-	assert(pRefBuff->mRef >= socks.size());
+	assert(pRefBuff->mRef >= (int)socks.size());
 	vector<int>::const_iterator iter = socks.begin();
 	for(; iter != socks.end(); iter++)
 	{
