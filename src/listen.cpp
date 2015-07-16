@@ -3,6 +3,7 @@
 #include "log.h"
 #include "poll.h"
 #include "conn.h"
+#include "config.h"
 
 Listen::Listen(int sock) : Sock(sock)
 {
@@ -36,4 +37,16 @@ void Listen::OnRead()
 }
 void Listen::OnWrite()
 {
+}
+void Listen::Init()
+{
+	Config* pConfig = Config::Singleton();
+
+	sockaddr_in sin;
+	memset(&sin, 0, sizeof(sin));
+	sin.sin_family = AF_INET;
+	sin.sin_addr.s_addr = inet_addr(pConfig->mIp.c_str());
+	sin.sin_port = htons(pConfig->mPort);
+	bind(mSock, (const sockaddr*)&sin, sizeof(sin));
+	listen(mSock, pConfig->mBacklog);
 }

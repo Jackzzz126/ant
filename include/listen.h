@@ -11,6 +11,8 @@ public:
 
 	virtual void OnRead();
 	virtual void OnWrite();
+
+	void Init();
 };
 
 #endif//_LISTEN_H_

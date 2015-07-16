@@ -50,15 +50,8 @@ int main(int argc, char* argv[])
 	//listener
 	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
 	Listen* pListener = new Listen(listenSock);
+	pListener->Init();
 	pPoll->Add(listenSock, pListener);
-
-	sockaddr_in sin;
-	memset(&sin, 0, sizeof(sin));
-	sin.sin_family = AF_INET;
-	sin.sin_addr.s_addr = inet_addr(pConfig->mIp.c_str());
-	sin.sin_port = htons(pConfig->mPort);
-	bind(pListener->mSock, (const sockaddr*)&sin, sizeof(sin));
-	listen(pListener->mSock, pConfig->mBacklog);
 	Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
 
 	//thread start
