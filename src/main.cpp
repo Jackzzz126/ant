@@ -9,6 +9,7 @@
 #include "router.h"
 #include "poll.h"
 #include "conn.h"
+#include "event.h"
 
 bool gGotQuitSignal = false;
 
@@ -80,6 +81,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
+		EventMgr::Update();
 	}
 
 	//thread end

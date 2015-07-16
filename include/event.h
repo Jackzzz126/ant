@@ -21,10 +21,13 @@ struct Event
 class EventMgr
 {
 private:
-	static map<int, Event> mAllEvents;
+	static map<int, Event*> mAllEvents;
 	static int mEventIdSeed;
+	static int mLastUpdateTime;
 public:
+	//interval in seconds
 	static int AddEvent(EventHandle handle, int interval, bool repeat = false);
 	static bool DelEvent(int eventId);
+	static void Update();
 };
 #endif//_EVENT_H_
