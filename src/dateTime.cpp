@@ -1,12 +1,12 @@
 #include "comm.h"
 #include "dateTime.h"
 
-//int Time::GetSysTime()
-//{
-//	timeval time;
-//	gettimeofday(&time, NULL);
-//	return time.tv_sec * 1000 + time.tv_usec / 1000;
-//}
+int DateTime::GetTimeStamp()
+{
+	timeval time;
+	gettimeofday(&time, NULL);
+	return time.tv_sec * 1000 + time.tv_usec / 1000;
+}
 
 int DateTime::GetProcTime()
 {

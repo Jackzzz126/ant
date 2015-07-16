@@ -7,17 +7,8 @@
 class DateTime
 {
 public:
-	/*
-		int startTime = Time::GetSysTime();
-		int startTime1 = Time::GetProcTime();
-		int endTime = Time::GetSysTime();
-		int endTime1 = Time::GetProcTime();
-		Log::Error( "time: %d\n", endTime - startTime );
-		Log::Error( "cpu time: %d\n", endTime1 - startTime1 );
-	*/
-	//should use int 64
-	//static int GetSysTime();//time stamp in millisecond
-	static int GetProcTime();//time stamp in millisecond
+	static int GetTimeStamp();//time stamp in seconds
+	static int GetProcTime();//time stamp in milliseconds
 
 	static string GetNowStr();
 };
