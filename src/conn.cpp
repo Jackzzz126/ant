@@ -62,6 +62,7 @@ void Conn::OnRead()
 	if(recvLen <= 0)
 	{
 		ConnMgr::CloseConn(mSock, false);
+		return;
 	}
 	mValidSize += recvLen;
 
@@ -101,6 +102,7 @@ void Conn::OnWrite()
 	if(sendLen <= 0)
 	{
 		ConnMgr::CloseConn(mSock, false);
+		return;
 	}
 	head->mOffset += sendLen;
 	if(!(head->mOffset < head->mRefBuff->mLen))
@@ -301,6 +303,7 @@ void Conn::Close(bool logErr)
 	}
 
 	close(mSock);
+	delete this;
 }
 
 void Conn::HandleHttpPost(const string& url, char* buff, int size)
@@ -452,7 +455,6 @@ void ConnMgr::CloseConn(int sock, bool logErr)
 	if(iter != ConnMgr::mAllConns.end())
 	{
 		iter->second->Close(logErr);
-		delete iter->second;
 		ConnMgr::mAllConns.erase(sock);
 	}
 	else

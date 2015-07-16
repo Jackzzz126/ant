@@ -82,10 +82,6 @@ int main(int argc, char* argv[])
 		}
 	}
 
-	//delete singleton
-	pPoll->Close();
-	pConfig->Release();
-
 	//thread end
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
@@ -98,6 +94,10 @@ int main(int argc, char* argv[])
 		iter->second->Close(false);
 	}
 	ConnMgr::mAllConns.clear();
+
+	//delete singleton
+	pPoll->Close();
+	pConfig->Release();
 
 	return 0;
 }

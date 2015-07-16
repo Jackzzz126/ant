@@ -28,9 +28,7 @@ void Listen::OnRead()
 		ConnMgr::mAllConns[sock] = pConn;
 		if(!pPoll->Add(sock, pConn))
 		{
-			ConnMgr::mAllConns.erase(sock);;
-			DELETE(pConn);
-			close(sock);
+			ConnMgr::CloseConn(sock);
 			continue;
 		}
 		pPoll->SetWrite(sock, pConn);
