@@ -32,7 +32,6 @@ void HttpHandle::Handle(int sock, const string& url, char* data, int size)
 	else
 	{
 		Log::Error("Unknown url: %s.\n", url.c_str());
-		DelBuff(&data);
 	}
 }
 
@@ -56,6 +55,17 @@ void HttpHandle::Hello(int sock, char* data, int size)
 	//	memcpy(sendBuff, buff, 72);
 	//	req->data = (void*)sendBuff;
 	//	uv_write( req, (uv_stream_t*)mSock, &sendBuff, 1, OnWriteClose);
+	//	return;
+	//}
+
+	//if(url == "/hello")
+	//{
+	//}
+	//else
+	//{
+	//	char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
+	//	RefBuff* refBuff = new RefBuff(sizeof(buff), 1);
+	//	ConnMgr::SendToOne(mSock, refBuff);
 	//	return;
 	//}
 }

@@ -6,10 +6,7 @@
 #include "game.h"
 #include "msg.h"
 #include "poll.h"
-
-//#include "ReqJoinRoom.h"
-//#include "ReqBenchMark.h"
-//#include "ReqTest.h"
+#include "httpHandle.h"
 
 Conn::Conn(int sock) : Sock(sock)
 {
@@ -211,7 +208,7 @@ void Conn::ParseHttpPack()
 	}
 	if(method == "GET")
 	{
-		HandleHttpGet(url);
+		HttpHandle::Handle(mSock, url, NULL, 0);
 		int excessDataLen = ((char*)mRecvBuff + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
@@ -246,11 +243,11 @@ void Conn::ParseHttpPack()
 			}
 			else if(excessDataLen == 0)
 			{
-				HandleHttpPost(url, end, dataLen);
+				HttpHandle::Handle(mSock, url, end, dataLen);
 			}
 			else//excessDataLen > 0
 			{
-				HandleHttpPost(url, end, dataLen);
+				HttpHandle::Handle(mSock, url, end, dataLen);
 
 				memcpy(mRecvBuff, end + dataLen, excessDataLen);
 				mValidSize = excessDataLen;
@@ -304,23 +301,6 @@ void Conn::Close(bool logErr)
 
 	close(mSock);
 	delete this;
-}
-
-void Conn::HandleHttpPost(const string& url, char* buff, int size)
-{
-	if(url == "/hello")
-	{
-	}
-	else
-	{
-		char buff[] = "HTTP/1.1 404 Not Found\r\nContent-Lenght:0\r\nContent-Type:'text/plain'\r\n\r\n";
-		RefBuff* refBuff = new RefBuff(sizeof(buff), 1);
-		ConnMgr::SendToOne(mSock, refBuff);
-		return;
-	}
-}
-void Conn::HandleHttpGet(const string& url)
-{
 }
 
 bool Conn::IsHttpPack(char* buff)
