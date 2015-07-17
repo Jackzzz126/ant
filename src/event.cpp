@@ -34,9 +34,9 @@ bool EventMgr::DelEvent(int eventId)
 	}
 }
 
-void EventMgr::Update()
+void EventMgr::Update(int timeStamp)
 {
-	int timeDelta = DateTime::GetTimeStamp() - mLastUpdateTime;
+	int timeDelta = timeStamp - mLastUpdateTime;
 	if(timeDelta > 0)
 	{
 		mLastUpdateTime += timeDelta;

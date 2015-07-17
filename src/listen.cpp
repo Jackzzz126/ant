@@ -12,7 +12,7 @@ Listen::~Listen()
 {
 }
 
-void Listen::OnRead()
+void Listen::OnRead(int timeStamp)
 {
 	sockaddr_in sin;
 	socklen_t len = sizeof(sockaddr_in);
@@ -35,7 +35,7 @@ void Listen::OnRead()
 		pPoll->SetWrite(sock, pConn);
 	}
 }
-void Listen::OnWrite()
+void Listen::OnWrite(int timeStamp)
 {
 }
 void Listen::Init()

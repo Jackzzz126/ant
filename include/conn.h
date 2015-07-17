@@ -22,8 +22,8 @@ public:
 	Conn(int sock);
 	~Conn();
 public:
-	void OnRead();
-	void OnWrite();
+	void OnRead(int timeStamp);
+	void OnWrite(int timeStamp);
 	void Write(RefBuff* refBuff);
 	void Close(bool logErr);
 private:

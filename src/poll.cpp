@@ -69,7 +69,7 @@ void Poll::Del(int sock)
 	epoll_ctl(mPoll, EPOLL_CTL_DEL, sock , NULL);
 }
 
-int Poll::Wait(int size)
+int Poll::Wait(int size, int timeStamp)
 {
 	epoll_event ev[size];
 	int n = epoll_wait(mPoll, ev, size, 1000 * 1);//-1 for block
@@ -85,11 +85,11 @@ int Poll::Wait(int size)
 		{
 			if((flag & EPOLLOUT) != 0)
 			{
-				pSock->OnWrite();
+				pSock->OnWrite(timeStamp);
 			}
 			if((flag & EPOLLIN) != 0)
 			{
-				pSock->OnRead();
+				pSock->OnRead(timeStamp);
 			}
 		}
 	}

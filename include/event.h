@@ -28,6 +28,6 @@ public:
 	//interval in seconds
 	static int AddEvent(EventHandle handle, int interval, bool repeat = false);
 	static bool DelEvent(int eventId);
-	static void Update();
+	static void Update(int timeStamp);
 };
 #endif//_EVENT_H_

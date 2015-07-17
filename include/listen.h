@@ -9,8 +9,8 @@ public:
 	Listen(int sock);
 	~Listen();
 
-	virtual void OnRead();
-	virtual void OnWrite();
+	virtual void OnRead(int timeStamp);
+	virtual void OnWrite(int timeStamp);
 
 	void Init();
 };

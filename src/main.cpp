@@ -10,6 +10,7 @@
 #include "poll.h"
 #include "conn.h"
 #include "event.h"
+#include "dateTime.h"
 
 bool gGotQuitSignal = false;
 
@@ -65,7 +66,8 @@ int main(int argc, char* argv[])
 	//main loop
 	while(!gGotQuitSignal)
 	{
-		int fdCount = pPoll->Wait(ConnMgr::mAllConns.size() + 1);
+		int timeStamp = DateTime::GetTimeStamp();
+		int fdCount = pPoll->Wait(ConnMgr::mAllConns.size() + 1, timeStamp);
 		if(fdCount < 0)
 		{
 			if(errno != EINTR)
@@ -74,7 +76,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
-		EventMgr::Update();
+		EventMgr::Update(timeStamp);
 	}
 
 	//thread end

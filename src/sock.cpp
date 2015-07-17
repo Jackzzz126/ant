@@ -7,8 +7,8 @@ Sock::Sock(int sock)
 	SetNoBlock();
 }
 Sock::~Sock(){}
-void Sock::OnRead(){}
-void Sock::OnWrite(){};
+void Sock::OnRead(int timeStamp){}
+void Sock::OnWrite(int timeStamp){};
 
 void Sock::SetNoBlock()
 {

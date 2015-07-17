@@ -56,8 +56,10 @@ void Conn::ShrinkRecvBuff()
 	mRecvLen = BUFF_UNIT * 2;
 }
 
-void Conn::OnRead()
+void Conn::OnRead(int timeStamp)
 {
+	mLastActiveTime = timeStamp;
+
 	int recvLen = recv(mSock, mRecvBuff + mValidSize, mRecvLen - mValidSize, 0);
 	if(recvLen <= 0)
 	{
@@ -88,8 +90,10 @@ void Conn::OnRead()
 		ShrinkRecvBuff();
 	}
 }
-void Conn::OnWrite()
+void Conn::OnWrite(int timeStamp)
 {
+	mLastActiveTime = timeStamp;
+
 	SendBuffNode* head = mSendBuffHead;
 	if(head == NULL)
 	{
