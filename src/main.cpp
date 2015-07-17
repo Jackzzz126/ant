@@ -9,13 +9,15 @@
 #include "router.h"
 #include "poll.h"
 #include "conn.h"
-#include "event.h"
+#include "schedule.h"
+#include "scheduleTasks.h"
 #include "dateTime.h"
 
 bool gGotQuitSignal = false;
 
 void* WorkerFunc(void* arg);
 void SignalHanle(int signum);
+void CloseDeadSock();
 
 int main(int argc, char* argv[])
 {
@@ -63,6 +65,9 @@ int main(int argc, char* argv[])
 		pthread_create(&workerThreadId, NULL, WorkerFunc, NULL);
 		threads.push_back(workerThreadId);
 	}
+	
+	//add schedule
+	ScheduleMgr::AddSchedule(ScheduleTasks::CloseDeadSock, pConfig->mSockTimeout, true);
 	//main loop
 	while(!gGotQuitSignal)
 	{
@@ -76,7 +81,7 @@ int main(int argc, char* argv[])
 				break;
 			}
 		}
-		EventMgr::Update(timeStamp);
+		ScheduleMgr::Update(timeStamp);
 	}
 
 	//thread end
