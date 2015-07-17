@@ -53,8 +53,8 @@ void EventMgr::Update(int timeStamp)
 				pEv->mHandle();
 				if(!pEv->mRepeat)
 				{
-					delete pEv;
 					eventsToDel.push_back(pEv->mId);
+					delete pEv;
 				}
 			}
 		}

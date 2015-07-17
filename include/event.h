@@ -26,7 +26,7 @@ private:
 	static int mLastUpdateTime;
 public:
 	//interval in seconds
-	static int AddEvent(EventHandle handle, int interval, bool repeat = false);
+	static int AddEvent(EventHandle handle, int interval, bool repeat);
 	static bool DelEvent(int eventId);
 	static void Update(int timeStamp);
 };
