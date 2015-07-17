@@ -14,8 +14,8 @@
 
 bool gGotQuitSignal = false;
 
-void* workerFunc(void* arg);
-void signalHanle(int signum);
+void* WorkerFunc(void* arg);
+void SignalHanle(int signum);
 
 int main(int argc, char* argv[])
 {
@@ -46,8 +46,8 @@ int main(int argc, char* argv[])
 	}
 
 	//signal
-	signal(SIGINT, signalHanle);
-	signal(SIGTERM, signalHanle);
+	signal(SIGINT, SignalHanle);
+	signal(SIGTERM, SignalHanle);
 	//listener
 	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
 	Listen* pListener = new Listen(listenSock);
@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
 		pthread_t workerThreadId;
-		pthread_create(&workerThreadId, NULL, workerFunc, NULL);
+		pthread_create(&workerThreadId, NULL, WorkerFunc, NULL);
 		threads.push_back(workerThreadId);
 	}
 	//main loop
@@ -98,12 +98,12 @@ int main(int argc, char* argv[])
 
 	return 0;
 }
-void signalHanle(int signum)
+void SignalHanle(int signum)
 {
 	gGotQuitSignal = true;
 }
 
-void* workerFunc(void* arg)
+void* WorkerFunc(void* arg)
 {
 	while(true)
 	{
