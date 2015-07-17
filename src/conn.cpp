@@ -92,8 +92,6 @@ void Conn::OnRead(int timeStamp)
 }
 void Conn::OnWrite(int timeStamp)
 {
-	mLastActiveTime = timeStamp;
-
 	SendBuffNode* head = mSendBuffHead;
 	if(head == NULL)
 	{

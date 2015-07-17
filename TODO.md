@@ -3,9 +3,6 @@
 * connect database
 * proto
 
-* epoll
-	add socket time out check.
-
 *clean
 	http req
 	player

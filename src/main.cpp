@@ -68,6 +68,7 @@ int main(int argc, char* argv[])
 	
 	//add schedule task
 	ScheduleMgr::AddTask(ScheduleTasks::CloseDeadSock, pConfig->mSockTimeout, true);
+
 	//main loop
 	while(!gGotQuitSignal)
 	{

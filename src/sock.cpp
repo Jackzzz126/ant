@@ -1,10 +1,12 @@
 #include "comm.h"
 #include "sock.h"
+#include "dateTime.h"
 
 Sock::Sock(int sock)
 {
 	mSock = sock;
 	SetNoBlock();
+	mLastActiveTime = DateTime::GetTimeStamp();
 }
 Sock::~Sock(){}
 void Sock::OnRead(int timeStamp){}
