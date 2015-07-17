@@ -1,6 +1,4 @@
 #include "comm.h"
-#include "log.h"
-#include "define.h"
 #include "time.h"
 #include "config.h"
 #include "listen.h"
@@ -11,7 +9,7 @@
 #include "conn.h"
 #include "schedule.h"
 #include "scheduleTasks.h"
-#include "dateTime.h"
+#include "httpHandle.h"
 
 bool gGotQuitSignal = false;
 
@@ -38,6 +36,7 @@ int main(int argc, char* argv[])
 		}
 	}
 	Router::Init();
+	HttpHandle::Init();
 
 	//socket poll
 	Poll* pPoll = Poll::Singleton();

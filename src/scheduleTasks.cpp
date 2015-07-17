@@ -2,8 +2,6 @@
 #include "scheduleTasks.h"
 #include "conn.h"
 #include "config.h"
-#include "log.h"
-#include "dateTime.h"
 
 namespace ScheduleTasks
 {

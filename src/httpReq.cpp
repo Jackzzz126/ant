@@ -1,8 +1,6 @@
 #include "comm.h"
 #include "httpReq.h"
 #include "proto.h"
-#include "log.h"
-#include "define.h"
 
 //vector<HttpConn> gHttpConns;
 //

@@ -1,6 +1,5 @@
 #include "comm.h"
 #include "game.h"
-#include "log.h"
 #include "player.h"
 #include "conn.h"
 

@@ -32,5 +32,7 @@ using namespace std;
 //owen
 #include "strUtil.h"
 #include "define.h"
+#include "log.h"
+#include "dateTime.h"
 
 #endif//_COMM_H_

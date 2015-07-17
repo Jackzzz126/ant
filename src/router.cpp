@@ -1,6 +1,5 @@
 #include "comm.h"
 #include "router.h"
-#include "log.h"
 
 #include "benchMark.h"
 

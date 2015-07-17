@@ -5,7 +5,6 @@
 #include "poll.h"
 #include "sock.h"
 #include "conn.h"
-#include "log.h"
 
 
 Poll* Poll::mGlobalPoll = NULL;

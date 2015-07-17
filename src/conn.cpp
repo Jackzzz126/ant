@@ -2,8 +2,6 @@
 #include "packId.h"
 #include "conn.h"
 
-#include "log.h"
-#include "define.h"
 #include "json.h"
 #include "game.h"
 #include "msg.h"

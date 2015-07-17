@@ -1,7 +1,6 @@
 #include "comm.h"
 #include "gate.h"
 #include "config.h"
-#include "log.h"
 
 //#include "ReqRegCombatServer.h"
 //#include "ResRegCombatServer.h"

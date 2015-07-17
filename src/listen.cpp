@@ -1,6 +1,5 @@
 #include "comm.h"
 #include "listen.h"
-#include "log.h"
 #include "poll.h"
 #include "conn.h"
 #include "config.h"

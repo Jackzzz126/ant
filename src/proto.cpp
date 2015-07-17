@@ -1,5 +1,4 @@
 #include "comm.h"
-#include "log.h"
 #include "proto.h"
 
 Proto::Proto()
