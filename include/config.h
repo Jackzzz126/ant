@@ -21,6 +21,7 @@ public:
 	FILE* mLogFileHandle;
 	FILE* mErrFileHandle;
 	bool mDaemon;
+	int mSockTimeout;
 	int mWorkerThreads;
 
 private:

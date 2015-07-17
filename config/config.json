@@ -5,6 +5,7 @@
 		"port" : 8003,
 		"backlog" : 128,
 		"daemon" : false,
+		"sockTimeout" : 60 * 5,
 		"workerThreads" : 5
 	},
 	"log" :

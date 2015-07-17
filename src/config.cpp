@@ -17,6 +17,7 @@ Config::Config()
 	mBacklog = 128;
 	mDaemon = false;
 	mWorkerThreads = 0;
+	mSockTimeout = 60 * 5;
 }
 
 bool Config::Load(char* fileName)
@@ -51,6 +52,7 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:ip", mIp) ||
 		!json.GetValue("server:backlog", &mBacklog) ||
 		!json.GetValue("server:daemon", &mDaemon) ||
+		!json.GetValue("server:sockTimeout", &mSockTimeout) ||
 		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
 		!json.GetValue("log:errFile", mErrFileName)
