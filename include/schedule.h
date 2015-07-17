@@ -26,8 +26,8 @@ private:
 	static int mLastUpdateTime;
 public:
 	//interval in seconds
-	static int AddSchedule(ScheduleTask task, int interval, bool repeat);
-	static bool DelSchedule(int eventId);
+	static int AddTask(ScheduleTask task, int interval, bool repeat);
+	static bool DelTask(int taskId);
 	static void Update(int timeStamp);
 };
 #endif//_SCHEDULE_H_

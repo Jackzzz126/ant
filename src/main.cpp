@@ -66,8 +66,8 @@ int main(int argc, char* argv[])
 		threads.push_back(workerThreadId);
 	}
 	
-	//add schedule
-	ScheduleMgr::AddSchedule(ScheduleTasks::CloseDeadSock, pConfig->mSockTimeout, true);
+	//add schedule task
+	ScheduleMgr::AddTask(ScheduleTasks::CloseDeadSock, pConfig->mSockTimeout, true);
 	//main loop
 	while(!gGotQuitSignal)
 	{
