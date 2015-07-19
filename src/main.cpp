@@ -9,7 +9,6 @@
 #include "conn.h"
 #include "schedule.h"
 #include "scheduleTasks.h"
-#include "httpHandle.h"
 #include "packId.h"
 
 bool gGotQuitSignal = false;
@@ -38,7 +37,6 @@ int main(int argc, char* argv[])
 	}
 	PackId::Init();
 	Router::Init();
-	HttpHandle::Init();
 
 	//socket poll
 	Poll* pPoll = Poll::Singleton();

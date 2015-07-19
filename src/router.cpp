@@ -2,6 +2,7 @@
 #include "router.h"
 
 #include "benchMark.h"
+#include "admin.h"
 
 map<int, MsgHandler> Router::mAllHandlers;
 void Router::AddHandler(int msgId, MsgHandler handler)
@@ -35,8 +36,10 @@ void Router::Handle(int sock, int msgId, char* data, int size)
 }
 void Router::Init()
 {
-	AddHandler(-1, &BenchMark::Echo);
-	AddHandler(-2, &BenchMark::DoubleEcho);
+	AddHandler(-1, BenchMark::Echo);
+	AddHandler(-2, BenchMark::DoubleEcho);
+
+	AddHandler(900, Admin::Hello);
 }
 
 

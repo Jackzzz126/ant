@@ -1,41 +1,13 @@
+#include "benchMark.h"
+
 #include "comm.h"
-#include "httpHandle.h"
+#include "packId.h"
+#include "conn.h"
 
-map<string, HttpHandler> HttpHandle::mAllHttpHandlers;
+namespace Admin
+{//begin of name space
 
-void HttpHandle::AddHandler(const string& url, HttpHandler handler)
-{
-	assert(handler);
-
-	map<string, HttpHandler>::iterator iter;
-	iter = mAllHttpHandlers.find(url);
-	if(iter != mAllHttpHandlers.end())
-	{
-		Log::Error("Duplicate url added: %s.\n", url.c_str());
-	}
-	else
-	{
-		mAllHttpHandlers[url] = handler;
-	}
-}
-void HttpHandle::Init()
-{
-	AddHandler("/hello", HttpHandle::Hello);
-}
-void HttpHandle::Handle(int sock, const string& url, char* data, int size)
-{
-	map<string, HttpHandler>::iterator iter = mAllHttpHandlers.find(url);
-	if(iter != mAllHttpHandlers.end())
-	{
-		mAllHttpHandlers[url](sock, data, size);
-	}
-	else
-	{
-		Log::Error("Unknown url: %s.\n", url.c_str());
-	}
-}
-
-void HttpHandle::Hello(int sock, char* data, int size)
+void Hello(int sock, char* data, int size)
 {
 	//if(url == "/hello")
 	//{
@@ -69,4 +41,6 @@ void HttpHandle::Hello(int sock, char* data, int size)
 	//	return;
 	//}
 }
+
+}//end of name space
 

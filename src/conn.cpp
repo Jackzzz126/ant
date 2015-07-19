@@ -6,7 +6,6 @@
 #include "game.h"
 #include "msg.h"
 #include "poll.h"
-#include "httpHandle.h"
 
 Conn::Conn(int sock) : Sock(sock)
 {
@@ -208,7 +207,7 @@ void Conn::ParseHttpPack()
 	}
 	if(method == "GET")
 	{
-		HttpHandle::Handle(mSock, url, NULL, 0);
+		HandleHttpPack(url, NULL, 0);
 		int excessDataLen = ((char*)mRecvBuff + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
@@ -243,11 +242,11 @@ void Conn::ParseHttpPack()
 			}
 			else if(excessDataLen == 0)
 			{
-				HttpHandle::Handle(mSock, url, end, dataLen);
+				HandleHttpPack(url, end, dataLen);
 			}
 			else//excessDataLen > 0
 			{
-				HttpHandle::Handle(mSock, url, end, dataLen);
+				HandleHttpPack(url, end, dataLen);
 
 				memcpy(mRecvBuff, end + dataLen, excessDataLen);
 				mValidSize = excessDataLen;
