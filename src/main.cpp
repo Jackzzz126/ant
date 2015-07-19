@@ -10,6 +10,7 @@
 #include "schedule.h"
 #include "scheduleTasks.h"
 #include "httpHandle.h"
+#include "packId.h"
 
 bool gGotQuitSignal = false;
 
@@ -35,6 +36,7 @@ int main(int argc, char* argv[])
 			return 1;
 		}
 	}
+	PackId::Init();
 	Router::Init();
 	HttpHandle::Init();
 

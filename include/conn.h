@@ -31,6 +31,7 @@ private:
 	void ParseNormalPack();
 
 	void HandleNormalPack(int packId, char* buff, int size);
+	void HandleHttpPack(const string& url, char* buff, int size);
 
 	bool IsHttpPack(char* buff);
 	void ExpandRecvBuff();

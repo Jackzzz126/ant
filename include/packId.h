@@ -30,12 +30,14 @@ public:
 		////201-300
 		//JOINROOM = 201,
 
-		//TEST = 299,
-		//BENCHMARK = 300,
-		//MAX_PACKID = 300,
+		//1900-1999, for admin http
 	};
 public:
 	static void WritePackHead(char* buff, PackIdType packId, int len);
+	static int GetPackIdByUrl(const string& url);
+	static void Init();
+private:
+	static map<string, int> mUrlIdMap;
 };
 
 #endif//_PACKID_H_

@@ -400,6 +400,41 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	//	return;
 	//}
 }
+void Conn::HandleHttpPack(const string& url, char* buff, int size)
+{
+	int packId = 0;
+	if(url == "/null")
+	{
+		packId = *((int*)buff) ^ 0x79669966;
+		int packLen = *((int*)(buff) + 1) ^ 0x79669966;
+		if((size - HEAD_LENGTH) != packLen)
+		{
+			Log::Error("Unknown http pack received: packId: %d, size:%d.\n",
+					packId, size);
+			return;
+		}
+		else
+		{
+			buff = buff + HEAD_LENGTH;
+			size = packLen;
+		}
+	}
+	else
+	{
+		packId = PackId::GetPackIdByUrl(url);
+	}
+
+	if(packId == 0)
+	{
+		Log::Error("Unknown http pack received: %s.\n", url.c_str());
+	}
+	else
+	{
+		char* data = NewBuff(size);
+		memcpy(data, buff, size);
+		MsgQueue::Singleton()->PushMsg(mSock, packId, data, size);
+	}
+}
 
 //************************************************
 map<int, Conn*> ConnMgr::mAllConns;
