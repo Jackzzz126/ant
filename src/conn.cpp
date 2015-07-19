@@ -404,11 +404,16 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 	int packId = 0;
 	if(url == "/null")
 	{
+		if(size < HEAD_LENGTH)
+		{
+			Log::Error("Unknown http pack, size: %d.\n", size);
+			return;
+		}
 		packId = *((int*)buff) ^ 0x79669966;
 		int packLen = *((int*)(buff) + 1) ^ 0x79669966;
 		if((size - HEAD_LENGTH) != packLen)
 		{
-			Log::Error("Unknown http pack received: packId: %d, size:%d.\n",
+			Log::Error("Unknown http pack: packId: %d, size:%d.\n",
 					packId, size);
 			return;
 		}
@@ -425,7 +430,7 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 
 	if(packId == 0)
 	{
-		Log::Error("Unknown http pack received: %s.\n", url.c_str());
+		Log::Error("Unknown http req received: %s.\n", url.c_str());
 	}
 	else
 	{
