@@ -2,23 +2,14 @@
 
 #include "comm.h"
 #include "packId.h"
-#include "conn.h"
+#include "httpUtil.h"
 
 namespace Admin
 {//begin of name space
 
 void Hello(int sock, char* data, int size)
 {
-	//if(url == "/hello")
-	//{
-	//	uv_write_t *req = new uv_write_t;
-	//	char buff[] = "HTTP/1.1 200 OK\r\nContent-Lenght:12\r\nContent-Type:'text/plain'\r\n\r\nHello world.";
-	//	uv_buf_t sendBuff = NewUvBuff(77/BUFF_UNIT + BUFF_UNIT);
-	//	memcpy(sendBuff, buff, 77);
-	//	req->data = (void*)sendBuff;
-	//	uv_write( req, (uv_stream_t*)mSock, &sendBuff, 1, OnWriteClose);
-	//	return;
-	//}
+	HttpUtil::ResStr(sock, "Hello world.");
 	//else
 	//{
 	//	uv_write_t *req = new uv_write_t;

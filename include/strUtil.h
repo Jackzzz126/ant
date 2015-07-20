@@ -6,6 +6,6 @@ class StrUtil
 {
 public:
 	static void Trim(string& str);
-	static string Format(const char* str, ...);
+	static void Format(char* buff, int len, const char* str, ...);
 };
 #endif//_STRING_H_

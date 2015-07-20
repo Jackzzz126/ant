@@ -19,13 +19,11 @@ void StrUtil::Trim(string& str)
 	}
 }
 
-string StrUtil::Format(const char* str, ...)
+void StrUtil::Format(char* buff, int len, const char* str, ...)
 {
-	char buff[1024];
 	va_list arg;
 	va_start(arg, str);
-	vsnprintf(buff, 1024, str, arg);
+	vsnprintf(buff, len, str, arg);
 	va_end(arg);
-	return string(buff);
 }
 
