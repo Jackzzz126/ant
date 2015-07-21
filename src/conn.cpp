@@ -3,7 +3,6 @@
 #include "conn.h"
 
 #include "json.h"
-#include "game.h"
 #include "msg.h"
 #include "poll.h"
 
@@ -326,79 +325,8 @@ void Conn::HandleNormalPack(int packId, char* buff, int size)
 	char* data = NewBuff(size);
 	memcpy(data, buff, size);
 	MsgQueue::Singleton()->PushMsg(mSock, packId, data, size);
-	//switch(packId)
-	//{
-	//case 11:
-	//	break;
-	//case 12:
-	//	{
-	//		uv_buf_t sendBuff = NewUvBuff(size + HEAD_LENGTH);
-	//		memcpy(sendBuff + HEAD_LENGTH, buff, size);
-	//		*(int*)(sendBuff) = size ^ 0x79669966;
-	//		*((int*)(sendBuff) + 1) = 12 ^ 0x79669966;
-	//		ConnMgr::SendPackToAll(sendBuff);
-	//		break;
-	//	}
-	//default:
-	//	break;
-	//}
-	//if( packId < PackId::MIN_PACKID || packId > PackId::MAX_PACKID )
-	//{
-	//	ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
-	//	return;
-	//}
-	//if(packId == PackId::JOINROOM)
-	//{
-	//	ReqJoinRoom req;
-	//	req.InitBuff(buff, size);
-	//	if(!req.Parst())
-	//	{
-	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
-	//		return;
-	//	}
-	//	Game::ValidChar(req.m_session, req.m_charId, req.m_ip, req.m_port, mPlayer);
-	//}
-	//else if( packId == PackId::TEST )
-	//{
-	//	ReqTest req;
-	//	req.InitBuff(buff, size);
-	//	if(!req.Parse())
-	//	{
-	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
-	//		return;
-	//	}
-	//	printf("%s\n", req.m_buff.mBuff);
-	//	printf("%s\n", req.m_buff.mBuff + 5);
-	//	for(size_t i = 0; i < req.m_array1.size(); i++)
-	//	{
-	//		printf("%d, ", req.m_array1[i]);
-	//	}
-	//	printf("\n");
-	//	for(size_t i = 0; i < req.m_array2.size(); i++)
-	//	{
-	//		printf("%f, ", req.m_array2[i]);
-	//	}
-	//	printf("\n");
-	//}
-	//else if( packId == PackId::BENCHMARK )
-	//{
-	//	ReqBenchMark req;
-	//	req.InitBuff(buff, size);
-	//	if(!req.Parse())
-	//	{
-	//		ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
-	//		return;
-	//	}
-	//	uv_buf_t sendBuff;
-	//	req.Write(sendBuff);
-	//	ConnMgr::SendPackToAll(sendBuff);
-	//}
-	//else
-	//{
-	//	ConnMgr::CloseConn(mSock, UNKNOWN_DATA);
-	//	return;
-	//}
 }
+
 void Conn::HandleHttpPack(const string& url, char* buff, int size)
 {
 	int packId = 0;
