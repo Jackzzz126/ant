@@ -9,12 +9,8 @@ build/*.a
 
 ant
 
-test/*.o
-test/*.a
-test/*/*
-!test/*/*.cpp
-
 libjson/
+protobuf-2.6.1/
 
 tags
 *.swp
