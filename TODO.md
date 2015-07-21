@@ -8,3 +8,4 @@
 	player
 	game
 	gate
+	test
