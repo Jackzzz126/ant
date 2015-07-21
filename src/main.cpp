@@ -2,7 +2,6 @@
 #include "time.h"
 #include "config.h"
 #include "listen.h"
-#include "gate.h"
 #include "msg.h"
 #include "router.h"
 #include "poll.h"
