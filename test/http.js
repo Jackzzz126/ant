@@ -10,13 +10,13 @@ options.method = "GET";
 httpRequest(options, null, onReturn);
 function onReturn(errStr, reply)
 {
-	if(errStr == null)
+	if(errStr !== null)
 	{
 		console.log(errStr);
 	}
 	else
 	{
-		console.log(reply);
+		console.log(reply.toString());
 	}
 }
 
