@@ -4,6 +4,8 @@
 #include "packId.h"
 #include "conn.h"
 
+#include "benchMark.pb.h"
+
 namespace BenchMark
 {//begin of name space
 
@@ -22,6 +24,30 @@ void DoubleEcho(int sock, char* data, int size)
 	memcpy(pRefBuff->mBuff + HEAD_LENGTH, data, size);
 	memcpy(pRefBuff->mBuff + HEAD_LENGTH + size, data, size);
 	ConnMgr::SendToOne(sock, pRefBuff);
+	DelBuff(&data);
+}
+
+void Reg(int sock, char* data, int size)
+{
+	ReqReg req;
+	//res.SerializeToArray();
+	req.ParseFromArray(data, size);
+	DelBuff(&data);
+}
+
+void Login(int sock, char* data, int size)
+{
+	ReqLogin req;
+	//res.SerializeToArray();
+	req.ParseFromArray(data, size);
+	DelBuff(&data);
+}
+
+void Move(int sock, char* data, int size)
+{
+	ReqMove req;
+	//res.SerializeToArray();
+	req.ParseFromArray(data, size);
 	DelBuff(&data);
 }
 

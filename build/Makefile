@@ -5,10 +5,10 @@ HPATH+=-I ../include
 HPATH+=-I ../handle/include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-LIBS = -lrt -ldl -lm -ljson -lhandle
+LIBS = -lrt -ldl -lm -ljson -lhandle -l proto -lprotobuf-lite
 LIBPATH = -L .
 TARGET = ant
-DEPLIBS = libjson.a libhandle.a
+DEPLIBS = libjson.a libhandle.a libproto.a
 
 .PHONY:all
 all:$(TARGET)

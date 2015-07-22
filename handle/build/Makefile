@@ -1,6 +1,7 @@
 
 CPPPATH=../src
 HPATH=-I ../../include
+HPATH+=-I ../../proto/build
 HPATH+=-I ../include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))

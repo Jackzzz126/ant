@@ -39,6 +39,10 @@ void Router::Init()
 	AddHandler(-1, BenchMark::Echo);
 	AddHandler(-2, BenchMark::DoubleEcho);
 
+	AddHandler(-10, BenchMark::Reg);
+	AddHandler(-11, BenchMark::Login);
+	AddHandler(-12, BenchMark::Move);
+
 	AddHandler(900, Admin::Hello);
 }
 

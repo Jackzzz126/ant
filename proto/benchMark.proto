@@ -1,4 +1,5 @@
-package BanchMark;
+package BenchMark;
+option optimize_for = LITE_RUNTIME;
 
 //-10
 message ReqReg{
