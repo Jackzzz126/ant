@@ -1,3 +1,9 @@
+proto/build/*.o
+proto/build/*.d
+proto/build/*.a
+proto/build/*.pb.h
+proto/build/*.pb.cc
+
 handle/build/*.o
 handle/build/*.d
 handle/build/*.a

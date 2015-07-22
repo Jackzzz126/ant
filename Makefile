@@ -15,10 +15,12 @@ export CC
 
 .PHONY:all
 all:
+	@cd proto/build && make;
 	@cd handle/build && make;
 	@cd build && make;
 
 .PHONY:clean
 clean:
+	@cd proto/build && make clean;
 	@cd handle/build && make clean;
 	@cd build && make clean;

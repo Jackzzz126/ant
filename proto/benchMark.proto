@@ -1,0 +1,39 @@
+package BanchMark;
+
+//-10
+message ReqReg{
+	required string name  = 1;
+	required string pwd  = 2;
+}
+
+//-1010
+message ResReg{
+	required int32 status = 1;//-21: wrong token, -22: wrong charId, -23: no char yet.
+	optional int32 charId = 2;
+}
+
+//-11
+message ReqLogin{
+	required int32 charId = 1;
+	required string pwd  = 2;
+}
+
+//-1011
+message ResLogin{
+	required int32 status = 1;//-21: aready inited, -22: invalid name, -23: duplicate name.
+}
+
+//-12
+message ReqMove{
+	required int32 charId = 1;
+	required int32 x  = 2;
+	required int32 y  = 3;
+}
+
+//-1012
+message ResMove{
+	required int32 charId = 1;
+	required int32 x  = 2;
+	required int32 y  = 3;
+}
+
