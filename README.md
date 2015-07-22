@@ -6,7 +6,7 @@ only for learn and test, not ready for use yet!
 * [node.js & protobufjs](https://nodejs.org/) -- for test only
 
 ### build
-* install make, g++
+* install make, g++.
 * run `make` in root dir.
-* run `make clean` to clean all tmp file
+* run `make clean` to clean all tmp file.
 
