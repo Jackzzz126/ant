@@ -17,6 +17,7 @@ ant
 
 libjson/
 protobuf-2.6.1/
+test/node_modules/
 
 tags
 *.swp
