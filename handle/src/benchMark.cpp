@@ -30,9 +30,13 @@ void DoubleEcho(int sock, char* data, int size)
 void Reg(int sock, char* data, int size)
 {
 	ReqReg req;
-	//res.SerializeToArray();
 	req.ParseFromArray(data, size);
 	DelBuff(&data);
+	
+	Log::Out("aaaaaaaaaaaa %s, %s\n", req.name().c_str(), req.pwd().c_str());
+
+
+	//res.SerializeToArray();
 }
 
 void Login(int sock, char* data, int size)
