@@ -1,4 +1,5 @@
 var net = require("net");
+var config = require("../config/config.json")
 
 var ProtoBuf = require("protobufjs");
 var builder = ProtoBuf.loadProtoFile("../proto/benchMark.proto");
@@ -8,7 +9,7 @@ var req = new BenchMark.ReqReg();
 req.name = "aaa";
 req.pwd = "aaa";
 
-var socket = net.createConnection(8003, "192.168.1.21");
+var socket = net.createConnection(config.server.port, config.server.ip);
 socket.on("connect", onConnect);
 socket.on("error", onError);
 socket.on("data", onRecvData);
