@@ -15,8 +15,7 @@ build/*.a
 
 ant
 
-libjson/
-protobuf-2.6.1/
+deps/
 test/node_modules/
 
 tags
