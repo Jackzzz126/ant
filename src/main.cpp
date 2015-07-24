@@ -9,6 +9,7 @@
 #include "schedule.h"
 #include "scheduleTasks.h"
 #include "packId.h"
+#include "threadData.h"
 
 bool gGotQuitSignal = false;
 
@@ -56,6 +57,7 @@ int main(int argc, char* argv[])
 	Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
 
 	//thread start
+	pthread_key_create(&ThreadData::mThreadKey, NULL);
 	vector<pthread_t> threads;
 	for(int i = 0; i < pConfig->mWorkerThreads; i++)
 	{
@@ -109,6 +111,8 @@ void SignalHanle(int signum)
 
 void* WorkerFunc(void* arg)
 {
+	ThreadData* pThreadData = new ThreadData();
+	pthread_setspecific(ThreadData::mThreadKey, pThreadData);
 	while(true)
 	{
 		MsgNode* pMsgNode = MsgQueue::Singleton()->PopMsg();
@@ -130,6 +134,8 @@ void* WorkerFunc(void* arg)
 			DELETE(pMsgNode);
 		}
 	};
+
+	DELETE(pThreadData);
 	return NULL;
 }
 
