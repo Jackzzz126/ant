@@ -17,12 +17,15 @@ public:
 	string mIp;
 	int mPort;
 	int mBacklog;
-	//log
-	FILE* mLogFileHandle;
-	FILE* mErrFileHandle;
 	bool mDaemon;
 	int mSockTimeout;
 	int mWorkerThreads;
+	//Db
+	string mIpRedis;
+	int mPortRedis;
+	//log
+	FILE* mLogFileHandle;
+	FILE* mErrFileHandle;
 
 private:
 	//log

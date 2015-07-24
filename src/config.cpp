@@ -18,6 +18,8 @@ Config::Config()
 	mDaemon = false;
 	mWorkerThreads = 0;
 	mSockTimeout = 60 * 5;
+
+	mPortRedis = 0;
 }
 
 bool Config::Load(char* fileName)
@@ -54,6 +56,8 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:daemon", &mDaemon) ||
 		!json.GetValue("server:sockTimeout", &mSockTimeout) ||
 		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
+		!json.GetValue("Db:ipRedis", mIpRedis) ||
+		!json.GetValue("Db:portRedis", &mPortRedis) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
 		!json.GetValue("log:errFile", mErrFileName)
 	  )
@@ -76,6 +80,11 @@ bool Config::Load(char* fileName)
 	if(mWorkerThreads < 1)
 	{
 		printf( "Error when parse %s: worker threads must > 1.\n", fileName);
+		return false;
+	}
+	if(mPortRedis == 0 || mIpRedis == "")
+	{
+		printf( "Error when parse %s: reids ip, port invalid.\n", fileName);
 		return false;
 	}
 
