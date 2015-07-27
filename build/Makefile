@@ -2,13 +2,14 @@
 CPPPATH=../src
 HPATH=-I ../include
 HPATH+=-I ../deps/libjson
+HPATH+=-I ../deps/hiredis
 HPATH+=-I ../handle/include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
-LIBS = -lrt -ldl -lm -ljson -lhandle -l proto -lprotobuf-lite
+LIBS = -lrt -ldl -lm -ljson -lhandle -lproto -lprotobuf-lite -lhiredis
 LIBPATH = -L .
 TARGET = ant
-DEPLIBS = libjson.a libhandle.a libproto.a
+DEPLIBS = libjson.a libhandle.a libproto.a libhiredis.a
 
 .PHONY:all
 all:$(TARGET)
