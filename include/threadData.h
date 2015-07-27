@@ -12,6 +12,7 @@ public:
 	virtual ~ThreadData();
 public:
 	Redis* GetRedis();
+	void CloseRedis();
 private:
 	Redis* mRedis;
 };

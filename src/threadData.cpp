@@ -10,10 +10,7 @@ ThreadData::ThreadData()
 }
 ThreadData::~ThreadData()
 {
-	if(mRedis != NULL)
-	{
-		DELETE(mRedis);
-	}
+	CloseRedis();
 }
 
 Redis* ThreadData::GetRedis()
@@ -35,6 +32,14 @@ Redis* ThreadData::GetRedis()
 			DELETE(mRedis);
 			return NULL;
 		}
+	}
+}
+
+void ThreadData::CloseRedis()
+{
+	if(mRedis != NULL)
+	{
+		DELETE(mRedis);
 	}
 }
 
