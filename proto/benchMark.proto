@@ -9,7 +9,7 @@ message ReqReg{
 
 //-1010
 message ResReg{
-	required int32 status = 1;//-21: wrong token, -22: wrong charId, -23: no char yet.
+	required int32 status = 1;
 	optional int32 charId = 2;
 }
 

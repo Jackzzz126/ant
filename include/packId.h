@@ -7,8 +7,12 @@ public:
 	enum PackIdType
 	{
 		// -1001 - -1005, for test
-		NORMAL_ECHO = -1001,
-		DOUBLE_ECHO = -1002,
+		BENCHMARK_ECHO = -1001,
+		BENCHMARK_DOUBLE_ECHO = -1002,
+
+		BENCHMARK_REG = -1010,
+		BENCHMARK_LOGIN= -1011,
+		BENCHMARK_MOVE = -1012,
 		//1-50
 		//LOGIN = 2,
 		//LOGOUT = 3,
