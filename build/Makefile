@@ -1,7 +1,7 @@
 
 CPPPATH=../src
-HPATH=-I ../libjson
-HPATH+=-I ../include
+HPATH=-I ../include
+HPATH+=-I ../deps/libjson
 HPATH+=-I ../handle/include
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
