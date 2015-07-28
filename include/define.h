@@ -37,6 +37,8 @@ typedef unsigned long long int	uint64;
 char* NewBuff(int size);
 void DelBuff(char** pp);
 
+string ToHex(const char* data, int len);
+
 struct RefBuff
 {
 	char* mBuff;
