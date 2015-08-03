@@ -20,12 +20,15 @@ public:
 	bool mDaemon;
 	int mSockTimeout;
 	int mWorkerThreads;
-	//db
-	string mIpRedis;
-	int mPortRedis;
 	//log
 	FILE* mLogFileHandle;
 	FILE* mErrFileHandle;
+	//redis
+	string mRedis_Ip;
+	int mRedis_Port;
+	string mRedis_Seed;
+	string mRedis_SeedChar;
+	string mRedis_Char;
 
 private:
 	//log

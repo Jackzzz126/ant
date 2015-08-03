@@ -8,14 +8,17 @@
 		"sockTimeout" : 300,
 		"workerThreads" : 5
 	},
-	"db" :
-	{
-		"ipRedis" : "192.168.1.21",
-		"portRedis" : 6379
-	},
 	"log" :
 	{
 		"logFile" : "",
 		"errFile" : ""
+	},
+	"redis" :
+	{
+		"ip" : "192.168.1.21",
+		"port" : 6379
+		"seed" : "Seed_",
+			"seedChar" : "char",
+		"char" : "Char_"
 	}
 }

@@ -23,7 +23,7 @@ Redis* ThreadData::GetRedis()
 	{
 		mRedis = new Redis();
 		Config* pConfig = Config::Singleton();
-		if(mRedis->Conn(pConfig->mIpRedis, pConfig->mPortRedis))
+		if(mRedis->Conn(pConfig->mRedis_Ip, pConfig->mRedis_Port))
 		{
 			return mRedis;
 		}

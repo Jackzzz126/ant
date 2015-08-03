@@ -19,7 +19,7 @@ Config::Config()
 	mWorkerThreads = 0;
 	mSockTimeout = 60 * 5;
 
-	mPortRedis = 0;
+	mRedis_Port = 0;
 }
 
 bool Config::Load(char* fileName)
@@ -56,10 +56,13 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:daemon", &mDaemon) ||
 		!json.GetValue("server:sockTimeout", &mSockTimeout) ||
 		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
-		!json.GetValue("db:ipRedis", mIpRedis) ||
-		!json.GetValue("db:portRedis", &mPortRedis) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
-		!json.GetValue("log:errFile", mErrFileName)
+		!json.GetValue("log:errFile", mErrFileName) ||
+		!json.GetValue("redis:ip", mRedis_Ip) ||
+		!json.GetValue("redis:port", &mRedis_Port) ||
+		!json.GetValue("redis:seed", mRedis_Seed) ||
+		!json.GetValue("redis:seedChar", mRedis_SeedChar) ||
+		!json.GetValue("redis:char", mRedis_Char)
 	  )
 	{
 		printf("Error when parse %s: some value miss.\n", fileName);
@@ -82,9 +85,10 @@ bool Config::Load(char* fileName)
 		printf( "Error when parse %s: worker threads must > 1.\n", fileName);
 		return false;
 	}
-	if(mPortRedis == 0 || mIpRedis == "")
+	if(mRedis_Port == 0 || mRedis_Ip == "" || mRedis_Seed == "" ||
+		mRedis_SeedChar == "" || mRedis_Char == "")
 	{
-		printf( "Error when parse %s: reids ip, port invalid.\n", fileName);
+		printf( "Error when parse %s: reids ip, port or keys invalid.\n", fileName);
 		return false;
 	}
 
