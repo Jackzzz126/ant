@@ -5,6 +5,8 @@
 #include "conn.h"
 #include "threadData.h"
 #include "redis.h"
+#include "config.h"
+#include "strUtil.h"
 
 #include "benchMark.pb.h"
 
@@ -43,6 +45,15 @@ void Reg(int sock, char* data, int size)
 	{
 		res.set_status(STATUS_WRONG_ARG);
 	}
+
+	Config* pConfig = Config::Singleton();
+	int charId;
+	pRedis->RunCmd(&charId, "hincrby %s %s %d", pConfig->mRedis_Seed.c_str(),
+			pConfig->mRedis_SeedChar.c_str(), 1);
+	char buff[BUFF_UNIT];
+	StrUtil::Format(buff, BUFF_UNIT, "{\"name\":%s, \"pwd\":%s}",
+			req.name().c_str(), req.pwd().c_str());
+	pRedis->RunCmd("set %s%d %s", pConfig->mRedis_Char.c_str(), charId, buff);
 
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);

@@ -52,7 +52,7 @@ bool Redis::RunCmd(const char* cmd, ...)
 	}
 }
 
-bool Redis::RunCmd(int& reply, const char* cmd, ...)
+bool Redis::RunCmd(int* reply, const char* cmd, ...)
 {
 	va_list arg;
 	va_start(arg, cmd);
@@ -63,7 +63,7 @@ bool Redis::RunCmd(int& reply, const char* cmd, ...)
 
 	if(pReply->type == REDIS_REPLY_INTEGER)
 	{
-		reply = (int)(pReply->integer);
+		*reply = (int)(pReply->integer);
 		freeReplyObject(pReply);
 		return true;
 	}

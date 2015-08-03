@@ -11,7 +11,7 @@ public:
 	bool Conn(const string& ip, int port);
 
 	bool RunCmd(const char* cmd, ...);
-	bool RunCmd(int& reply, const char* cmd, ...);
+	bool RunCmd(int* reply, const char* cmd, ...);
 	bool RunCmd(string& reply, const char* cmd, ...);
 	bool RunCmd(vector<string>& reply, const char* cmd, ...);
 private:
