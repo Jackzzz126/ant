@@ -20,7 +20,7 @@ public:
 	bool mDaemon;
 	int mSockTimeout;
 	int mWorkerThreads;
-	//Db
+	//db
 	string mIpRedis;
 	int mPortRedis;
 	//log

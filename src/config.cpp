@@ -56,8 +56,8 @@ bool Config::Load(char* fileName)
 		!json.GetValue("server:daemon", &mDaemon) ||
 		!json.GetValue("server:sockTimeout", &mSockTimeout) ||
 		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
-		!json.GetValue("Db:ipRedis", mIpRedis) ||
-		!json.GetValue("Db:portRedis", &mPortRedis) ||
+		!json.GetValue("db:ipRedis", mIpRedis) ||
+		!json.GetValue("db:portRedis", &mPortRedis) ||
 		!json.GetValue("log:logFile", mLogFileName) ||
 		!json.GetValue("log:errFile", mErrFileName)
 	  )
