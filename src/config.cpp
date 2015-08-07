@@ -50,19 +50,19 @@ bool Config::Load(char* fileName)
 		printf("Error when parse %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
-	if( !json.GetValue("server:port", &mPort) ||
-		!json.GetValue("server:ip", mIp) ||
-		!json.GetValue("server:backlog", &mBacklog) ||
-		!json.GetValue("server:daemon", &mDaemon) ||
-		!json.GetValue("server:sockTimeout", &mSockTimeout) ||
-		!json.GetValue("server:workerThreads", &mWorkerThreads) ||
-		!json.GetValue("log:logFile", mLogFileName) ||
-		!json.GetValue("log:errFile", mErrFileName) ||
-		!json.GetValue("redis:ip", mRedis_Ip) ||
-		!json.GetValue("redis:port", &mRedis_Port) ||
-		!json.GetValue("redis:seed", mRedis_Seed) ||
-		!json.GetValue("redis:seedChar", mRedis_SeedChar) ||
-		!json.GetValue("redis:char", mRedis_Char)
+	if( !json.GetValue("server:port", &mPort)
+		|| !json.GetValue("server:ip", mIp)
+		|| !json.GetValue("server:backlog", &mBacklog)
+		|| !json.GetValue("server:daemon", &mDaemon)
+		|| !json.GetValue("server:sockTimeout", &mSockTimeout)
+		|| !json.GetValue("server:workerThreads", &mWorkerThreads)
+		|| !json.GetValue("log:logFile", mLogFileName)
+		|| !json.GetValue("log:errFile", mErrFileName)
+		|| !json.GetValue("redis:ip", mRedis_Ip)
+		|| !json.GetValue("redis:port", &mRedis_Port)
+		|| !json.GetValue("redis:seed", mRedis_Seed)
+		|| !json.GetValue("redis:seedChar", mRedis_SeedChar)
+		|| !json.GetValue("redis:char", mRedis_Char)
 	  )
 	{
 		printf("Error when parse %s: some value miss.\n", fileName);
