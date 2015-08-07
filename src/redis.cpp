@@ -23,12 +23,9 @@ bool Redis::Conn(const string& ip, int port)
 	}
 }
 
-bool Redis::RunCmd(const char* cmd, ...)
+bool Redis::RunCmd(const char* cmd)
 {
-	va_list arg;
-	va_start(arg, cmd);
-	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd, arg);
-	va_end(arg);
+	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
 		return false;
 
@@ -52,12 +49,9 @@ bool Redis::RunCmd(const char* cmd, ...)
 	}
 }
 
-bool Redis::RunCmd(int* reply, const char* cmd, ...)
+bool Redis::RunCmd(int* reply, const char* cmd)
 {
-	va_list arg;
-	va_start(arg, cmd);
-	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd, arg);
-	va_end(arg);
+	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
 		return false;
 
@@ -74,12 +68,9 @@ bool Redis::RunCmd(int* reply, const char* cmd, ...)
 	}
 }
 
-bool Redis::RunCmd(string& reply, const char* cmd, ...)
+bool Redis::RunCmd(string& reply, const char* cmd)
 {
-	va_list arg;
-	va_start(arg, cmd);
-	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd, arg);
-	va_end(arg);
+	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
 		return false;
 
@@ -102,12 +93,9 @@ bool Redis::RunCmd(string& reply, const char* cmd, ...)
 	}
 }
 
-bool Redis::RunCmd(vector<string>& reply, const char* cmd, ...)
+bool Redis::RunCmd(vector<string>& reply, const char* cmd)
 {
-	va_list arg;
-	va_start(arg, cmd);
-	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd, arg);
-	va_end(arg);
+	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
 		return false;
 
