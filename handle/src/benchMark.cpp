@@ -50,14 +50,21 @@ void Reg(int sock, char* data, int size)
 
 
 	int charId;
-	StrUtil::Format(buff, BUFF_UNIT, "hincrby %s 1",
+	StrUtil::Format(buff, BUFF_UNIT, "incrby %s 1",
 			pConfig->mRedis_CharIdSeed.c_str());
-	pRedis->RunCmd(&charId, buff);
+	if(!pRedis->RunCmd(&charId, buff))
+	{
+		ConnMgr::CloseConn(sock, false);
+	}
 
-	StrUtil::Format(buff, BUFF_UNIT, "set %s%d \'{\"name\":%s, \"pwd\":%s}\'",
+	StrUtil::Format(buff, BUFF_UNIT, "set %s%d \"{\"name\":\"%s\", \"pwd\":\"%s\"}\"",
 			pConfig->mRedis_Char.c_str(), charId,
 			req.name().c_str(), req.pwd().c_str());
-	pRedis->RunCmd(buff);
+	printf("%s\n", buff);
+	if(!pRedis->RunCmd(buff))
+	{
+		ConnMgr::CloseConn(sock, false);
+	}
 
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
