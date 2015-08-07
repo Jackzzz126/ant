@@ -45,15 +45,19 @@ void Reg(int sock, char* data, int size)
 	{
 		res.set_status(STATUS_WRONG_ARG);
 	}
-
-	Config* pConfig = Config::Singleton();
-	int charId;
-	pRedis->RunCmd(&charId, "hincrby %s %s %d", pConfig->mRedis_Seed.c_str(),
-			pConfig->mRedis_SeedChar.c_str(), 1);
 	char buff[BUFF_UNIT];
-	StrUtil::Format(buff, BUFF_UNIT, "{\"name\":%s, \"pwd\":%s}",
+	Config* pConfig = Config::Singleton();
+
+
+	int charId;
+	StrUtil::Format(buff, BUFF_UNIT, "hincrby %s 1",
+			pConfig->mRedis_CharIdSeed.c_str());
+	pRedis->RunCmd(&charId, buff);
+
+	StrUtil::Format(buff, BUFF_UNIT, "set %s%d \'{\"name\":%s, \"pwd\":%s}\'",
+			pConfig->mRedis_Char.c_str(), charId,
 			req.name().c_str(), req.pwd().c_str());
-	pRedis->RunCmd("set %s%d %s", pConfig->mRedis_Char.c_str(), charId, buff);
+	pRedis->RunCmd(buff);
 
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
@@ -76,10 +80,14 @@ void Login(int sock, char* data, int size)
 	{
 		res.set_status(STATUS_WRONG_ARG);
 	}
-
+	char buff[BUFF_UNIT];
 	Config* pConfig = Config::Singleton();
+
 	string pwd;
-	pRedis->RunCmd(pwd, "hget %s%d %s", pConfig->mRedis_Char.c_str(), req.charid());
+	StrUtil::Format(buff, BUFF_UNIT, "hget %s%d %s",
+			pConfig->mRedis_Char.c_str(), req.charid());
+	pRedis->RunCmd(pwd, buff);
+
 	if(pwd == "")
 	{
 		res.set_status(-22);

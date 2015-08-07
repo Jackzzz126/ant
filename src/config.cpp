@@ -60,8 +60,7 @@ bool Config::Load(char* fileName)
 		|| !json.GetValue("log:errFile", mErrFileName)
 		|| !json.GetValue("redis:ip", mRedis_Ip)
 		|| !json.GetValue("redis:port", &mRedis_Port)
-		|| !json.GetValue("redis:seed", mRedis_Seed)
-		|| !json.GetValue("redis:seedChar", mRedis_SeedChar)
+		|| !json.GetValue("redis:charIdSeed", mRedis_CharIdSeed)
 		|| !json.GetValue("redis:char", mRedis_Char)
 	  )
 	{
@@ -85,8 +84,8 @@ bool Config::Load(char* fileName)
 		printf( "Error when parse %s: worker threads must > 1.\n", fileName);
 		return false;
 	}
-	if(mRedis_Port == 0 || mRedis_Ip == "" || mRedis_Seed == "" ||
-		mRedis_SeedChar == "" || mRedis_Char == "")
+	if(mRedis_Port == 0 || mRedis_Ip == "" || mRedis_CharIdSeed == ""
+			|| mRedis_Char == "")
 	{
 		printf( "Error when parse %s: reids ip, port or keys invalid.\n", fileName);
 		return false;
