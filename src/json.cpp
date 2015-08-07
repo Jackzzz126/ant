@@ -49,7 +49,7 @@ bool Json::Parse(const string& str)
 		}
 		else if(json_type(*iter) == JSON_BOOL)
 		{
-			mDataStr[nodeName] = json_as_string(*iter);
+			mDataBool[nodeName] = json_as_bool(*iter);
 		}
 		else if(json_type(*iter) == JSON_STRING)
 		{
@@ -101,7 +101,7 @@ bool Json::Parse(const string& key, JSONNODE* node)
 		}
 		else if(json_type(*iter) == JSON_BOOL)
 		{
-			mDataStr[key + ":" + nodeName] = json_as_string(*iter);
+			mDataBool[key + ":" + nodeName] = json_as_bool(*iter);
 		}
 		else if(json_type(*iter) == JSON_STRING)
 		{
@@ -161,15 +161,7 @@ bool Json::GetValue(const string& key, bool* pBool)
 	}
 	else
 	{
-		string str = mDataStr[key];
-		if(str == "true")
-		{
-			*pBool = true;
-		}
-		else
-		{
-			*pBool = false;
-		}
+		*pBool = mDataBool[key];
 		return true;
 	}
 }
@@ -216,3 +208,38 @@ bool Json::GetValue(const string& key, vector<string>& array)
 		return true;
 	}
 }
+
+string Json::ToString()
+{
+	return "";
+}
+
+void Json::SetValue(const string& key, int value)
+{
+	mDataNum[key] = value;
+}
+void Json::SetValue(const string& key, float value)
+{
+	mDataNum[key] = value;
+}
+void Json::SetValue(const string& key, const string& str)
+{
+	mDataStr[key] = str;
+}
+void Json::SetValue(const string& key, bool boolValue)
+{
+	mDataBool[key] = boolValue;
+}
+void Json::SetValue(const string& key, const vector<int>& array)
+{
+	mDataNumArray[key] = array;
+}
+void Json::SetValue(const string& key, const vector<float>& array)
+{
+	mDataNumArray[key] = array;
+}
+void Json::SetValue(const string& key, const vector<string>& array)
+{
+	mDataStrArray[key] = array;
+}
+
