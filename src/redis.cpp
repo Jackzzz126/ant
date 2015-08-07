@@ -27,7 +27,10 @@ bool Redis::RunCmd(const char* cmd)
 {
 	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
+	{
+		Log::Error("Error when run redis cmd. cmd: %s err: %s,", cmd, mContext->errstr);
 		return false;
+	}
 
 	if(pReply->type == REDIS_REPLY_STATUS)
 	{
@@ -38,12 +41,14 @@ bool Redis::RunCmd(const char* cmd)
 		}
 		else
 		{
+			Log::Error("Error when run redis cmd.\n	cmd: %s.\n	err: %s.\n", cmd, pReply->str);
 			freeReplyObject(pReply);
 			return false;
 		}
 	}
 	else
 	{
+		Log::Error("Error when run redis cmd.\n	cmd: %s.\n	err: %s.\n", cmd, pReply->str);
 		freeReplyObject(pReply);
 		return false;
 	}
@@ -53,7 +58,10 @@ bool Redis::RunCmd(int* reply, const char* cmd)
 {
 	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
+	{
+		Log::Error("Error when run redis cmd. cmd: %s err: %s,", cmd, mContext->errstr);
 		return false;
+	}
 
 	if(pReply->type == REDIS_REPLY_INTEGER)
 	{
@@ -63,6 +71,7 @@ bool Redis::RunCmd(int* reply, const char* cmd)
 	}
 	else
 	{
+		Log::Error("Error when run redis cmd.\n	cmd: %s.\n	err: %s.\n", cmd, pReply->str);
 		freeReplyObject(pReply);
 		return false;
 	}
@@ -72,7 +81,10 @@ bool Redis::RunCmd(string& reply, const char* cmd)
 {
 	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
+	{
+		Log::Error("Error when run redis cmd. cmd: %s err: %s,", cmd, mContext->errstr);
 		return false;
+	}
 
 	if(pReply->type == REDIS_REPLY_STRING)
 	{
@@ -88,6 +100,7 @@ bool Redis::RunCmd(string& reply, const char* cmd)
 	}
 	else
 	{
+		Log::Error("Error when run redis cmd.\n	cmd: %s.\n	err: %s.\n", cmd, pReply->str);
 		freeReplyObject(pReply);
 		return false;
 	}
@@ -97,7 +110,10 @@ bool Redis::RunCmd(vector<string>& reply, const char* cmd)
 {
 	redisReply* pReply = (redisReply*)redisCommand(mContext, cmd);
 	if(pReply == NULL)
+	{
+		Log::Error("Error when run redis cmd. cmd: %s err: %s,", cmd, mContext->errstr);
 		return false;
+	}
 
 	if(pReply->type == REDIS_REPLY_ARRAY)
 	{
@@ -111,6 +127,7 @@ bool Redis::RunCmd(vector<string>& reply, const char* cmd)
 	}
 	else
 	{
+		Log::Error("Error when run redis cmd.\n	cmd: %s.\n	err: %s.\n", cmd, pReply->str);
 		freeReplyObject(pReply);
 		return false;
 	}
