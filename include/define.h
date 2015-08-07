@@ -29,6 +29,7 @@ typedef unsigned long long int	uint64;
 #define BUFF_UNIT 1024
 #define HEAD_LENGTH 8
 
+#define STATUS_SUCCESS 0
 #define STATUS_WRONG_ARG -1
 #define STATUS_SERVER_ERR -2
 

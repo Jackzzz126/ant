@@ -60,15 +60,44 @@ void Reg(int sock, char* data, int size)
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_REG, size);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
 	ConnMgr::SendToOne(sock, pRefBuff);
-	//Log::Out("aaaaaaaaaaaa %s, %s\n", req.name().c_str(), req.pwd().c_str());
 }
 
 void Login(int sock, char* data, int size)
 {
 	ReqLogin req;
-	//res.SerializeToArray();
+	ResReg res;
+
 	req.ParseFromArray(data, size);
 	DelBuff(&data);
+
+	ThreadData* pThreadData = (ThreadData*)pthread_getspecific(ThreadData::mThreadKey);
+	Redis* pRedis = pThreadData->GetRedis();
+	if(pRedis == NULL)
+	{
+		res.set_status(STATUS_WRONG_ARG);
+	}
+
+	Config* pConfig = Config::Singleton();
+	string pwd;
+	pRedis->RunCmd(pwd, "hget %s%d %s", pConfig->mRedis_Char.c_str(), req.charid());
+	if(pwd == "")
+	{
+		res.set_status(-22);
+	}
+	else if(pwd != req.pwd())
+	{
+		res.set_status(-21);
+	}
+	else
+	{
+		res.set_status(STATUS_SUCCESS);
+	}
+	
+	int packLen = res.ByteSize();
+	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, size);
+	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
+	ConnMgr::SendToOne(sock, pRefBuff);
 }
 
 void Move(int sock, char* data, int size)

@@ -21,7 +21,7 @@ message ReqLogin{
 
 //-1011
 message ResLogin{
-	required int32 status = 1;//-21: aready inited, -22: invalid name, -23: duplicate name.
+	required int32 status = 1;//-21: wrong pwd, -22: no such user;
 }
 
 //-12
