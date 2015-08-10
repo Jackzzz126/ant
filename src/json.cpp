@@ -161,8 +161,8 @@ bool Json::GetValue(const string& key, string& str)
 }
 bool Json::GetValue(const string& key, bool* pBool)
 {
-	map<string, string>::iterator iter = mDataStr.find(key);
-	if(iter == mDataStr.end())
+	map<string, bool>::iterator iter = mDataBool.find(key);
+	if(iter == mDataBool.end())
 	{
 		return false;
 	}
