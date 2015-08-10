@@ -81,7 +81,8 @@ public:
 	bool GetValue(const string& key, vector<string>& array);
 
 	//for form str
-	string ToString();
+	char* ToStr();
+	void Reset();
 	void SetValue(JSONNODE* node, const string& key, int value);
 	void SetValue(JSONNODE* node, const string& key, float value);
 	void SetValue(JSONNODE* node, const string& key, string& str);
@@ -100,9 +101,10 @@ private:
 	map<string, bool> mDataBool;
 	map<string, vector<float> > mDataFloatArray;
 	map<string, vector<string> > mDataStrArray;
-public:
+private:
 	//for form str
 	JSONNODE* mpRootNode;
+	char* mJsonStr;
 };
 #endif//_JSON_H_
 

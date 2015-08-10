@@ -4,9 +4,11 @@
 Json::Json()
 {
 	mpRootNode = json_new(JSON_NODE);
+	mJsonStr = NULL;
 }
 Json::~Json()
 {
+	json_free(mJsonStr);
 	json_delete(mpRootNode);
 }
 
@@ -214,12 +216,22 @@ bool Json::GetValue(const string& key, vector<string>& array)
 	}
 }
 
-string Json::ToString()
+char* Json::ToStr()
 {
-	json_char *jc = json_write(mpRootNode);
-	string retStr = string(jc);
-	json_free(jc);
-	return retStr;
+	if(mJsonStr == NULL)
+	{
+		mJsonStr = json_write(mpRootNode);
+	}
+	return mJsonStr;
+}
+
+void Json::Reset()
+{
+	json_free(mJsonStr);
+	json_delete(mpRootNode);
+
+	mpRootNode = json_new(JSON_NODE);
+	mJsonStr = NULL;
 }
 
 void Json::SetValue(JSONNODE* node, const string& key, int value)
