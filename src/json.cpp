@@ -3,6 +3,11 @@
 
 Json::Json()
 {
+	mpRootNode = json_new(JSON_NODE);
+}
+Json::~Json()
+{
+	json_delete(mpRootNode);
 }
 
 bool Json::Parse(const string& str)
@@ -211,35 +216,10 @@ bool Json::GetValue(const string& key, vector<string>& array)
 
 string Json::ToString()
 {
-	return "";
+	json_char *jc = json_write(mpRootNode);
+	string retStr = string(jc);
+	json_free(jc);
+	return retStr;
 }
 
-void Json::SetValue(const string& key, int value)
-{
-	mDataInt[key] = value;
-}
-void Json::SetValue(const string& key, float value)
-{
-	mDataInt[key] = value;
-}
-void Json::SetValue(const string& key, const string& str)
-{
-	mDataStr[key] = str;
-}
-void Json::SetValue(const string& key, bool boolValue)
-{
-	mDataBool[key] = boolValue;
-}
-void Json::SetValue(const string& key, const vector<int>& array)
-{
-	mDataIntArray[key] = array;
-}
-void Json::SetValue(const string& key, const vector<float>& array)
-{
-	mDataFloatArray[key] = array;
-}
-void Json::SetValue(const string& key, const vector<string>& array)
-{
-	mDataStrArray[key] = array;
-}
 

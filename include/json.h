@@ -9,7 +9,7 @@
 #endif
 
 
-//all value must have a key, array only with int
+//all value must have a key
 /*
 for data:
     {"test":{"id":1, "name":"aaaaa", "equip":[1,2,3]}}
@@ -29,12 +29,48 @@ use like this:
 	{
 		return;
 	}
+	
+	//to string example
+	JSONNODE *n = json_new(JSON_NODE);
+	json_push_back(n, json_new_a("String Node", "String Value"));
+	json_push_back(n, json_new_i("Integer Node", 42));
+	json_push_back(n, json_new_f("Floating Point Node", 3.14));
+	json_push_back(n, json_new_b("Boolean Node", 1));
+	json_char *jc = json_write_formatted(n);
+	printf("%s\n", jc);
+	json_free(jc);
+	json_delete(n);
+	
+	JSONNODE *n = json_new(JSON_NODE);
+	json_push_back(n, json_new_a("RootA", "Value in parent node"));
+	JSONNODE *c = json_new(JSON_NODE);
+	json_set_name(c, "ChildNode");
+	json_push_back(c, json_new_a("ChildA", "String Value"));
+	json_push_back(c, json_new_i("ChildB", 42));
+	json_push_back(n, c);
+	json_char *jc = json_write_formatted(n);
+	printf("%s\n", jc);
+	json_free(jc);
+	json_delete(n);
+
+	JSONNODE *n = json_new(JSON_NODE);
+	json_push_back(n, json_new_a("RootA", "Hello World"));
+	JSONNODE *c = json_new(JSON_ARRAY);
+	json_set_name(c, "ArrayOfNumbers");
+	json_push_back(c, json_new_i(NULL, 16));
+	json_push_back(c, json_new_i(NULL, 42));
+	json_push_back(c, json_new_i(NULL, 128));
+	json_push_back(n, c);
+	json_char *jc = json_write_formatted(n);
+	printf("%s\n", jc);
+	json_free(jc);
+	json_delete(n);
 */
 class Json
 {
 public:
 	Json();
-	~Json(){};
+	~Json();
 public:
 	bool Parse(const string& str);
 	bool GetValue(const string& key, int* value);
@@ -45,24 +81,20 @@ public:
 	bool GetValue(const string& key, vector<float>& array);
 	bool GetValue(const string& key, vector<string>& array);
 
+	//for form str
 	string ToString();
-	void SetValue(const string& key, int value);
-	void SetValue(const string& key, float value);
-	void SetValue(const string& key, const string& str);
-	void SetValue(const string& key, bool boolValue);
-	void SetValue(const string& key, const vector<int>& array);
-	void SetValue(const string& key, const vector<float>& array);
-	void SetValue(const string& key, const vector<string>& array);
 private:
 	bool Parse(const string& key, JSONNODE* node);
-public:
-	map<string, int> mDataInt;
+private:
+	//for parse
 	map<string, float> mDataFloat;
 	map<string, string> mDataStr;
 	map<string, bool> mDataBool;
-	map<string, vector<int> > mDataIntArray;
 	map<string, vector<float> > mDataFloatArray;
 	map<string, vector<string> > mDataStrArray;
+public:
+	//for form str
+	JSONNODE* mpRootNode;
 };
 #endif//_JSON_H_
 
