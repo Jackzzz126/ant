@@ -7,6 +7,7 @@
 #include "redis.h"
 #include "config.h"
 #include "strUtil.h"
+#include "json.h"
 
 #include "benchMark.pb.h"
 
@@ -57,9 +58,11 @@ void Reg(int sock, char* data, int size)
 		ConnMgr::CloseConn(sock, false);
 	}
 
-	StrUtil::Format(buff, BUFF_UNIT, "set %s%d \"{\"name\":\"%s\", \"pwd\":\"%s\"}\"",
-			pConfig->mRedis_Char.c_str(), charId,
-			req.name().c_str(), req.pwd().c_str());
+	Json json;
+	json.SetValue(NULL, "name", req.name());
+	json.SetValue(NULL, "pwd", req.pwd());
+	StrUtil::Format(buff, BUFF_UNIT, "set %s%d %s",
+			pConfig->mRedis_Char.c_str(), charId, json.ToStr());
 	printf("%s\n", buff);
 	if(!pRedis->RunCmd(buff))
 	{

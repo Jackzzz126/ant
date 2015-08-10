@@ -4,6 +4,7 @@ HPATH=-I ../../include
 HPATH+=-I ../include
 HPATH+=-I ../../proto/build
 HPATH+=-I ../../deps/hiredis
+HPATH+=-I ../../deps/libjson
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 TARGET = libhandle.a
