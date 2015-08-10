@@ -8,7 +8,6 @@
 #include "libjson.h"
 #endif
 
-
 //all value must have a key
 /*
 for data:
@@ -83,6 +82,15 @@ public:
 
 	//for form str
 	string ToString();
+	void SetValue(JSONNODE* node, const string& key, int value);
+	void SetValue(JSONNODE* node, const string& key, float value);
+	void SetValue(JSONNODE* node, const string& key, string& str);
+	void SetValue(JSONNODE* node, const string& key, bool value);
+	void SetValue(JSONNODE* node, const string& key, vector<int>& array);
+	void SetValue(JSONNODE* node, const string& key, vector<float>& array);
+	void SetValue(JSONNODE* node, const string& key, vector<string>& array);
+
+	void AddChild(JSONNODE* node, JSONNODE* childNode);
 private:
 	bool Parse(const string& key, JSONNODE* node);
 private:
