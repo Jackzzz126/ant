@@ -246,7 +246,7 @@ void Json::SetValue(JSONNODE* node, const string& key, float value)
 		node = mpRootNode;
 	json_push_back(node, json_new_f(key.c_str(), value));
 }
-void Json::SetValue(JSONNODE* node, const string& key, string& str)
+void Json::SetValue(JSONNODE* node, const string& key, const string& str)
 {
 	if(node == NULL)
 		node = mpRootNode;
@@ -258,7 +258,7 @@ void Json::SetValue(JSONNODE* node, const string& key, bool value)
 		node = mpRootNode;
 	json_push_back(node, json_new_b(key.c_str(), value));
 }
-void Json::SetValue(JSONNODE* node, const string& key, vector<int>& array)
+void Json::SetValue(JSONNODE* node, const string& key, const vector<int>& array)
 {
 	if(node == NULL)
 		node = mpRootNode;
@@ -271,7 +271,7 @@ void Json::SetValue(JSONNODE* node, const string& key, vector<int>& array)
 	}
 	json_push_back(node, c);
 }
-void Json::SetValue(JSONNODE* node, const string& key, vector<float>& array)
+void Json::SetValue(JSONNODE* node, const string& key, const vector<float>& array)
 {
 	if(node == NULL)
 		node = mpRootNode;
@@ -284,7 +284,7 @@ void Json::SetValue(JSONNODE* node, const string& key, vector<float>& array)
 	}
 	json_push_back(node, c);
 }
-void Json::SetValue(JSONNODE* node, const string& key, vector<string>& array)
+void Json::SetValue(JSONNODE* node, const string& key, const vector<string>& array)
 {
 	if(node == NULL)
 		node = mpRootNode;
