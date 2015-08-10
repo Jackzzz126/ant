@@ -34,7 +34,7 @@ bool Json::Parse(const string& str)
 			{
 				if(json_type(*iter) == JSON_NUMBER)
 				{
-					mDataNumArray[nodeName].push_back(json_as_float(*i));
+					mDataFloatArray[nodeName].push_back(json_as_float(*i));
 				}
 				else
 				{
@@ -45,7 +45,7 @@ bool Json::Parse(const string& str)
 		}
 		else if(json_type(*iter) == JSON_NUMBER)
 		{
-			mDataNum[nodeName] = json_as_float(*iter);
+			mDataFloat[nodeName] = json_as_float(*iter);
 		}
 		else if(json_type(*iter) == JSON_BOOL)
 		{
@@ -86,7 +86,7 @@ bool Json::Parse(const string& key, JSONNODE* node)
 			{
 				if(json_type(*iter) == JSON_NUMBER)
 				{
-					mDataNumArray[nodeName].push_back(json_as_float(*i));
+					mDataFloatArray[nodeName].push_back(json_as_float(*i));
 				}
 				else
 				{
@@ -97,7 +97,7 @@ bool Json::Parse(const string& key, JSONNODE* node)
 		}
 		else if(json_type(*iter) == JSON_NUMBER)
 		{
-			mDataNum[key + ":" + nodeName] = json_as_float(*iter);
+			mDataFloat[key + ":" + nodeName] = json_as_float(*iter);
 		}
 		else if(json_type(*iter) == JSON_BOOL)
 		{
@@ -115,27 +115,27 @@ bool Json::Parse(const string& key, JSONNODE* node)
 
 bool Json::GetValue(const string& key, int* value)
 {
-	map<string, float>::iterator iter = mDataNum.find(key);
-	if(iter == mDataNum.end())
+	map<string, float>::iterator iter = mDataFloat.find(key);
+	if(iter == mDataFloat.end())
 	{
 		return false;
 	}
 	else
 	{
-		*value = (int)mDataNum[key];
+		*value = (int)mDataFloat[key];
 		return true;
 	}
 }
 bool Json::GetValue(const string& key, float* value)
 {
-	map<string, float>::iterator iter = mDataNum.find(key);
-	if(iter == mDataNum.end())
+	map<string, float>::iterator iter = mDataFloat.find(key);
+	if(iter == mDataFloat.end())
 	{
 		return false;
 	}
 	else
 	{
-		*value = mDataNum[key];
+		*value = mDataFloat[key];
 		return true;
 	}
 }
@@ -167,15 +167,15 @@ bool Json::GetValue(const string& key, bool* pBool)
 }
 bool Json::GetValue(const string& key, vector<int>& array)
 {
-	map<string, vector<float> >::iterator iter = mDataNumArray.find(key);
-	if(iter == mDataNumArray.end())
+	map<string, vector<float> >::iterator iter = mDataFloatArray.find(key);
+	if(iter == mDataFloatArray.end())
 	{
 		return false;
 	}
 	else
 	{
-		vector<float>::iterator iter2 = mDataNumArray[key].begin();
-		for(; iter2 != mDataNumArray[key].end(); iter2++)
+		vector<float>::iterator iter2 = mDataFloatArray[key].begin();
+		for(; iter2 != mDataFloatArray[key].end(); iter2++)
 		{
 			array.push_back((int)(*iter2));
 		}
@@ -184,14 +184,14 @@ bool Json::GetValue(const string& key, vector<int>& array)
 }
 bool Json::GetValue(const string& key, vector<float>& array)
 {
-	map<string, vector<float> >::iterator iter = mDataNumArray.find(key);
-	if(iter == mDataNumArray.end())
+	map<string, vector<float> >::iterator iter = mDataFloatArray.find(key);
+	if(iter == mDataFloatArray.end())
 	{
 		return false;
 	}
 	else
 	{
-		array = mDataNumArray[key];
+		array = mDataFloatArray[key];
 		return true;
 	}
 }
@@ -216,11 +216,11 @@ string Json::ToString()
 
 void Json::SetValue(const string& key, int value)
 {
-	mDataNum[key] = value;
+	mDataInt[key] = value;
 }
 void Json::SetValue(const string& key, float value)
 {
-	mDataNum[key] = value;
+	mDataInt[key] = value;
 }
 void Json::SetValue(const string& key, const string& str)
 {
@@ -232,11 +232,11 @@ void Json::SetValue(const string& key, bool boolValue)
 }
 void Json::SetValue(const string& key, const vector<int>& array)
 {
-	mDataNumArray[key] = array;
+	mDataIntArray[key] = array;
 }
 void Json::SetValue(const string& key, const vector<float>& array)
 {
-	mDataNumArray[key] = array;
+	mDataFloatArray[key] = array;
 }
 void Json::SetValue(const string& key, const vector<string>& array)
 {
