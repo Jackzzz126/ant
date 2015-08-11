@@ -14,6 +14,8 @@ Conn::Conn(int sock) : Sock(sock)
 
 	mSendBuffHead = mSendBuffTail = NULL;
 	pthread_mutex_init(&mMutex, NULL);
+
+	mCloseAfterWrite = false;
 }
 Conn::~Conn()
 {
@@ -88,7 +90,14 @@ void Conn::OnWrite(int timeStamp)
 	SendBuffNode* head = mSendBuffHead;
 	if(head == NULL)
 	{
-		return;
+		if(mCloseAfterWrite)
+		{
+			ConnMgr::CloseConn(mSock, false);
+		}
+		else
+		{
+			return;
+		}
 	}
 	int sendLen = send(mSock,
 			head->mRefBuff->mBuff + head->mOffset,
@@ -388,6 +397,22 @@ void ConnMgr::CloseConn(int sock, bool logErr)
 	{
 		Log::Error("Close unknown conn.\n");
 		close(sock);
+	}
+}
+void ConnMgr::ErrorEnd(int sock)
+{
+	RefBuff* pRefBuff = new RefBuff(HEAD_LENGTH, 1);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::INTERNAL_ERROR, 0);
+
+	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
+	if(iter != ConnMgr::mAllConns.end())
+	{
+		iter->second->Write(pRefBuff);
+		iter->second->mCloseAfterWrite = true;
+	}
+	else//client disconnect
+	{
+		pRefBuff->Unref();
 	}
 }
 void ConnMgr::SendToAll(RefBuff* pRefBuff)

@@ -36,9 +36,11 @@ private:
 	bool IsHttpPack(char* buff);
 	void ExpandRecvBuff();
 	void ShrinkRecvBuff();
+public:
+	bool mCloseAfterWrite;
 private:
 	char* mRecvBuff;//buff to recv data
-	int mRecvLen;
+	int mRecvLen;//length of recv buff
 	int mValidSize;
 	SendBuffNode* mSendBuffHead;
 	SendBuffNode* mSendBuffTail;
@@ -52,7 +54,8 @@ class ConnMgr
 public:
 	static map<int, Conn*> mAllConns;
 public:
-	static void CloseConn(int sock, bool logErr);
+	static void CloseConn(int sock, bool logErr);//close conn immediately
+	static void ErrorEnd(int sock);//response err and then close.
 	static void SendToAll(RefBuff* pRefBuff);
 	static void SendToOne(int sock, RefBuff* pRefBuff);
 	static void SendToMulti(const vector<int>& socks, RefBuff* pRefBuff);

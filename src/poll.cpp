@@ -78,6 +78,7 @@ int Poll::Wait(int size, int timeStamp)
 		unsigned flag = ev[i].events;
 		if((flag & EPOLLRDHUP) != 0)
 		{
+			Log::Error("Error when wait sock(%d) in epoll (%d): %s.\n", pSock->mSock, mPoll, strerror(errno));
 			ConnMgr::CloseConn(pSock->mSock, false);
 		}
 		else

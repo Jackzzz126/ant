@@ -6,6 +6,7 @@ class PackId
 public:
 	enum PackIdType
 	{
+		INTERNAL_ERROR = 0,
 		// -1001 - -1005, for test
 		BENCHMARK_ECHO = -1001,
 		BENCHMARK_DOUBLE_ECHO = -1002,
