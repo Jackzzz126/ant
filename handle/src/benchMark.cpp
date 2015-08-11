@@ -36,7 +36,6 @@ void Reg(int sock, char* data, int size)
 {
 	ReqReg req;
 	ResReg res;
-
 	req.ParseFromArray(data, size);
 	DelBuff(&data);
 
@@ -44,7 +43,8 @@ void Reg(int sock, char* data, int size)
 	Redis* pRedis = pThreadData->GetRedis();
 	if(pRedis == NULL)
 	{
-		res.set_status(STATUS_WRONG_ARG);
+		Log::Error("Error when conn to reids.");
+		return ConnMgr::ErrorEnd(sock);
 	}
 	char buff[BUFF_UNIT];
 	Config* pConfig = Config::Singleton();
@@ -55,7 +55,8 @@ void Reg(int sock, char* data, int size)
 			pConfig->mRedis_CharIdSeed.c_str());
 	if(!pRedis->RunCmd(&charId, buff))
 	{
-		ConnMgr::CloseConn(sock, false);
+		Log::Error("Error when get new charId.");
+		return ConnMgr::ErrorEnd(sock);
 	}
 
 	Json json;
@@ -63,15 +64,16 @@ void Reg(int sock, char* data, int size)
 	json.SetValue(NULL, "pwd", req.pwd());
 	StrUtil::Format(buff, BUFF_UNIT, "set %s%d %s",
 			pConfig->mRedis_Char.c_str(), charId, json.ToStr());
-	printf("%s\n", buff);
 	if(!pRedis->RunCmd(buff))
 	{
-		ConnMgr::CloseConn(sock, false);
+		Log::Error("Error when add char.");
+		return ConnMgr::ErrorEnd(sock);
 	}
 
+	res.set_status(STATUS_SUCCESS);
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
-	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_REG, size);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_REG, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
 	ConnMgr::SendToOne(sock, pRefBuff);
 }
@@ -88,7 +90,8 @@ void Login(int sock, char* data, int size)
 	Redis* pRedis = pThreadData->GetRedis();
 	if(pRedis == NULL)
 	{
-		res.set_status(STATUS_WRONG_ARG);
+		Log::Error("Conn to redis error.");
+		ConnMgr::ErrorEnd(sock);
 	}
 	char buff[BUFF_UNIT];
 	Config* pConfig = Config::Singleton();
@@ -113,7 +116,7 @@ void Login(int sock, char* data, int size)
 	
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
-	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, size);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
 	ConnMgr::SendToOne(sock, pRefBuff);
 }

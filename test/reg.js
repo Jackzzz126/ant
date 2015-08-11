@@ -1,29 +1,35 @@
 var net = require("net");
+var ProtoBuf = require("protobufjs");
 var config = require("../config/config.json")
 
-var ProtoBuf = require("protobufjs");
-var builder = ProtoBuf.loadProtoFile("../proto/benchMark.proto");
-var BenchMark = builder.build("BenchMark");
-
-var req = new BenchMark.ReqReg();
-req.name = "aaa";
-req.pwd = "aaa";
+var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
 
 var socket = net.createConnection(config.server.port, config.server.ip);
 socket.on("connect", onConnect);
 socket.on("error", onError);
 socket.on("data", onRecvData);
+
+//reg "regNum" users
+var regNum = 1;
+
 function onConnect()
 {
 	debugger;
-	var dataBuff = req.encode().toBuffer();
+	var req = new BenchMark.ReqReg();
+	for(var i = 0; i < regNum; i++)
+	{
+		req.name = "user-" + (i + 1);
+		req.pwd = "pwd-" + (i + 1);
 
-	var headBuff = new Buffer(8);
-	headBuff.writeInt32LE(-10 ^ 0x79669966, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+		var dataBuff = req.encode().toBuffer();
 
-	socket.write(headBuff);
-	socket.write(dataBuff);
+		var headBuff = new Buffer(8);
+		headBuff.writeInt32LE(-10 ^ 0x79669966, 0);
+		headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+
+		socket.write(headBuff);
+		socket.write(dataBuff);
+	}
 }
 
 function onError(err)
@@ -55,12 +61,14 @@ function onRecvData(dataBuff)
 		dataPacksRecved.push(buff);
 	}
 
+	debugger;
 	var packId = dataPacksRecved[0].readInt32LE(0) ^ 0x79669966;
 	var packLength = dataPacksRecved[0].readInt32LE(4) ^ 0x79669966;
 	if(totalLength >= (packLength + 8))
 	{
 		var recvBuff = Buffer.concat(dataPacksRecved);
-		res = BenchMark.ResReg.decode(recvBuff.slice(8, packLength));
+		res = BenchMark.ResReg.decode(recvBuff.slice(8, packLength + 8));
+		var x = 1;
 	}
 }
 
