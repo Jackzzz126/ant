@@ -1,20 +1,16 @@
-var net = require("net");
+var comm = require("./comm");
+
 var ProtoBuf = require("protobufjs");
-var config = require("../config/config.json")
-
 var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
-
-var socket = net.createConnection(config.server.port, config.server.ip);
-socket.on("connect", onConnect);
-socket.on("error", onError);
-socket.on("data", onRecvData);
 
 //reg "regNum" users
 var regNum = 1;
+var sucNum = 0;
+var failNum = 0;
 
-function onConnect()
+comm.connect(onConnect, onPack);
+function onConnect(socket)
 {
-	debugger;
 	var req = new BenchMark.ReqReg();
 	for(var i = 0; i < regNum; i++)
 	{
@@ -32,43 +28,22 @@ function onConnect()
 	}
 }
 
-function onError(err)
+function onPack(packId, packLen, buff)
 {
-	debugger;
-	console.log("Conn error.");
+	var res = BenchMark.ResReg.decode(buff);
+	if(res.status === 0)
+	{
+		sucNum++;
+	}
+	else
+	{
+		failNum++;
+	}
+	if((sucNum + failNum) === regNum)
+	{
+		console.log("suc: %d, fail: %d", sucNum, failNum);
+		process.exit(0);
+	}
 }
 
-var dataPacksRecved = new Array( );
-function onRecvData(dataBuff)
-{
-	debugger;
-	dataPacksRecved.push(dataBuff);
-
-	var totalLength = 0;
-	for(var i in dataPacksRecved)
-	{
-		totalLength += dataPacksRecved[i].length;
-	}
-	if(totalLength < 8)
-	{
-		return;
-	}
-
-	if(dataPacksRecved[0].length < 8)
-	{
-		var buff = Buffer.concat(dataPacksRecved);
-		dataPacksRecved = new Array();
-		dataPacksRecved.push(buff);
-	}
-
-	debugger;
-	var packId = dataPacksRecved[0].readInt32LE(0) ^ 0x79669966;
-	var packLength = dataPacksRecved[0].readInt32LE(4) ^ 0x79669966;
-	if(totalLength >= (packLength + 8))
-	{
-		var recvBuff = Buffer.concat(dataPacksRecved);
-		res = BenchMark.ResReg.decode(recvBuff.slice(8, packLength + 8));
-		var x = 1;
-	}
-}
 
