@@ -1,10 +1,11 @@
 var http = require("http");
 var comm = require("./comm");
+var config = require("./config.json");
 
 
 options = new Object();
-options.host = "192.168.1.21";
-options.port = 8003;
+options.host = config.ip;
+options.port = config.port;
 options.path = "/hello";
 options.method = "GET";
 
