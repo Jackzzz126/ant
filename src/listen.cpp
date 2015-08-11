@@ -37,7 +37,7 @@ void Listen::OnRead(int timeStamp)
 void Listen::OnWrite(int timeStamp)
 {
 }
-void Listen::Init()
+int Listen::Init()
 {
 	Config* pConfig = Config::Singleton();
 
@@ -47,5 +47,5 @@ void Listen::Init()
 	sin.sin_addr.s_addr = inet_addr(pConfig->mIp.c_str());
 	sin.sin_port = htons(pConfig->mPort);
 	bind(mSock, (const sockaddr*)&sin, sizeof(sin));
-	listen(mSock, pConfig->mBacklog);
+	return listen(mSock, pConfig->mBacklog);
 }

@@ -52,7 +52,11 @@ int main(int argc, char* argv[])
 	//listener
 	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
 	Listen* pListener = new Listen(listenSock);
-	pListener->Init();
+	if(pListener->Init() != 0)
+	{
+		Log::Error("Listen error: %s.\n", strerror(errno));
+		return 1;
+	}
 	pPoll->Add(listenSock, pListener);
 	Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
 
@@ -78,7 +82,7 @@ int main(int argc, char* argv[])
 		{
 			if(errno != EINTR)
 			{
-				Log::Error("Poll wait error: %d.\n", fdCount);
+				Log::Error("Poll wait error: %d %s.\n", fdCount, strerror(errno));
 				break;
 			}
 		}

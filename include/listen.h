@@ -12,7 +12,7 @@ public:
 	virtual void OnRead(int timeStamp);
 	virtual void OnWrite(int timeStamp);
 
-	void Init();
+	int Init();
 };
 
 #endif//_LISTEN_H_
