@@ -24,10 +24,10 @@ void Echo(int sock, char* data, int size)
 }
 void DoubleEcho(int sock, char* data, int size)
 {
-	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 1);
-	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_DOUBLE_ECHO, size * 2);
+	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 2);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_DOUBLE_ECHO, size);
 	memcpy(pRefBuff->mBuff + HEAD_LENGTH, data, size);
-	memcpy(pRefBuff->mBuff + HEAD_LENGTH + size, data, size);
+	ConnMgr::SendToOne(sock, pRefBuff);
 	ConnMgr::SendToOne(sock, pRefBuff);
 	DelBuff(&data);
 }
