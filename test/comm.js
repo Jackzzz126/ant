@@ -69,6 +69,8 @@ function connect(connFunc, packFunc)
 	function onError(err)
 	{
 		console.log("Conn error.");
+		console.log(err);
+		process.exit(0);
 	}
 
 	var dataPacksRecved = new Array( );
