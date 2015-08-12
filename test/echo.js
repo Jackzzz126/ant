@@ -1,6 +1,6 @@
 var comm = require("./comm");
 
-var totalConnNum = 10000;
+var totalConnNum = 20000;
 var packSize = 128;
 var sendFreqency = 1;
 var packId = -1;//-1: echo, -2: double echo, -3:rw db
