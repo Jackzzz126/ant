@@ -216,7 +216,7 @@ void Conn::ParseHttpPack()
 	if(method == "GET")
 	{
 		HandleHttpPack(url, NULL, 0);
-		int excessDataLen = ((char*)mRecvBuff + mValidSize) - end;
+		int excessDataLen = (mRecvBuff + mValidSize) - end;
 		if(excessDataLen == 0)
 		{
 			mValidSize = 0;
@@ -282,7 +282,7 @@ void Conn::ParseNormalPack()
 		{
 			HandleNormalPack(packId, mRecvBuff + HEAD_LENGTH, packLen);
 
-			memcpy(mRecvBuff, (char*)mRecvBuff + mValidSize, excessDataLen);
+			memcpy(mRecvBuff, mRecvBuff + packLen + HEAD_LENGTH, excessDataLen);
 			mValidSize = excessDataLen;
 		}
 	}
