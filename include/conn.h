@@ -28,7 +28,9 @@ public:
 	void Close(bool logErr);
 private:
 	void ParseHttpPack();
+	bool ParseHttpHead(char* beginPos, char** ppHeadEnd, string& url, string& method, int* pDataLen);
 	void ParseNormalPack();
+	void ResetBuff(char* curPos);
 
 	void HandleNormalPack(int packId, char* buff, int size);
 	void HandleHttpPack(const string& url, char* buff, int size);

@@ -140,45 +140,79 @@ void Conn::Write(RefBuff* refBuff)
 }
 void Conn::ParseHttpPack()
 {
-	vector<string> httpHead;
-
-	char* head = mRecvBuff;
-	char* end = mRecvBuff;
-	while(end < (mRecvBuff + mValidSize))
+	char* curPos = mRecvBuff;
+	while(true)
 	{
-		if(*end == '\n' && *(end-1) == '\r')
+		char* headEnd = NULL;
+		string url;
+		string method;
+		int headDataLen = -1;
+		if(!ParseHttpHead(curPos, &headEnd, url, method, &headDataLen))
 		{
-			if(*(end+1) == '\r' && *(end+2) == '\n')
+			break;
+		}
+		if(method == "GET")
+		{
+			HandleHttpPack(url, NULL, 0);
+			curPos = headEnd + 1;
+		}
+		else
+		{
+			int dataLen = (mRecvBuff + mValidSize) - headEnd - 1;
+			if(dataLen < headDataLen)
 			{
-				end += 3;
 				break;
 			}
 			else
 			{
-				httpHead.push_back(string(head, end - head - 1));
+				HandleHttpPack(url, headEnd + 1, dataLen);
+				curPos = headEnd + 1 + dataLen;
+			}
+		}
+	}
+	ResetBuff(curPos);
+}
+
+bool Conn::ParseHttpHead(char* beginPos, char** ppHeadEnd, string& url, string& method, int* pDataLen)
+{
+	vector<string> httpHead;
+
+	char* head = beginPos;
+	char* end = beginPos;
+	bool getEnd = false;
+	while(end < (mRecvBuff + mValidSize))
+	{
+		if(*end == '\n' && *(end-1) == '\r')
+		{
+			string headStr = string(head, end - head - 1);
+			if(headStr == "")
+			{
+				getEnd = true;
+				*ppHeadEnd = end;
+				break;
+			}
+			else
+			{
+				httpHead.push_back(headStr);
 				head = end + 1;
 			}
 		}
 		end++;
 	}
 
-	if(*(end-1) != '\n' || *(end-2) != '\r' )//not found http head end
+	if(!getEnd)
 	{
-		if((end - mRecvBuff) > 512)
+		if((end - beginPos) > 512)
 		{
 			Log::Error("Http head > %d.\n", 512);
 			ConnMgr::CloseConn(mSock, true);
-			return;
 		}
-		else
-		{
-			return;
-		}
+		return false;
 	}
 	
-	string url;
-	string method;
-	int dataLen = -1;
+	url = "";
+	method = "";
+	*pDataLen = -1;
 	for(size_t i = 0; i < httpHead.size(); i++)
 	{
 		if(httpHead[i].substr(0, 4) == "GET ")
@@ -199,7 +233,7 @@ void Conn::ParseHttpPack()
 		}
 		else if(httpHead[i].substr(0, 16) == "Content-Length: ")
 		{
-			dataLen = atoi(httpHead[i].substr(16, httpHead[i].size() - 16).c_str());
+			*pDataLen = atoi(httpHead[i].substr(16, httpHead[i].size() - 16).c_str());
 		}
 	}
 	if(url == "" || method == "")
@@ -211,56 +245,24 @@ void Conn::ParseHttpPack()
 		}
 
 		ConnMgr::CloseConn(mSock, true);
-		return;
+		return false;
 	}
-	if(method == "GET")
+	if(method == "POST")
 	{
-		HandleHttpPack(url, NULL, 0);
-		int excessDataLen = (mRecvBuff + mValidSize) - end;
-		if(excessDataLen == 0)
+		if(*pDataLen == -1 || *pDataLen == 0)
 		{
-			mValidSize = 0;
+			Log::Error("Error post data: dataLen: %d.\n", *pDataLen);
+			ConnMgr::CloseConn(mSock, true);
+			return false;
 		}
-		else
+		else if(*pDataLen > 2048)
 		{
-			memcpy(mRecvBuff, end, excessDataLen);
-			mValidSize = excessDataLen;
+			Log::Error("Error post data, dataLen: %d bigger than: %d.\n", *pDataLen, 2048);
+			ConnMgr::CloseConn(mSock, true);
+			return false;
 		}
 	}
-	else//post
-	{
-		if(dataLen == -1 || dataLen == 0)
-		{
-			Log::Error("Error post data: dataLen: %d.\n", dataLen);
-			ConnMgr::CloseConn(mSock, true);
-			return;
-		}
-		else if(dataLen > 2048)
-		{
-			Log::Error("Error post data, dataLen: %d bigger than: %d.\n", dataLen, 2048);
-			ConnMgr::CloseConn(mSock, true);
-			return;
-		}
-		else
-		{
-			int excessDataLen = (mRecvBuff + mValidSize) - end - dataLen;
-			if(excessDataLen < 0)
-			{
-				return;
-			}
-			else if(excessDataLen == 0)
-			{
-				HandleHttpPack(url, end, dataLen);
-			}
-			else//excessDataLen > 0
-			{
-				HandleHttpPack(url, end, dataLen);
-
-				memcpy(mRecvBuff, end + dataLen, excessDataLen);
-				mValidSize = excessDataLen;
-			}
-		}
-	}
+	return true;
 }
 void Conn::ParseNormalPack()
 {
@@ -282,6 +284,11 @@ void Conn::ParseNormalPack()
 			curPos += (packLen + HEAD_LENGTH);
 		}
 	}
+	ResetBuff(curPos);
+}
+
+void Conn::ResetBuff(char* curPos)
+{
 	if(curPos != mRecvBuff)
 	{
 		if(curPos == (mRecvBuff + mValidSize))
