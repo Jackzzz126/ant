@@ -264,26 +264,37 @@ void Conn::ParseHttpPack()
 }
 void Conn::ParseNormalPack()
 {
-	while(!(mValidSize < HEAD_LENGTH))
+	char* curPos = mRecvBuff;
+	while(true)
 	{
-		int packId = *((int*)mRecvBuff) ^ 0x79669966;
-		int packLen = *((int*)(mRecvBuff) + 1) ^ 0x79669966;
-		int excessDataLen = mValidSize - packLen - HEAD_LENGTH;
-		if(excessDataLen < 0)
+		if(((mRecvBuff + mValidSize) - curPos) < HEAD_LENGTH)
+			break;
+		int packId = *((int*)curPos) ^ 0x79669966;
+		int packLen = *((int*)(curPos) + 1) ^ 0x79669966;
+		int dataLen = (mRecvBuff + mValidSize) - (curPos + HEAD_LENGTH);
+		if(dataLen < packLen)
 		{
 			break;
 		}
-		else if(excessDataLen == 0)
+		else
 		{
-			HandleNormalPack(packId, mRecvBuff + HEAD_LENGTH, packLen);
+			HandleNormalPack(packId, curPos + HEAD_LENGTH, packLen);
+			curPos += (packLen + HEAD_LENGTH);
+		}
+	}
+	if(curPos != mRecvBuff)
+	{
+		if(curPos == (mRecvBuff + mValidSize))
+		{
 			mValidSize = 0;
 		}
-		else//excessDataLen > 0
+		else
 		{
-			HandleNormalPack(packId, mRecvBuff + HEAD_LENGTH, packLen);
-
-			memcpy(mRecvBuff, mRecvBuff + packLen + HEAD_LENGTH, excessDataLen);
-			mValidSize = excessDataLen;
+			mValidSize = (mRecvBuff + mValidSize) - curPos;
+			char* newBuff = NewBuff(mRecvLen);
+			memcpy(newBuff, curPos, mValidSize);
+			DelBuff(&mRecvBuff);
+			mRecvBuff = newBuff;
 		}
 	}
 }
