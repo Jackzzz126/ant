@@ -79,33 +79,40 @@ function connect(connFunc, packFunc)
 		var headLen = 8;
 		dataPacksRecved.push(dataBuff);
 
-		var totalLength = 0;
-		for(var i in dataPacksRecved)
+		while(true)
 		{
-			totalLength += dataPacksRecved[i].length;
-		}
-		if(totalLength < headLen)
-		{
-			return;
-		}
-
-		if(dataPacksRecved[0].length < headLen)
-		{
-			var buff = Buffer.concat(dataPacksRecved);
-			dataPacksRecved = new Array();
-			dataPacksRecved.push(buff);
-		}
-
-		var packId = dataPacksRecved[0].readInt32LE(0) ^ 0x79669966;
-		var packLength = dataPacksRecved[0].readInt32LE(4) ^ 0x79669966;
-		if(totalLength >= (packLength + headLen))
-		{
-			var recvBuff = Buffer.concat(dataPacksRecved);
-			packFunc(packId, packLength, recvBuff.slice(headLen, packLength + headLen));
-			if(totalLength > (packLength + headLen))
+			var totalLength = 0;
+			for(var i in dataPacksRecved)
 			{
+				totalLength += dataPacksRecved[i].length;
+			}
+			if(totalLength < headLen)
+			{
+				break;
+			}
+
+			if(dataPacksRecved[0].length < headLen)
+			{
+				var buff = Buffer.concat(dataPacksRecved);
 				dataPacksRecved = new Array();
-				dataPacksRecved.push(recvBuff.slice(packLength + headLen, totalLength));
+				dataPacksRecved.push(buff);
+			}
+
+			var packId = dataPacksRecved[0].readInt32LE(0) ^ 0x79669966;
+			var packLength = dataPacksRecved[0].readInt32LE(4) ^ 0x79669966;
+			if(totalLength >= (packLength + headLen))
+			{
+				var recvBuff = Buffer.concat(dataPacksRecved);
+				packFunc(packId, packLength, recvBuff.slice(headLen, packLength + headLen));
+				if(totalLength > (packLength + headLen))
+				{
+					dataPacksRecved = new Array();
+					dataPacksRecved.push(recvBuff.slice(packLength + headLen, totalLength));
+				}
+			}
+			else
+			{
+				break;
 			}
 		}
 	}

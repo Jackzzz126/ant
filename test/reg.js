@@ -4,9 +4,11 @@ var ProtoBuf = require("protobufjs");
 var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
 
 //reg "regNum" users
-var regNum = 1;
+var regNum = 10000;
 var sucNum = 0;
 var failNum = 0;
+
+var timeOrigin = (new Date()).getTime();
 
 comm.connect(onConnect, onPack);
 function onConnect(socket)
@@ -39,9 +41,13 @@ function onPack(packId, packLen, buff)
 	{
 		failNum++;
 	}
+	if((sucNum + failNum) % 1000 === 0)
+	{
+		var now = (new Date()).getTime();
+		console.log("suc: %d, fail: %d, in %d ms.", sucNum, failNum, now - timeOrigin);
+	}
 	if((sucNum + failNum) === regNum)
 	{
-		console.log("suc: %d, fail: %d", sucNum, failNum);
 		process.exit(0);
 	}
 }
