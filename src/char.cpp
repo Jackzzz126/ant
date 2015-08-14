@@ -1,10 +1,11 @@
 #include "comm.h"
 #include "char.h"
+#include "conn.h"
 
-Char::Char(int id, int socket)
+Char::Char(int id, int sock)
 {
 	mId = id;
-	mSocket = socket;
+	mSock = sock;
 }
 Char::~Char()
 {
@@ -50,5 +51,27 @@ Char* CharMgr::GetChar(int id)
 	{
 		return NULL;
 	}
+}
+
+void CharMgr::SendToChar(int charId, RefBuff* pRefBuff)
+{
+	Char* pChar = GetChar(charId);
+	if(pChar != NULL)
+	{
+		ConnMgr::SendToSock(pChar->mSock, pRefBuff);
+	}
+}
+void CharMgr::SendToChars(const vector<int>& chars, RefBuff* pRefBuff)
+{
+	vector<int> socks;
+	for(vector<int>::const_iterator iter = chars.begin(); iter != chars.end(); iter++)
+	{
+		Char* pChar = GetChar(*iter);
+		if(pChar != NULL)
+		{
+			socks.push_back(pChar->mSock);
+		}
+	}
+	ConnMgr::SendToSocks(socks, pRefBuff);
 }
 

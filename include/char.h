@@ -4,14 +4,14 @@
 class Char
 {
 public:
-	Char(int id, int socket);
+	Char(int id, int sock);
 	~Char();
 public:
 	void Lock();
 	void Unlock();
 public:
 	int mId;
-	int mSocket;
+	int mSock;
 
 private:
 	pthread_mutex_t mMutex;
@@ -28,6 +28,9 @@ private:
 public:
 	static void AddChar(int id, Char* pChar);
 	static Char* GetChar(int id);
+
+	static void SendToChar(int charId, RefBuff* pRefBuff);
+	static void SendToChars(const vector<int>& chars, RefBuff* pRefBuff);
 private:
 };
 
