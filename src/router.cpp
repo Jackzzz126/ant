@@ -4,29 +4,29 @@
 #include "benchMark.h"
 #include "admin.h"
 
-map<int, MsgHandler> Router::mAllHandlers;
+map<int, MsgHandler> Router::mIdHandles;
 void Router::AddHandler(int msgId, MsgHandler handler)
 {
 	assert(handler);
 
 	map<int, MsgHandler>::iterator iter;
-	iter = mAllHandlers.find(msgId);
-	if(iter != mAllHandlers.end())
+	iter = mIdHandles.find(msgId);
+	if(iter != mIdHandles.end())
 	{
 		Log::Error("Duplicate msgId added.", msgId);
 	}
 	else
 	{
-		mAllHandlers[msgId] = handler;
+		mIdHandles[msgId] = handler;
 	}
 }
 void Router::Handle(int sock, int msgId, char* data, int size)
 {
 	map<int, MsgHandler>::iterator iter;
-	iter = mAllHandlers.find(msgId);
-	if(iter != mAllHandlers.end())
+	iter = mIdHandles.find(msgId);
+	if(iter != mIdHandles.end())
 	{
-		mAllHandlers[msgId](sock, data, size);
+		mIdHandles[msgId](sock, data, size);
 	}
 	else
 	{
