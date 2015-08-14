@@ -8,6 +8,7 @@
 #include "config.h"
 #include "strUtil.h"
 #include "json.h"
+#include "char.h"
 
 #include "benchMark.pb.h"
 
@@ -117,6 +118,8 @@ void Login(int sock, char* data, int size)
 		}
 		else
 		{
+			Char* pChar = new Char(req.charid(), sock);
+			CharMgr::AddChar(req.charid(), pChar);
 			res.set_status(STATUS_SUCCESS);
 		}
 	}
