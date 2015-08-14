@@ -45,10 +45,12 @@ function onPack(packId, packLen, buff)
 	if((sucNum + failNum) % 1000 === 0)
 	{
 		var now = (new Date()).getTime();
-		console.log("suc: %d, fail: %d, in %d ms.", sucNum, failNum, now - timeOrigin);
+		console.log("	suc: %d, fail: %d, in %d ms.", sucNum, failNum, now - timeOrigin);
 	}
 	if((sucNum + failNum) === regNum)
 	{
+		var now = (new Date()).getTime();
+		console.log("suc: %d, fail: %d, in %d ms.", sucNum, failNum, now - timeOrigin);
 		process.exit(0);
 	}
 }
