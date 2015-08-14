@@ -15,6 +15,7 @@ export CC
 
 .PHONY:all
 all:
+	@cd proto && ./proto.sh;
 	@cd proto/build && make;
 	@cd handle/build && make;
 	@cd build && make;

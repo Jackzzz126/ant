@@ -16,8 +16,9 @@ function onConnect(socket)
 	var req = new BenchMark.ReqReg();
 	for(var i = 0; i < regNum; i++)
 	{
-		req.name = "user-" + (i + 1);
-		req.pwd = "pwd-" + (i + 1);
+		req.charId = i + 1;
+		req.name = "user-" + req.charId;
+		req.pwd = "pwd-" + req.charId;
 
 		var dataBuff = req.encode().toBuffer();
 

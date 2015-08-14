@@ -50,20 +50,20 @@ void Reg(int sock, char* data, int size)
 	Config* pConfig = Config::Singleton();
 
 
-	int charId;
-	StrUtil::Format(buff, BUFF_UNIT, "incrby %s 1",
-			pConfig->mRedis_CharIdSeed.c_str());
-	if(!pRedis->RunCmd(&charId, buff))
-	{
-		Log::Error("Error when get new charId.");
-		return ConnMgr::ErrorEnd(sock);
-	}
+	//int charId;
+	//StrUtil::Format(buff, BUFF_UNIT, "incrby %s 1",
+	//		pConfig->mRedis_CharIdSeed.c_str());
+	//if(!pRedis->RunCmd(&charId, buff))
+	//{
+	//	Log::Error("Error when get new charId.");
+	//	return ConnMgr::ErrorEnd(sock);
+	//}
 
 	Json json;
 	json.SetValue(NULL, "name", req.name());
 	json.SetValue(NULL, "pwd", req.pwd());
 	StrUtil::Format(buff, BUFF_UNIT, "set %s%d %s",
-			pConfig->mRedis_Char.c_str(), charId, json.ToStr());
+			pConfig->mRedis_Char.c_str(), req.charid(), json.ToStr());
 	if(!pRedis->RunCmd(buff))
 	{
 		Log::Error("Error when add char.");
@@ -96,22 +96,29 @@ void Login(int sock, char* data, int size)
 	char buff[BUFF_UNIT];
 	Config* pConfig = Config::Singleton();
 
-	string pwd;
-	StrUtil::Format(buff, BUFF_UNIT, "hget %s%d %s",
+	string charStr;
+	StrUtil::Format(buff, BUFF_UNIT, "get %s%d",
 			pConfig->mRedis_Char.c_str(), req.charid());
-	pRedis->RunCmd(pwd, buff);
+	pRedis->RunCmd(charStr, buff);
 
-	if(pwd == "")
+	if(charStr == "")
 	{
 		res.set_status(-22);
 	}
-	else if(pwd != req.pwd())
-	{
-		res.set_status(-21);
-	}
 	else
 	{
-		res.set_status(STATUS_SUCCESS);
+		Json json;
+		json.Parse(charStr);
+		string pwd;
+		json.GetValue("pwd", pwd);
+		if(pwd != req.pwd())
+		{
+			res.set_status(-21);
+		}
+		else
+		{
+			res.set_status(STATUS_SUCCESS);
+		}
 	}
 	
 	int packLen = res.ByteSize();

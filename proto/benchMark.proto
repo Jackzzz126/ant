@@ -5,12 +5,12 @@ option optimize_for = LITE_RUNTIME;
 message ReqReg{
 	required string name  = 1;
 	required string pwd  = 2;
+	required int32 charId = 3;
 }
 
 //-1010
 message ResReg{
 	required int32 status = 1;
-	optional int32 charId = 2;
 }
 
 //-11
