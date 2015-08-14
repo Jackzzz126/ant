@@ -11,7 +11,7 @@ void HttpUtil::ResStr(int sock, const string& str)
 	int len = strlen(buff);
 	RefBuff* pRefBuff = new RefBuff(len, 1);
 	memcpy(pRefBuff->mBuff, buff, len);
-	ConnMgr::SendToOne(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
 

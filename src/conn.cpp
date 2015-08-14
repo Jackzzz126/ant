@@ -442,7 +442,7 @@ void ConnMgr::SendToAll(RefBuff* pRefBuff)
 	}
 }
 
-void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
+void ConnMgr::SendToSock(int sock, RefBuff* pRefBuff)
 {
 	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.find(sock);
 	if(iter != ConnMgr::mSockConns.end())
@@ -455,7 +455,7 @@ void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 	}
 }
 
-void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
+void ConnMgr::SendToSocks(const vector<int>& socks, RefBuff* pRefBuff)
 {
 	assert(pRefBuff->mRef >= (int)socks.size());
 	vector<int>::const_iterator iter = socks.begin();

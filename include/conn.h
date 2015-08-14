@@ -59,8 +59,8 @@ public:
 	static void CloseConn(int sock, bool logErr);//close conn immediately
 	static void ErrorEnd(int sock);//response err and then close.
 	static void SendToAll(RefBuff* pRefBuff);
-	static void SendToOne(int sock, RefBuff* pRefBuff);
-	static void SendToMulti(const vector<int>& socks, RefBuff* pRefBuff);
+	static void SendToSock(int sock, RefBuff* pRefBuff);
+	static void SendToSocks(const vector<int>& socks, RefBuff* pRefBuff);
 
 	static void AddConn(int sock, Conn* pConn);
 public:

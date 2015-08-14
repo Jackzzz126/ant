@@ -20,7 +20,7 @@ void Echo(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_ECHO, size);
 	memcpy(pRefBuff->mBuff + HEAD_LENGTH, data, size);
-	ConnMgr::SendToOne(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 	DelBuff(&data);
 }
 void DoubleEcho(int sock, char* data, int size)
@@ -28,8 +28,8 @@ void DoubleEcho(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 2);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_DOUBLE_ECHO, size);
 	memcpy(pRefBuff->mBuff + HEAD_LENGTH, data, size);
-	ConnMgr::SendToOne(sock, pRefBuff);
-	ConnMgr::SendToOne(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 	DelBuff(&data);
 }
 
@@ -76,7 +76,7 @@ void Reg(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_REG, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
-	ConnMgr::SendToOne(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
 void Login(int sock, char* data, int size)
@@ -128,15 +128,16 @@ void Login(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
-	ConnMgr::SendToOne(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
 void Move(int sock, char* data, int size)
 {
 	ReqMove req;
-	//res.SerializeToArray();
+	ResMove res;
 	req.ParseFromArray(data, size);
 	DelBuff(&data);
+
 }
 
 }//end of name space
