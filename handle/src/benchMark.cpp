@@ -128,7 +128,7 @@ void Login(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
-	ConnMgr::SendTo(sock, pRefBuff);
+	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
 void Move(int sock, char* data, int size)
@@ -160,7 +160,7 @@ void Move(int sock, char* data, int size)
 	res.set_x(req.x());
 
 	int packLen = res.ByteSize();
-	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
+	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 10);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_MOVE, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
 	CharMgr::SendToChars(chars, pRefBuff);
