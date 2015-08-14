@@ -42,6 +42,7 @@ function onPack(packId, packLen, buff)
 	{
 		failNum++;
 	}
+	console.log("%d.", sucNum + failNum);
 	if((sucNum + failNum) % 1000 === 0)
 	{
 		var now = (new Date()).getTime();
