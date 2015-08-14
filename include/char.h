@@ -7,21 +7,28 @@ public:
 	Char(int id, int socket);
 	~Char();
 public:
+	void Lock();
+	void Unlock();
+public:
 	int mId;
 	int mSocket;
+
+private:
+	pthread_mutex_t mMutex;
 };
 
 class CharMgr
 {
 private:
 	static map<int, Char*> mIdChars;
+	static pthread_mutex_t mMutex;
 private:
 	CharMgr();
 	~CharMgr();
 public:
-public:
+	static void AddChar(int id, Char* pChar);
+	static Char* GetChar(int id);
 private:
-	pthread_mutex_t mMutex;
 };
 
 #endif//_CHAR_H_
