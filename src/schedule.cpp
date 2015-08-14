@@ -1,7 +1,7 @@
 #include "comm.h"
 #include "schedule.h"
 
-map<int, Schedule*> ScheduleMgr::mAllSchedules;
+map<int, Schedule*> ScheduleMgr::mIdSchedules;
 int ScheduleMgr::mScheduleIdSeed = 0;
 int ScheduleMgr::mLastUpdateTime = DateTime::GetTimeStamp();
 
@@ -15,16 +15,16 @@ int ScheduleMgr::AddTask(ScheduleTask task, int interval, bool repeat)
 	pSchedule->mRepeat = repeat;
 	mScheduleIdSeed++;
 	pSchedule->mId = mScheduleIdSeed;
-	mAllSchedules[mScheduleIdSeed] = pSchedule;
+	mIdSchedules[mScheduleIdSeed] = pSchedule;
 	return mScheduleIdSeed;
 }
 bool ScheduleMgr::DelTask(int taskId)
 {
-	map<int, Schedule*>::iterator iter = mAllSchedules.find(taskId);
-	if(iter != mAllSchedules.end())
+	map<int, Schedule*>::iterator iter = mIdSchedules.find(taskId);
+	if(iter != mIdSchedules.end())
 	{
 		delete iter->second;
-		mAllSchedules.erase(taskId);
+		mIdSchedules.erase(taskId);
 		return true;
 	}
 	else
@@ -41,8 +41,8 @@ void ScheduleMgr::Update(int timeStamp)
 		mLastUpdateTime += timeDelta;
 		vector<int> tasksToDel;
 
-		map<int, Schedule*>::iterator iter = mAllSchedules.begin();
-		for(; iter != mAllSchedules.end(); iter++)
+		map<int, Schedule*>::iterator iter = mIdSchedules.begin();
+		for(; iter != mIdSchedules.end(); iter++)
 		{
 			Schedule* pSchedule = iter->second;
 			pSchedule->mTimeDelta += timeDelta;
@@ -61,7 +61,7 @@ void ScheduleMgr::Update(int timeStamp)
 		vector<int>::iterator idIter = tasksToDel.begin();
 		for(; idIter != tasksToDel.end(); idIter++)
 		{
-			mAllSchedules.erase(*idIter);
+			mIdSchedules.erase(*idIter);
 		}
 	}
 }

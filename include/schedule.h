@@ -21,7 +21,7 @@ struct Schedule
 class ScheduleMgr
 {
 private:
-	static map<int, Schedule*> mAllSchedules;
+	static map<int, Schedule*> mIdSchedules;
 	static int mScheduleIdSeed;
 	static int mLastUpdateTime;
 public:
