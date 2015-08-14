@@ -42,7 +42,7 @@ public:
 	static int GetPackIdByUrl(const string& url);
 	static void Init();
 private:
-	static map<string, int> mUrlIdMap;
+	static map<string, int> mUrlIds;
 };
 
 #endif//_PACKID_H_
