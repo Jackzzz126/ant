@@ -128,7 +128,7 @@ void Login(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_LOGIN, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
-	ConnMgr::SendToSock(sock, pRefBuff);
+	ConnMgr::SendTo(sock, pRefBuff);
 }
 
 void Move(int sock, char* data, int size)
@@ -138,6 +138,32 @@ void Move(int sock, char* data, int size)
 	req.ParseFromArray(data, size);
 	DelBuff(&data);
 
+	int charId = req.charid();//send to xx1 x10
+	int beginId;
+	if(charId % 10 == 0)
+	{
+		beginId = charId - 10;
+	}
+	else
+	{
+		beginId = charId - charId % 10;
+	}
+
+	vector<int> chars;
+	for(int i = 0; i < 10; i++)
+	{
+		chars.push_back(beginId + i + 1);
+	}
+
+	res.set_charid(req.charid());
+	res.set_x(req.x());
+	res.set_x(req.x());
+
+	int packLen = res.ByteSize();
+	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 1);
+	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_MOVE, packLen);
+	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
+	CharMgr::SendToChars(chars, pRefBuff);
 }
 
 }//end of name space
