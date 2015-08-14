@@ -25,7 +25,7 @@ void Listen::OnRead(int timeStamp)
 
 		Poll* pPoll = Poll::Singleton();
 		Conn* pConn = new Conn(sock);
-		ConnMgr::mAllConns[sock] = pConn;
+		ConnMgr::AddConn(sock, pConn);
 		if(!pPoll->Add(sock, pConn))
 		{
 			ConnMgr::CloseConn(sock, false);

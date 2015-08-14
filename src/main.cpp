@@ -77,7 +77,7 @@ int main(int argc, char* argv[])
 	while(!gGotQuitSignal)
 	{
 		int timeStamp = DateTime::GetTimeStamp();
-		int fdCount = pPoll->Wait(ConnMgr::mAllConns.size() + 1, timeStamp);
+		int fdCount = pPoll->Wait(ConnMgr::mSockConns.size() + 1, timeStamp);
 		if(fdCount < 0)
 		{
 			if(errno != EINTR)
@@ -96,11 +96,11 @@ int main(int argc, char* argv[])
 	}
 
 	//user
-	for(map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin(); iter != ConnMgr::mAllConns.end(); iter++)
+	for(map<int, Conn*>::iterator iter = ConnMgr::mSockConns.begin(); iter != ConnMgr::mSockConns.end(); iter++)
 	{
 		iter->second->Close(false);
 	}
-	ConnMgr::mAllConns.clear();
+	ConnMgr::mSockConns.clear();
 
 	//delete singleton
 	pPoll->Close();

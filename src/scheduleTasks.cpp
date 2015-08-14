@@ -12,8 +12,8 @@ void CloseDeadSock()
 	int timeStampNow = DateTime::GetTimeStamp();
 	Config* pConfig = Config::Singleton();
 
-	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
-	for(; iter != ConnMgr::mAllConns.end(); iter++)
+	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.begin();
+	for(; iter != ConnMgr::mSockConns.end(); iter++)
 	{
 		Conn* pConn = iter->second;
 		if((timeStampNow - pConn->mLastActiveTime) > pConfig->mSockTimeout)
@@ -26,7 +26,7 @@ void CloseDeadSock()
 	vector<int>::iterator sockIter = socksToDel.begin();
 	for(; sockIter != socksToDel.end(); sockIter++)
 	{
-		ConnMgr::mAllConns.erase(*sockIter);
+		ConnMgr::mSockConns.erase(*sockIter);
 	}
 	if(socksToDel.size() > 0)
 	{

@@ -396,7 +396,7 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 }
 
 //************************************************
-map<int, Conn*> ConnMgr::mAllConns;
+map<int, Conn*> ConnMgr::mSockConns;
 
 ConnMgr::ConnMgr()
 {
@@ -405,11 +405,11 @@ ConnMgr::ConnMgr()
 void ConnMgr::CloseConn(int sock, bool logErr)
 {
 	Poll::Singleton()->Del(sock);
-	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
-	if(iter != ConnMgr::mAllConns.end())
+	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.find(sock);
+	if(iter != ConnMgr::mSockConns.end())
 	{
 		iter->second->Close(logErr);
-		ConnMgr::mAllConns.erase(sock);
+		ConnMgr::mSockConns.erase(sock);
 	}
 	else
 	{
@@ -422,8 +422,8 @@ void ConnMgr::ErrorEnd(int sock)
 	RefBuff* pRefBuff = new RefBuff(HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::INTERNAL_ERROR, 0);
 
-	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
-	if(iter != ConnMgr::mAllConns.end())
+	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.find(sock);
+	if(iter != ConnMgr::mSockConns.end())
 	{
 		iter->second->Write(pRefBuff);
 		iter->second->mCloseAfterWrite = true;
@@ -435,8 +435,8 @@ void ConnMgr::ErrorEnd(int sock)
 }
 void ConnMgr::SendToAll(RefBuff* pRefBuff)
 {
-	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.begin();
-	for(; iter != ConnMgr::mAllConns.end(); iter++)
+	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.begin();
+	for(; iter != ConnMgr::mSockConns.end(); iter++)
 	{
 		iter->second->Write(pRefBuff);
 	}
@@ -444,8 +444,8 @@ void ConnMgr::SendToAll(RefBuff* pRefBuff)
 
 void ConnMgr::SendToOne(int sock, RefBuff* pRefBuff)
 {
-	map<int, Conn*>::iterator iter = ConnMgr::mAllConns.find(sock);
-	if(iter != ConnMgr::mAllConns.end())
+	map<int, Conn*>::iterator iter = ConnMgr::mSockConns.find(sock);
+	if(iter != ConnMgr::mSockConns.end())
 	{
 		iter->second->Write(pRefBuff);
 	}
@@ -461,8 +461,8 @@ void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 	vector<int>::const_iterator iter = socks.begin();
 	for(; iter != socks.end(); iter++)
 	{
-		map<int, Conn*>::iterator connIter = ConnMgr::mAllConns.find(*iter);
-		if(connIter != ConnMgr::mAllConns.end())
+		map<int, Conn*>::iterator connIter = ConnMgr::mSockConns.find(*iter);
+		if(connIter != ConnMgr::mSockConns.end())
 		{
 			connIter->second->Write(pRefBuff);
 		}
@@ -471,6 +471,11 @@ void ConnMgr::SendToMulti(const vector<int>& socks, RefBuff* pRefBuff)
 			pRefBuff->Unref();
 		}
 	}
+}
+
+void ConnMgr::AddConn(int sock, Conn* pConn)
+{
+	mSockConns[sock] = pConn;
 }
 
 
