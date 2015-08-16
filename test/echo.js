@@ -16,7 +16,7 @@ var allConns = new Array();
 
 for(var i = 0; i < totalConnNum; i++)
 {
-	comm.connect(onConnect, onPack);
+	comm.tcpConnect(onConnect, onPack);
 }
 function onConnect(socket)
 {

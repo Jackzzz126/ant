@@ -55,7 +55,7 @@ function httpRequest(options, data, func)
 	}
 }
 
-function connect(connFunc, packFunc)
+function tcpConnect(connFunc, packFunc)
 {
 	var socket = net.createConnection(config.server.port, config.server.ip);
 	socket.on("connect", onConn);
@@ -124,5 +124,5 @@ function connect(connFunc, packFunc)
 }
 
 exports.httpRequest = httpRequest;
-exports.connect = connect;
+exports.tcpConnect = tcpConnect;
 

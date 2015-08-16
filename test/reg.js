@@ -10,7 +10,7 @@ var failNum = 0;
 
 var timeOrigin = (new Date()).getTime();
 
-comm.connect(onConnect, onPack);
+comm.tcpConnect(onConnect, onPack);
 function onConnect(socket)
 {
 	var req = new BenchMark.ReqReg();

@@ -9,7 +9,7 @@ function nextBatch()
 	var finishNum = 0;
 	for(var i = 0; i < batchSize; i++)
 	{
-		comm.connect(onConnect, onPack);
+		comm.tcpConnect(onConnect, onPack);
 	}
 
 	function onConnect(socket)
