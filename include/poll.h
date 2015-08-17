@@ -3,6 +3,10 @@
 
 class Poll
 {
+public:
+	static Poll* Singleton();
+private:
+	static Poll* mPollSingleton;
 private:
 	Poll();
 	~Poll();
@@ -13,11 +17,7 @@ public:
 	void SetWrite(int sock, void *ud);
 	void Del(int sock);
 	int Wait(int size, int timeStamp);
-
-	static Poll* Singleton();
 private:
 	int mPoll;
-
-	static Poll* mGlobalPoll;
 };
 #endif//_POLL_H_

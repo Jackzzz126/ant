@@ -7,14 +7,14 @@
 #include "conn.h"
 
 
-Poll* Poll::mGlobalPoll = NULL;
+Poll* Poll::mPollSingleton = NULL;
 Poll* Poll::Singleton()
 {
-	if(mGlobalPoll == NULL)
+	if(mPollSingleton == NULL)
 	{
-		mGlobalPoll = new Poll();
+		mPollSingleton = new Poll();
 	}
-	return mGlobalPoll;
+	return mPollSingleton;
 }
 
 Poll::Poll()
