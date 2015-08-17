@@ -2,14 +2,14 @@
 #include "config.h"
 #include "json.h"
 
-Config* Config::mGlobalConfig = NULL;
+Config* Config::mConfigSingleton = NULL;
 Config* Config::Singleton()
 {
-	if(mGlobalConfig == NULL)
+	if(mConfigSingleton == NULL)
 	{
-		mGlobalConfig = new Config();
+		mConfigSingleton = new Config();
 	}
-	return mGlobalConfig;
+	return mConfigSingleton;
 }
 Config::Config()
 {

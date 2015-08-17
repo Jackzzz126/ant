@@ -3,6 +3,10 @@
 
 class Config
 {
+public:
+	static Config* Singleton();
+private:
+	static Config* mConfigSingleton;
 private:
 	Config();
 	~Config(){};
@@ -10,8 +14,6 @@ private:
 public:
 	bool Load(char* file);
 	void Release();
-
-	static Config* Singleton();
 public:
 	//server
 	string mIp;
@@ -33,7 +35,5 @@ private:
 	//log
 	string mLogFileName;
 	string mErrFileName;
-
-	static Config* mGlobalConfig;
 };
 #endif//_CONFIG_H_
