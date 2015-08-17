@@ -76,7 +76,6 @@ function tcpConnect(connFunc, packFunc)
 	var dataPacksRecved = new Array( );
 	function onRecvData(dataBuff)
 	{
-		debugger;
 		var HEADLEN = 8;
 		dataPacksRecved.push(dataBuff);
 

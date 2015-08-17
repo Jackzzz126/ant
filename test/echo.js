@@ -59,7 +59,6 @@ function sendMsg()
 
 function onPack(packId, packLen, buff)
 {
-	debugger;
 	recvCount++;
 
 	var timeStamp = buff.readInt32LE(0);
