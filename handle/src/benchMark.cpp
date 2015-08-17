@@ -119,7 +119,8 @@ void Login(int sock, char* data, int size)
 		else
 		{
 			Char* pChar = new Char(req.charid(), sock);
-			CharMgr::AddChar(req.charid(), pChar);
+			CharMgr* pCharMgr = CharMgr::Singleton();
+			pCharMgr->AddChar(req.charid(), pChar);
 			res.set_status(STATUS_SUCCESS);
 		}
 	}
@@ -163,7 +164,8 @@ void Move(int sock, char* data, int size)
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 10);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_MOVE, packLen);
 	res.SerializeToArray(pRefBuff->mBuff + HEAD_LENGTH, packLen);
-	CharMgr::SendToChars(chars, pRefBuff);
+	CharMgr* pCharMgr = CharMgr::Singleton();
+	pCharMgr->SendToChars(chars, pRefBuff);
 }
 
 }//end of name space

@@ -30,7 +30,7 @@ private:
 	MsgNode* mHead;
 	MsgNode* mTail;
 
-	pthread_mutex_t mMutex;
+	pthread_mutex_t mMsgQueueLock;
 
 	static MsgQueue* mGlobalMsgQueue;
 };

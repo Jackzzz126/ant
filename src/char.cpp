@@ -6,6 +6,7 @@ Char::Char(int id, int sock)
 {
 	mId = id;
 	mSock = sock;
+	pthread_mutex_init(&mCharLock, NULL);
 }
 Char::~Char()
 {
@@ -13,20 +14,26 @@ Char::~Char()
 
 void Char::Lock()
 {
-	pthread_mutex_lock(&mMutex);
+	pthread_mutex_lock(&mCharLock);
 }
 
 void Char::Unlock()
 {
-	pthread_mutex_unlock(&mMutex);
+	pthread_mutex_unlock(&mCharLock);
 }
 
 //************************************************
-map<int, Char*> CharMgr::mIdChars;
-pthread_mutex_t CharMgr::mMutex;
+CharMgr* CharMgr::mCharMgrSingleton = NULL;
 
+CharMgr* CharMgr::Singleton()
+{
+	if(mCharMgrSingleton == NULL)
+		mCharMgrSingleton = new CharMgr();
+	return mCharMgrSingleton;
+}
 CharMgr::CharMgr()
 {
+	pthread_mutex_init(&mIdCharsLock, NULL);
 }
 
 CharMgr::~CharMgr()
@@ -35,9 +42,9 @@ CharMgr::~CharMgr()
 
 void CharMgr::AddChar(int id, Char* pChar)
 {
-	pthread_mutex_lock(&mMutex);
+	pthread_mutex_lock(&mIdCharsLock);
 	mIdChars[id] = pChar;
-	pthread_mutex_unlock(&mMutex);
+	pthread_mutex_unlock(&mIdCharsLock);
 }
 
 Char* CharMgr::GetChar(int id)

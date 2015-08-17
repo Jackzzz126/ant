@@ -14,24 +14,27 @@ public:
 	int mSock;
 
 private:
-	pthread_mutex_t mMutex;
+	pthread_mutex_t mCharLock;
 };
 
 class CharMgr
 {
+public:
+	static CharMgr* Singleton();
 private:
-	static map<int, Char*> mIdChars;
-	static pthread_mutex_t mMutex;
+	static CharMgr* mCharMgrSingleton;
 private:
 	CharMgr();
 	~CharMgr();
 public:
-	static void AddChar(int id, Char* pChar);
-	static Char* GetChar(int id);
+	void AddChar(int id, Char* pChar);
+	Char* GetChar(int id);
 
-	static void SendToChar(int charId, RefBuff* pRefBuff);
-	static void SendToChars(const vector<int>& chars, RefBuff* pRefBuff);
+	void SendToChar(int charId, RefBuff* pRefBuff);
+	void SendToChars(const vector<int>& chars, RefBuff* pRefBuff);
 private:
+	map<int, Char*> mIdChars;
+	pthread_mutex_t mIdCharsLock;
 };
 
 #endif//_CHAR_H_
