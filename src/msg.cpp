@@ -13,14 +13,14 @@ MsgNode::~MsgNode()
 {
 }
 
-MsgQueue* MsgQueue::mGlobalMsgQueue = NULL;
+MsgQueue* MsgQueue::mMsgQueueSingleton = NULL;
 MsgQueue* MsgQueue::Singleton()
 {
-	if(mGlobalMsgQueue == NULL)
+	if(mMsgQueueSingleton == NULL)
 	{
-		mGlobalMsgQueue = new MsgQueue();
+		mMsgQueueSingleton = new MsgQueue();
 	}
-	return mGlobalMsgQueue;
+	return mMsgQueueSingleton;
 }
 
 MsgQueue::MsgQueue()

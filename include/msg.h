@@ -20,6 +20,8 @@ class MsgQueue
 public:
 	static MsgQueue* Singleton();
 private:
+	static MsgQueue* mMsgQueueSingleton;
+private:
 	MsgQueue();
 	~MsgQueue();
 public:
@@ -31,8 +33,6 @@ private:
 	MsgNode* mTail;
 
 	pthread_mutex_t mMsgQueueLock;
-
-	static MsgQueue* mGlobalMsgQueue;
 };
 
 #endif//_MSG_H_
