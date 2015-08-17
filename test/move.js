@@ -3,7 +3,7 @@ var comm = require("./comm");
 var ProtoBuf = require("protobufjs");
 var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
 
-var userNum = 1;
+var userNum = 3000;
 var loginSucNum = 0;
 var loginFailNum = 0;
 
@@ -14,29 +14,31 @@ var sendFreqency = 1;
 
 var timeOrigin = (new Date()).getTime();
 
-comm.tcpConnect(onConnect, onPack);
+var allSockets = new Array();
+
+for(var i = 0; i < userNum; i++)
+{
+	comm.tcpConnect(onConnect, onPack);
+}
 function onConnect(socket)
 {
+	allSockets.push(socket);
 	var req = new BenchMark.ReqLogin();
-	for(var i = 0; i < userNum; i++)
-	{
-		req.charId = i + 1;
-		req.pwd = "pwd-" + req.charId;
+	req.charId = allSockets.length;
+	req.pwd = "pwd-" + req.charId;
 
-		var dataBuff = req.encode().toBuffer();
+	var dataBuff = req.encode().toBuffer();
 
-		var headBuff = new Buffer(8);
-		headBuff.writeInt32LE(-11 ^ 0x79669966, 0);
-		headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+	var headBuff = new Buffer(8);
+	headBuff.writeInt32LE(-11 ^ 0x79669966, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
 
-		socket.write(headBuff);
-		socket.write(dataBuff);
-	}
+	socket.write(headBuff);
+	socket.write(dataBuff);
 }
 
 function onPack(packId, packLen, buff)
 {
-	debugger;
 	if(packId === -1011)//res login
 	{
 		var res = BenchMark.ResReg.decode(buff);
@@ -51,13 +53,11 @@ function onPack(packId, packLen, buff)
 		}
 		if((loginSucNum + loginFailNum) % 1000 === 0)
 		{
-			debugger;
 			var now = (new Date()).getTime();
 			console.log("	suc: %d, fail: %d, in %d ms.", loginSucNum, loginFailNum, now - timeOrigin);
 		}
 		if((loginSucNum + loginFailNum) === userNum)
 		{
-			debugger;
 			var now = (new Date()).getTime();
 			console.log("suc: %d, fail: %d, in %d ms.", loginSucNum, loginFailNum, now - timeOrigin);
 			setInterval(sendMove, 1000 / sendFreqency);
@@ -65,15 +65,19 @@ function onPack(packId, packLen, buff)
 			//process.exit();
 		}
 	}
-	else//res move
+	else if(packId === -1012)//res move
 	{
 		moveRecvNum++;
+	}
+	else
+	{
+		console.log("Unknown pack recevied.");
+		process.exit(1);
 	}
 }
 
 function statusOut()
 {
-	debugger;
 	console.log("%d send, %d recv.", moveSendNum, moveRecvNum);
 	moveSendNum = 0;
 	moveRecvNum = 0;
@@ -81,10 +85,9 @@ function statusOut()
 
 function sendMove()
 {
-	debugger;
-	var req = new BenchMark.ReqMove();
 	for(var i = 0; i < userNum; i++)
 	{
+		var req = new BenchMark.ReqMove();
 		req.charId = i + 1;
 		req.x = 1;
 		req.y = 1;
@@ -95,8 +98,8 @@ function sendMove()
 		headBuff.writeInt32LE(-12 ^ 0x79669966, 0);
 		headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
 
-		socket.write(headBuff);
-		socket.write(dataBuff);
+		allSockets[i].write(headBuff);
+		allSockets[i].write(dataBuff);
 		moveSendNum++;
 	}
 }
