@@ -47,7 +47,7 @@ private:
 	SendBuffNode* mSendBuffHead;
 	SendBuffNode* mSendBuffTail;
 
-	pthread_mutex_t mMutex;
+	pthread_mutex_t mSendListLock;
 };
 
 //***********************************************************

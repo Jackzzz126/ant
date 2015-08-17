@@ -13,7 +13,7 @@ Conn::Conn(int sock) : Sock(sock)
 	mValidSize = 0;
 
 	mSendBuffHead = mSendBuffTail = NULL;
-	pthread_mutex_init(&mMutex, NULL);
+	pthread_mutex_init(&mSendListLock, NULL);
 
 	mCloseAfterWrite = false;
 }
@@ -87,7 +87,9 @@ void Conn::OnRead(int timeStamp)
 }
 void Conn::OnWrite(int timeStamp)
 {
+	pthread_mutex_lock(&mSendListLock);
 	SendBuffNode* head = mSendBuffHead;
+
 	if(head == NULL)
 	{
 		if(mCloseAfterWrite)
@@ -96,6 +98,7 @@ void Conn::OnWrite(int timeStamp)
 		}
 		else
 		{
+			pthread_mutex_unlock(&mSendListLock);
 			return;
 		}
 	}
@@ -106,6 +109,7 @@ void Conn::OnWrite(int timeStamp)
 	if(sendLen <= 0)
 	{
 		ConnMgr::CloseConn(mSock, false);
+		pthread_mutex_unlock(&mSendListLock);
 		return;
 	}
 	head->mOffset += sendLen;
@@ -118,14 +122,16 @@ void Conn::OnWrite(int timeStamp)
 		}
 		else
 		{
+			SendBuffNode* oldHead = mSendBuffHead;
 			mSendBuffHead = mSendBuffHead->mNext;
-			DELETE(mSendBuffHead);
+			DELETE(oldHead);
 		}
 	}
+	pthread_mutex_unlock(&mSendListLock);
 }
 void Conn::Write(RefBuff* refBuff)
 {
-	pthread_mutex_lock(&mMutex);
+	pthread_mutex_lock(&mSendListLock);
 	if(mSendBuffHead == NULL)
 	{
 		mSendBuffTail = mSendBuffHead = new SendBuffNode(refBuff);
@@ -136,7 +142,7 @@ void Conn::Write(RefBuff* refBuff)
 		mSendBuffTail->mNext = node;
 		mSendBuffTail = node;
 	}
-	pthread_mutex_unlock(&mMutex);
+	pthread_mutex_unlock(&mSendListLock);
 }
 void Conn::ParseHttpPack()
 {
