@@ -9,6 +9,7 @@ var loginFailNum = 0;
 
 var moveSendNum = 0;
 var moveRecvNum = 0;
+var totalTimeDelta = 0;
 
 var sendFreqency = 1;
 
@@ -67,6 +68,12 @@ function onPack(packId, packLen, buff)
 	}
 	else if(packId === -1012)//res move
 	{
+		var res = BenchMark.ResMove.decode(buff);
+
+		var now = (new Date()).getTime();
+		var timeDelta = now - timeOrigin - res.time;
+		totalTimeDelta += timeDelta;
+
 		moveRecvNum++;
 	}
 	else
@@ -78,19 +85,23 @@ function onPack(packId, packLen, buff)
 
 function statusOut()
 {
-	console.log("%d send, %d recv.", moveSendNum, moveRecvNum);
+	console.log("%d send, %d recv, avg delay: %d.", moveSendNum, moveRecvNum,
+		totalTimeDelta / moveRecvNum / 2);
 	moveSendNum = 0;
 	moveRecvNum = 0;
+	totalTimeDelta = 0;
 }
 
 function sendMove()
 {
 	for(var i = 0; i < userNum; i++)
 	{
+		var now = (new Date()).getTime();
 		var req = new BenchMark.ReqMove();
 		req.charId = i + 1;
 		req.x = 1;
 		req.y = 1;
+		req.time = now - timeOrigin;
 
 		var dataBuff = req.encode().toBuffer();
 

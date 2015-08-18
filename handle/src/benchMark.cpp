@@ -158,7 +158,8 @@ void Move(int sock, char* data, int size)
 
 	res.set_charid(req.charid());
 	res.set_x(req.x());
-	res.set_x(req.x());
+	res.set_y(req.y());
+	res.set_time(req.time());
 
 	int packLen = res.ByteSize();
 	RefBuff* pRefBuff = new RefBuff(packLen + HEAD_LENGTH, 10);
