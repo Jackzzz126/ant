@@ -29,7 +29,10 @@
 #include<map>
 using namespace std;
 
-//owen
+//lua
+#include "lua.hpp"
+
+//own
 #include "strUtil.h"
 #include "define.h"
 #include "log.h"
