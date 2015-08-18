@@ -46,6 +46,10 @@ int Listen::Init()
 	sin.sin_family = AF_INET;
 	sin.sin_addr.s_addr = inet_addr(pConfig->mIp.c_str());
 	sin.sin_port = htons(pConfig->mPort);
-	bind(mSock, (const sockaddr*)&sin, sizeof(sin));
-	return listen(mSock, pConfig->mBacklog);
+	int ret = 0;
+	ret = bind(mSock, (const sockaddr*)&sin, sizeof(sin));
+	if(ret != 0)//bind failed
+		return ret;
+	else
+		return listen(mSock, pConfig->mBacklog);
 }
