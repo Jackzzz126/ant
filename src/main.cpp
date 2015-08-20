@@ -10,6 +10,7 @@
 #include "scheduleTasks.h"
 #include "packId.h"
 #include "threadData.h"
+#include "script.h"
 
 bool gGotQuitSignal = false;
 
@@ -19,6 +20,11 @@ void CloseDeadSock();
 
 int main(int argc, char* argv[])
 {
+	Script* pScript = Script::Singleton();
+	int sum = 0;
+	pScript->Test(&sum, 2, 8);
+	printf("sum is: %d\n", sum);
+	return 0;
 	//config
 	Config* pConfig = Config::Singleton();
 	char configFileName[] = "config/config.json";
