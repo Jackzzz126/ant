@@ -28,15 +28,6 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 
-	Script* pScript = Script::Singleton();
-	double x = 0.0;
-	int y = 0;
-	char* z = NULL;
-	if(pScript->Call("lua/test.lua", "f", "dis|dis", 5.0, 5, "bbb", &x, &y, &z))
-	{
-		printf("sum is: %f %d %s\n", x, y, z);
-	}
-	return 0;
 	//init
 	if(pConfig->mDaemon)
 	{
