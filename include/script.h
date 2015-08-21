@@ -15,10 +15,16 @@ public:
 	bool GetValue(const char* fileName, const char* key, string& value);
 	bool GetValue(const char* fileName, const char* key, int* value);
 	bool GetValue(const char* fileName, const char* key, double* value);
+
+	bool GetValue(const char* fileName, const char* tableName, const char* key, string& value);
+	bool GetValue(const char* fileName, const char* tableName, const char* key, int* value);
+	bool GetValue(const char* fileName, const char* tableName, const char* key, double* value);
+
 	bool Call(const char* fileName, const char* funcName, const char* fmt, ...);
 private:
 	void Init();
 	void Close();
+	bool DoFile(const char* fileName);
 private:
 	lua_State* mLuaState;
 };

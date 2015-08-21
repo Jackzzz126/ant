@@ -38,8 +38,7 @@ void Script::Close()
 	lua_close(mLuaState);
 	mLuaState = NULL;
 }
-
-bool Script::GetValue(const char* fileName, const char* key, string& value)
+bool Script::DoFile(const char* fileName)
 {
 	Init();
 	//run script
@@ -50,6 +49,13 @@ bool Script::GetValue(const char* fileName, const char* key, string& value)
 		Close();
 		return false;
 	}
+	return true;
+}
+
+bool Script::GetValue(const char* fileName, const char* key, string& value)
+{
+	if(!DoFile(fileName))
+		return false;
 
 	lua_getglobal(mLuaState, key);
 
@@ -65,15 +71,8 @@ bool Script::GetValue(const char* fileName, const char* key, string& value)
 
 bool Script::GetValue(const char* fileName, const char* key, int* value)
 {
-	Init();
-	//run script
-	if(luaL_dofile(mLuaState, fileName))
-	{
-		Log::Error("Error when run %s: %s.\n",
-			fileName, lua_tostring(mLuaState, -1));
-		Close();
+	if(!DoFile(fileName))
 		return false;
-	}
 
 	lua_getglobal(mLuaState, key);
 
@@ -89,18 +88,81 @@ bool Script::GetValue(const char* fileName, const char* key, int* value)
 
 bool Script::GetValue(const char* fileName, const char* key, double* value)
 {
-	Init();
-	//run script
-	if(luaL_dofile(mLuaState, fileName))
-	{
-		Log::Error("Error when run %s: %s.\n",
-			fileName, lua_tostring(mLuaState, -1));
-		Close();
+	if(!DoFile(fileName))
 		return false;
-	}
 
 	lua_getglobal(mLuaState, key);
 
+	if(!lua_isnumber(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	*value = lua_tonumber(mLuaState, -1);
+	return true;
+}
+bool Script::GetValue(const char* fileName, const char* tableName, const char* key, string& value)
+{
+	if(!DoFile(fileName))
+		return false;
+
+	lua_getglobal(mLuaState, tableName);
+	if (!lua_istable(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	lua_pushstring(mLuaState, key);
+	lua_gettable(mLuaState, -2);
+	if(!lua_isstring(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	value = string(lua_tostring(mLuaState, -1));
+	return true;
+
+}
+bool Script::GetValue(const char* fileName, const char* tableName, const char* key, int* value)
+{
+	if(!DoFile(fileName))
+		return false;
+
+	lua_getglobal(mLuaState, tableName);
+	if (!lua_istable(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	lua_pushstring(mLuaState, key);
+	lua_gettable(mLuaState, -2);
+	if(!lua_isnumber(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	*value = lua_tonumber(mLuaState, -1);
+	return true;
+}
+bool Script::GetValue(const char* fileName, const char* tableName, const char* key, double* value)
+{
+	if(!DoFile(fileName))
+		return false;
+
+	lua_getglobal(mLuaState, tableName);
+	if (!lua_istable(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	lua_pushstring(mLuaState, key);
+	lua_gettable(mLuaState, -2);
 	if(!lua_isnumber(mLuaState, -1))
 	{
 		Log::Error("Error when run %s: return value error.\n", fileName);
@@ -114,15 +176,8 @@ bool Script::GetValue(const char* fileName, const char* key, double* value)
 //'d':double,'i':integer,'s':strings, '|': separator
 bool Script::Call(const char* fileName, const char* funcName, const char* fmt, ...)
 {
-	Init();
-	//run script
-	if(luaL_dofile(mLuaState, fileName))
-	{
-		Log::Error("Error when run %s: %s.\n",
-			fileName, lua_tostring(mLuaState, -1));
-		Close();
+	if(!DoFile(fileName))
 		return false;
-	}
 
 	if(funcName == NULL)
 		return true;
