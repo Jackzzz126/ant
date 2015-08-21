@@ -20,11 +20,6 @@ void CloseDeadSock();
 
 int main(int argc, char* argv[])
 {
-	Script* pScript = Script::Singleton();
-	int sum = 0;
-	pScript->Test(&sum, 2, 8);
-	printf("sum is: %d\n", sum);
-	return 0;
 	//config
 	Config* pConfig = Config::Singleton();
 	char configFileName[] = "config/config.json";
@@ -32,6 +27,14 @@ int main(int argc, char* argv[])
 	{
 		return 1;
 	}
+
+	Script* pScript = Script::Singleton();
+	int sum = 0;
+	if(pScript->Test(&sum, 2, 8))
+	{
+		printf("sum is: %d\n", sum);
+	}
+	return 0;
 	//init
 	if(pConfig->mDaemon)
 	{

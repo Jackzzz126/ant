@@ -1,1 +1,6 @@
-print "Hello World aaaaaaa"
+print "Hello World."
+
+function xxx(x, y)
+	return(x * y)
+end
+
