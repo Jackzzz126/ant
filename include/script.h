@@ -10,8 +10,10 @@ private:
 private:
 	Script();
 	~Script();
+
 public:
 	bool Test(int* sum, int x, int y);
+	bool Call(const char* fileName, const char* funcName, const char* fmt, ...);
 private:
 	void Init();
 	void Close();

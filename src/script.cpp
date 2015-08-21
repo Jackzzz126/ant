@@ -80,3 +80,117 @@ bool Script::Test(int* sum, int x, int y)
 	}
 }
 
+//'d':double,'i':integer,'s':strings, '|': separator
+bool Script::Call(const char* fileName, const char* funcName, const char* fmt, ...)
+{
+	Init();
+	//run script
+	if(luaL_dofile(mLuaState, fileName))
+	{
+		Log::Error("Error when run %s: %s.\n",
+			fileName, lua_tostring(mLuaState, -1));
+		Close();
+		return false;
+	}
+
+	if(string(funcName) == "")
+		return true;
+
+	lua_getglobal(mLuaState, funcName);
+
+	va_list args;
+	va_start(args, fmt);
+
+	int argCount = 0;
+	int retCount = 0;
+	const char* p = fmt;
+	while(*p)
+	{
+		if(*p++ == '|')
+			break;
+		argCount++;
+	}
+	while(*p++)
+	{
+		retCount++;
+	}
+	luaL_checkstack(mLuaState, argCount, "lua error: too many arguments.");
+
+	for(int i = 0; i < argCount; i++)
+	{
+		if(*(fmt+i) == 'd')
+		{
+			lua_pushnumber(mLuaState, va_arg(args, double));
+		}
+		else if(*(fmt+i) == 'i')
+		{
+			lua_pushnumber(mLuaState, va_arg(args, int));
+		}
+		else if(*(fmt+i) == 's')
+		{
+			lua_pushstring(mLuaState, va_arg(args, char *));
+		}
+		else
+		{
+			Log::Error("Error when call %s:%s: wrong format str.\n", fileName, funcName);
+			Close();
+			return false;
+		}
+	}
+
+	if(lua_pcall(mLuaState, argCount, retCount, 0))
+	{
+		Log::Error("Error when run \"%s\".%s: %s.\n",
+			fileName, funcName, lua_tostring(mLuaState, -1));
+		Close();
+		return false;
+	}
+
+	for(int i = argCount + 1; i < argCount + 1 + retCount; i++)
+	{
+		int index = -retCount + (i - argCount - 1);
+		if(*(fmt+i) == 'd')
+		{
+			if(!lua_isnumber(mLuaState, index))
+			{
+				Log::Error("Error when run %s:%s: return value error.\n",
+						fileName, funcName);
+				Close();
+				return false;
+			}
+			*va_arg(args, double *) = lua_tonumber(mLuaState, index);
+		}
+		else if(*(fmt+i) == 'i')
+		{
+			if(!lua_isnumber(mLuaState, index))
+			{
+				Log::Error("Error when run %s:%s: return value error.\n",
+						fileName, funcName);
+				Close();
+				return false;
+			}
+			*va_arg(args, int *) = lua_tonumber(mLuaState, index);
+		}
+		else if(*(fmt+i) == 's')
+		{
+			if(!lua_isstring(mLuaState, index))
+			{
+				Log::Error("Error when run %s:%s: return value error.\n",
+						fileName, funcName);
+				Close();
+				return false;
+			}
+			*va_arg(args, const char **) = lua_tostring(mLuaState, index);
+		}
+		else
+		{
+			Log::Error("Error when call %s:%s: wrong format str.\n", fileName, funcName);
+			Close();
+			return false;
+		}
+	}
+
+	va_end(args);
+	return true;
+}
+

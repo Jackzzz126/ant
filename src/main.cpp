@@ -29,10 +29,12 @@ int main(int argc, char* argv[])
 	}
 
 	Script* pScript = Script::Singleton();
-	int sum = 0;
-	if(pScript->Test(&sum, 2, 8))
+	double x = 0.0;
+	int y = 0;
+	char* z = NULL;
+	if(pScript->Call("lua/test.lua", "f", "dis|dis", 5.0, 5, "bbb", &x, &y, &z))
 	{
-		printf("sum is: %d\n", sum);
+		printf("sum is: %f %d %s\n", x, y, z);
 	}
 	return 0;
 	//init
