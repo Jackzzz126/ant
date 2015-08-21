@@ -35,4 +35,24 @@ private:
 	pthread_mutex_t mMsgQueueLock;
 };
 
+class DbMsgQueue
+{
+public:
+	static DbMsgQueue* Singleton();
+private:
+	static DbMsgQueue* mDbMsgQueueSingleton;
+private:
+	DbMsgQueue();
+	~DbMsgQueue();
+public:
+	void PushMsg(int sock, int msgId, char* data, int size);
+	MsgNode* PopMsg();
+public:
+private:
+	MsgNode* mHead;
+	MsgNode* mTail;
+
+	pthread_mutex_t mDbMsgQueueLock;
+};
+
 #endif//_MSG_H_
