@@ -1,17 +1,6 @@
 #ifndef _DEFINE_H_
 #define _DEFINE_H_
 
-/*#ifdef DEBUG
-	#define ASSERT(x) \
-	{ \
-		if ( !(x) ) \
-			printf( "[Assert]%s,%d: %s\n", __FILE__, __LINE__, #x ); \
-	}
-#else
-	#define ASSERT(x)
-#endif
-*/
-
 typedef unsigned char byte;
 typedef unsigned int uint;
 

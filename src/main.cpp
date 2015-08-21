@@ -33,7 +33,7 @@ int main(int argc, char* argv[])
 	{
 		if(daemon(1,0)) 
 		{
-			printf("Daemonize error.\n");
+			Log::Error("Daemonize error.\n");
 			return 1;
 		}
 	}
@@ -44,7 +44,7 @@ int main(int argc, char* argv[])
 	Poll* pPoll = Poll::Singleton();
 	if(!pPoll->Create())
 	{
-		printf("Create poll error.\n");
+		Log::Error("Create poll error.\n");
 		return 1;
 	}
 

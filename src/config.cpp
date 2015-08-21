@@ -20,6 +20,9 @@ Config::Config()
 	mSockTimeout = 60 * 5;
 
 	mRedis_Port = 0;
+
+	mLogFileHandle = stdout;
+	mErrFileHandle = stderr;
 }
 
 bool Config::Load(char* fileName)
@@ -27,7 +30,7 @@ bool Config::Load(char* fileName)
 	FILE* pFile = fopen(fileName, "r");
 	if(pFile == NULL)
 	{
-		printf("Error when open %s: %s.\n", fileName, strerror(errno));
+		Log::Error("Error when open %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 
@@ -38,7 +41,7 @@ bool Config::Load(char* fileName)
 	size_t readLen = fread(buff, 1, fileLen, pFile);
 	if(readLen != fileLen)
 	{
-		printf("Error when read %s: %s.\n", fileName, strerror(errno));
+		Log::Error("Error when read %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 	buff[fileLen] = '\0';
@@ -47,7 +50,7 @@ bool Config::Load(char* fileName)
 	Json json;
 	if(!json.Parse(buff))
 	{
-		printf("Error when parse %s: %s.\n", fileName, strerror(errno));
+		Log::Error("Error when parse %s: %s.\n", fileName, strerror(errno));
 		return false;
 	}
 	if( !json.GetValue("server:port", &mPort)
@@ -64,30 +67,30 @@ bool Config::Load(char* fileName)
 		|| !json.GetValue("redis:char", mRedis_Char)
 	  )
 	{
-		printf("Error when parse %s: some value miss.\n", fileName);
+		Log::Error("Error when parse %s: some value miss.\n", fileName);
 		return false;
 	}
 
 	//check
 	if(mPort == 0 || mIp == "")
 	{
-		printf( "Error when parse %s: ip, port invalid.\n", fileName);
+		Log::Error( "Error when parse %s: ip, port invalid.\n", fileName);
 		return false;
 	}
 	if((mLogFileName == "" || mErrFileName == "") && mDaemon)
 	{
-		printf( "Error when parse %s: must set log file in daemon mode.\n", fileName);
+		Log::Error( "Error when parse %s: must set log file in daemon mode.\n", fileName);
 		return false;
 	}
 	if(mWorkerThreads < 1)
 	{
-		printf( "Error when parse %s: worker threads must > 1.\n", fileName);
+		Log::Error( "Error when parse %s: worker threads must > 1.\n", fileName);
 		return false;
 	}
 	if(mRedis_Port == 0 || mRedis_Ip == "" || mRedis_CharIdSeed == ""
 			|| mRedis_Char == "")
 	{
-		printf( "Error when parse %s: reids ip, port or keys invalid.\n", fileName);
+		Log::Error( "Error when parse %s: reids ip, port or keys invalid.\n", fileName);
 		return false;
 	}
 
@@ -103,7 +106,7 @@ bool Config::Load(char* fileName)
 		mErrFileHandle = fopen(mErrFileName.c_str(), "ab");
 		if(mLogFileHandle == NULL || mErrFileHandle == NULL)
 		{
-			printf("Error when open log files:%s, %s.\n",
+			Log::Error("Error when open log files:%s, %s.\n",
 					mLogFileName.c_str(), mErrFileName.c_str());
 			return false;
 		}
