@@ -12,7 +12,6 @@ private:
 	~Script();
 
 public:
-	bool Test(int* sum, int x, int y);
 	bool GetValue(const char* fileName, const char* key, string& value);
 	bool GetValue(const char* fileName, const char* key, int* value);
 	bool GetValue(const char* fileName, const char* key, double* value);
