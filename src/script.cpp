@@ -1,6 +1,14 @@
 #include "comm.h"
 #include "script.h"
 
+extern "C" int add(lua_State* L) 
+{
+	double op1 = luaL_checknumber(L,1);
+	double op2 = luaL_checknumber(L,2);
+	lua_pushnumber(L,op1 + op2);
+	return 1;
+}
+
 Script* Script::mScriptSingleton = NULL;
 Script* Script::Singleton()
 {
@@ -30,6 +38,8 @@ void Script::Init()
 		luaopen_io(mLuaState);
 		luaopen_string(mLuaState);
 		luaopen_math(mLuaState);
+
+		lua_register(mLuaState, "add", add);
 	}
 	lua_settop(mLuaState, 0);
 }
@@ -179,7 +189,7 @@ bool Script::Call(const char* fileName, const char* funcName, const char* fmt, .
 	if(!DoFile(fileName))
 		return false;
 
-	if(funcName == NULL)
+	if(string(funcName) == "")
 		return true;
 
 	lua_getglobal(mLuaState, funcName);
