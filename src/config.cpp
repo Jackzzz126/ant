@@ -17,6 +17,7 @@ Config::Config()
 	mBacklog = 128;
 	mDaemon = false;
 	mWorkerThreads = 0;
+	mDbThreads = 0;
 	mSockTimeout = 60 * 5;
 
 	mRedis_Port = 0;
@@ -59,6 +60,7 @@ bool Config::Load(char* fileName)
 		|| !json.GetValue("server:daemon", &mDaemon)
 		|| !json.GetValue("server:sockTimeout", &mSockTimeout)
 		|| !json.GetValue("server:workerThreads", &mWorkerThreads)
+		|| !json.GetValue("server:dbThreads", &mDbThreads)
 		|| !json.GetValue("log:logFile", mLogFileName)
 		|| !json.GetValue("log:errFile", mErrFileName)
 		|| !json.GetValue("redis:ip", mRedis_Ip)

@@ -22,6 +22,7 @@ public:
 	bool mDaemon;
 	int mSockTimeout;
 	int mWorkerThreads;
+	int mDbThreads;
 	//log
 	FILE* mLogFileHandle;
 	FILE* mErrFileHandle;
