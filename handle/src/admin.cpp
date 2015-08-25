@@ -7,7 +7,7 @@
 namespace Admin
 {//begin of name space
 
-void Hello(int sock, char* data, int size)
+void Hello(int sock, int msgId, char* data, int size)
 {
 	HttpUtil::ResStr(sock, "Hello world.");
 	//else

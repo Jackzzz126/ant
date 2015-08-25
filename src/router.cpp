@@ -5,6 +5,7 @@
 #include "admin.h"
 
 map<int, MsgHandler> Router::mIdHandles;
+map<int, MsgHandler> Router::mIdDbHandles;
 void Router::AddHandler(int msgId, MsgHandler handler)
 {
 	assert(handler);
@@ -13,11 +14,27 @@ void Router::AddHandler(int msgId, MsgHandler handler)
 	iter = mIdHandles.find(msgId);
 	if(iter != mIdHandles.end())
 	{
-		Log::Error("Duplicate msgId added.", msgId);
+		Log::Error("Duplicate handle for msg %d added.", msgId);
 	}
 	else
 	{
 		mIdHandles[msgId] = handler;
+	}
+}
+
+void Router::AddDbHandler(int msgId, MsgHandler handler)
+{
+	assert(handler);
+
+	map<int, MsgHandler>::iterator iter;
+	iter = mIdDbHandles.find(msgId);
+	if(iter != mIdDbHandles.end())
+	{
+		Log::Error("Duplicate db handle for msg %d added.", msgId);
+	}
+	else
+	{
+		mIdDbHandles[msgId] = handler;
 	}
 }
 void Router::Handle(int sock, int msgId, char* data, int size)
@@ -26,7 +43,7 @@ void Router::Handle(int sock, int msgId, char* data, int size)
 	iter = mIdHandles.find(msgId);
 	if(iter != mIdHandles.end())
 	{
-		mIdHandles[msgId](sock, data, size);
+		mIdHandles[msgId](sock, msgId, data, size);
 	}
 	else
 	{
@@ -40,7 +57,9 @@ void Router::Init()
 	AddHandler(-2, BenchMark::DoubleEcho);
 
 	AddHandler(-10, BenchMark::Reg);
+	AddDbHandler(-10, BenchMark::RegDb);
 	AddHandler(-11, BenchMark::Login);
+	AddDbHandler(-11, BenchMark::LoginDb);
 	AddHandler(-12, BenchMark::Move);
 
 	AddHandler(900, Admin::Hello);

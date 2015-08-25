@@ -9,13 +9,14 @@
 #include "strUtil.h"
 #include "json.h"
 #include "char.h"
+#include "msg.h"
 
 #include "benchMark.pb.h"
 
 namespace BenchMark
 {//begin of name space
 
-void Echo(int sock, char* data, int size)
+void Echo(int sock, int msgId, char* data, int size)
 {
 	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 1);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_ECHO, size);
@@ -23,7 +24,7 @@ void Echo(int sock, char* data, int size)
 	ConnMgr::SendToSock(sock, pRefBuff);
 	DelBuff(&data);
 }
-void DoubleEcho(int sock, char* data, int size)
+void DoubleEcho(int sock, int msgId, char* data, int size)
 {
 	RefBuff* pRefBuff = new RefBuff(size + HEAD_LENGTH, 2);
 	PackId::WritePackHead(pRefBuff->mBuff, PackId::BENCHMARK_DOUBLE_ECHO, size);
@@ -33,7 +34,11 @@ void DoubleEcho(int sock, char* data, int size)
 	DelBuff(&data);
 }
 
-void Reg(int sock, char* data, int size)
+void Reg(int sock, int msgId, char* data, int size)
+{
+	DbMsgQueue::Singleton()->PushMsg(sock, msgId, data, size);
+}
+void RegDb(int sock, int msgId, char* data, int size)
 {
 	ReqReg req;
 	ResReg res;
@@ -79,7 +84,11 @@ void Reg(int sock, char* data, int size)
 	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
-void Login(int sock, char* data, int size)
+void Login(int sock, int msgId, char* data, int size)
+{
+	DbMsgQueue::Singleton()->PushMsg(sock, msgId, data, size);
+}
+void LoginDb(int sock, int msgId, char* data, int size)
 {
 	ReqLogin req;
 	ResReg res;
@@ -132,7 +141,7 @@ void Login(int sock, char* data, int size)
 	ConnMgr::SendToSock(sock, pRefBuff);
 }
 
-void Move(int sock, char* data, int size)
+void Move(int sock, int msgId, char* data, int size)
 {
 	ReqMove req;
 	ResMove res;
