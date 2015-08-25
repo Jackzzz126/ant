@@ -15,6 +15,7 @@
 bool gGotQuitSignal = false;
 
 void* WorkerFunc(void* arg);
+void* DbFunc(void* arg);
 void SignalHanle(int signum);
 void CloseDeadSock();
 
@@ -70,6 +71,12 @@ int main(int argc, char* argv[])
 		pthread_t workerThreadId;
 		pthread_create(&workerThreadId, NULL, WorkerFunc, NULL);
 		threads.push_back(workerThreadId);
+	}
+	for(int i = 0; i < pConfig->mDbThreads; i++)
+	{
+		pthread_t dbThreadId;
+		pthread_create(&dbThreadId, NULL, DbFunc, NULL);
+		threads.push_back(dbThreadId);
 	}
 	
 	//add schedule task
@@ -137,6 +144,36 @@ void* WorkerFunc(void* arg)
 		else
 		{
 			Router::Handle(pMsgNode->mSock, pMsgNode->mId, pMsgNode->mData, pMsgNode->mSize);
+			DELETE(pMsgNode);
+		}
+	};
+
+	DELETE(pThreadData);
+	return NULL;
+}
+
+void* DbFunc(void* arg)
+{
+	ThreadData* pThreadData = new ThreadData();
+	pthread_setspecific(ThreadData::mThreadKey, pThreadData);
+	while(true)
+	{
+		MsgNode* pMsgNode = DbMsgQueue::Singleton()->PopMsg();
+		if(pMsgNode == NULL)
+		{
+			if(gGotQuitSignal)
+			{
+				break;
+			}
+			else
+			{
+				usleep(1000 * 200);//sleep use seconds, usleep use 10^-6 seconds
+				continue;
+			}
+		}
+		else
+		{
+			Router::DbHandle(pMsgNode->mSock, pMsgNode->mId, pMsgNode->mData, pMsgNode->mSize);
 			DELETE(pMsgNode);
 		}
 	};

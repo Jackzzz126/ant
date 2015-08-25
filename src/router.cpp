@@ -51,6 +51,22 @@ void Router::Handle(int sock, int msgId, char* data, int size)
 		DelBuff(&data);
 	}
 }
+
+void Router::DbHandle(int sock, int msgId, char* data, int size)
+{
+	map<int, MsgHandler>::iterator iter;
+	iter = mIdDbHandles.find(msgId);
+	if(iter != mIdDbHandles.end())
+	{
+		mIdDbHandles[msgId](sock, msgId, data, size);
+	}
+	else
+	{
+		Log::Error("Unknown db msg id: %d.\n", msgId);
+		DelBuff(&data);
+	}
+}
+
 void Router::Init()
 {
 	AddHandler(-1, BenchMark::Echo);
