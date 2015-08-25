@@ -6,7 +6,7 @@
 		"backlog" : 128,
 		"daemon" : false,
 		"sockTimeout" : 300,
-		"workerThreads" : 5
+		"workerThreads" : 5,
 		"dbThreads" : 2
 	},
 	"log" :
