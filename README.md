@@ -1,5 +1,3 @@
-a simple, plain, lua supported, multithread, long connection server.
-
 ### dependence
 * [libjson](http://sourceforge.net/projects/libjson/)
 * [protobuf2.6.1](https://github.com/google/protobuf/releases/download/v2.6.1/protobuf-2.6.1.zip) -- build with "`./configure --disable-shared --prefix=/usr`"
