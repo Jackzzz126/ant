@@ -1,4 +1,4 @@
-only for learn and test, not ready for use yet!
+a simple, plain, lua supported, multithread, long connection server.
 
 ### dependence
 * [libjson](http://sourceforge.net/projects/libjson/)
