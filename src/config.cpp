@@ -1,6 +1,7 @@
 #include "comm.h"
 #include "config.h"
 #include "json.h"
+#include "luaState.h"
 
 Config* Config::mConfigSingleton = NULL;
 Config* Config::Singleton()
@@ -28,6 +29,26 @@ Config::Config()
 
 bool Config::Load(char* fileName)
 {
+	LuaState* pLua = new LuaState();
+	int ret = 0;
+	char* errStr = NULL;
+	pLua->Call("lua/config.lua", "check", "|is", &ret, &errStr);
+	if(!ret)
+	{
+		vector<string> errStrs;
+		StrUtil::Split(errStr, "\n", errStrs);
+		vector<string>::iterator iter = errStrs.begin();
+		for(; iter != errStrs.end(); iter++)
+		{
+			if(*iter != "")
+			{
+				Log::Error("%s\n", iter->c_str());
+			}
+		}
+		return false;
+	}
+
+
 	FILE* pFile = fopen(fileName, "r");
 	if(pFile == NULL)
 	{

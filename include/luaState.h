@@ -3,7 +3,7 @@
 
 class LuaState
 {
-private:
+public:
 	LuaState();
 	~LuaState();
 
