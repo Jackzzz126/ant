@@ -27,3 +27,19 @@ void StrUtil::Format(char* buff, int len, const char* str, ...)
 	va_end(arg);
 }
 
+void StrUtil::Split(const string& str, const string& spliter, vector<string>& results)
+{
+	size_t startPos = 0;
+	size_t curPos = str.find_first_of(spliter, startPos);
+	while(curPos != string::npos)
+	{
+		results.push_back(str.substr(startPos, curPos - startPos));
+		startPos = curPos + 1;
+		curPos = str.find_first_of(spliter, startPos);
+	}
+	if((curPos - startPos) > 0)
+	{
+		results.push_back(str.substr(startPos, curPos + startPos));
+	}
+}
+
