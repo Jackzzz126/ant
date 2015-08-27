@@ -11,7 +11,7 @@ void DelBuff(char** pp)
 	*pp = NULL;
 }
 
-string ToHex(const char* data, int len)
+string Util::ToHex(const char* data, int len)
 {
 	char* buff = NewBuff(len * 2 + 1);
 	buff[len * 2] = '\0';

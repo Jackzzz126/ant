@@ -35,6 +35,7 @@ using namespace std;
 //own
 #include "strUtil.h"
 #include "define.h"
+#include "util.h"
 #include "log.h"
 #include "dateTime.h"
 

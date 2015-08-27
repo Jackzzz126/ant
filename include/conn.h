@@ -3,6 +3,7 @@
 
 #include "packId.h"
 #include "sock.h"
+#include "refBuff.h"
 
 class Conn : public Sock
 {

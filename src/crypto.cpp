@@ -8,7 +8,7 @@ string Crypto::Md5(char* data, int len)
 	byte md5[16];
 	Md5(data, len, md5);
 
-	return ToHex((const char*)md5, 16);
+	return Util::ToHex((const char*)md5, 16);
 }
 
 void Crypto::Md5(char* data, int len, byte md5[16])

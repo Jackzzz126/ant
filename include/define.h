@@ -24,34 +24,4 @@ typedef unsigned long long int	uint64;
 
 #define DELETE(p)		{ delete p; p = NULL; }
 
-char* NewBuff(int size);
-void DelBuff(char** pp);
-
-string ToHex(const char* data, int len);
-
-struct RefBuff
-{
-	char* mBuff;
-	int mLen;
-	int mRef;
-	RefBuff(int len, int ref)
-	{
-		mBuff = NewBuff(len);
-		mLen = len;
-		mRef = ref;
-	};
-	~RefBuff()
-	{
-		DelBuff(&mBuff);
-	};
-	void Unref()
-	{
-		mRef--;
-		if(mRef<=0)
-		{
-			DelBuff(&mBuff);
-			delete this;
-		}
-	}
-};
 #endif//_DEFINE_H_

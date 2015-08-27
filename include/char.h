@@ -1,6 +1,8 @@
 #ifndef _CHAR_H_
 #define _CHAR_H_
 
+#include "refBuff.h"
+
 class Char
 {
 public:
