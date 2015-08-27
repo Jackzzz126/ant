@@ -3,10 +3,6 @@
 
 class LuaState
 {
-public:
-	static LuaState* Singleton();
-private:
-	static LuaState* mLuaStateSingleton;
 private:
 	LuaState();
 	~LuaState();

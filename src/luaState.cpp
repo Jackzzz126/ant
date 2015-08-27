@@ -9,16 +9,6 @@ extern "C" int add(lua_State* L)
 	return 1;
 }
 
-LuaState* LuaState::mLuaStateSingleton = NULL;
-LuaState* LuaState::Singleton()
-{
-	if(mLuaStateSingleton == NULL)
-	{
-		mLuaStateSingleton = new LuaState();
-	}
-	return mLuaStateSingleton;
-}
-
 LuaState::LuaState()
 {
 	mLuaState = NULL;
