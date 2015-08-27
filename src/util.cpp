@@ -23,3 +23,18 @@ string Util::ToHex(const char* data, int len)
 	DelBuff(&buff);
 	return str;
 }
+
+string Util::GetIpByName(const char* hostName)
+{
+	struct hostent* hostEnt = gethostbyname(hostName);
+	if(hostEnt == NULL)
+	{
+		Log::Error("Error when parse addr: %s.\n", hostName);
+		return "";
+	}
+
+	char ipstr[16];
+	inet_ntop(AF_INET, (hostEnt->h_addr_list)[0], ipstr, 16);
+	return string(ipstr);
+}
+

@@ -1,4 +1,3 @@
 # todo
 UDP support
-DNS
 

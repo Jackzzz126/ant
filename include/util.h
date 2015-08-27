@@ -8,6 +8,7 @@ class Util
 {
 public:
 	static string ToHex(const char* data, int len);
+	static string GetIpByName(const char* hostName);
 };
 
 #endif//_UTIL_H_

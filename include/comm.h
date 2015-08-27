@@ -20,6 +20,8 @@
 #include <sys/epoll.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+//dns
+#include <netdb.h>
 //thread lib
 #include<pthread.h>
 
