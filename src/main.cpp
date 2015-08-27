@@ -10,7 +10,6 @@
 #include "scheduleTasks.h"
 #include "packId.h"
 #include "threadData.h"
-#include "script.h"
 
 bool gGotQuitSignal = false;
 

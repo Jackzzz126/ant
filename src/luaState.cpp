@@ -1,5 +1,5 @@
 #include "comm.h"
-#include "script.h"
+#include "luaState.h"
 
 extern "C" int add(lua_State* L) 
 {
@@ -9,27 +9,27 @@ extern "C" int add(lua_State* L)
 	return 1;
 }
 
-Script* Script::mScriptSingleton = NULL;
-Script* Script::Singleton()
+LuaState* LuaState::mLuaStateSingleton = NULL;
+LuaState* LuaState::Singleton()
 {
-	if(mScriptSingleton == NULL)
+	if(mLuaStateSingleton == NULL)
 	{
-		mScriptSingleton = new Script();
+		mLuaStateSingleton = new LuaState();
 	}
-	return mScriptSingleton;
+	return mLuaStateSingleton;
 }
 
-Script::Script()
+LuaState::LuaState()
 {
 	mLuaState = NULL;
 	Init();
 }
 
-Script::~Script()
+LuaState::~LuaState()
 {
 	Close();
 }
-void Script::Init()
+void LuaState::Init()
 {
 	if(mLuaState == NULL)
 	{
@@ -43,12 +43,12 @@ void Script::Init()
 	}
 	lua_settop(mLuaState, 0);
 }
-void Script::Close()
+void LuaState::Close()
 {
 	lua_close(mLuaState);
 	mLuaState = NULL;
 }
-bool Script::DoFile(const char* fileName)
+bool LuaState::DoFile(const char* fileName)
 {
 	Init();
 	//run script
@@ -62,7 +62,7 @@ bool Script::DoFile(const char* fileName)
 	return true;
 }
 
-bool Script::GetValue(const char* fileName, const char* key, string& value)
+bool LuaState::GetValue(const char* fileName, const char* key, string& value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -79,7 +79,7 @@ bool Script::GetValue(const char* fileName, const char* key, string& value)
 	return true;
 }
 
-bool Script::GetValue(const char* fileName, const char* key, int* value)
+bool LuaState::GetValue(const char* fileName, const char* key, int* value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -96,7 +96,7 @@ bool Script::GetValue(const char* fileName, const char* key, int* value)
 	return true;
 }
 
-bool Script::GetValue(const char* fileName, const char* key, double* value)
+bool LuaState::GetValue(const char* fileName, const char* key, double* value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -112,7 +112,7 @@ bool Script::GetValue(const char* fileName, const char* key, double* value)
 	*value = lua_tonumber(mLuaState, -1);
 	return true;
 }
-bool Script::GetValue(const char* fileName, const char* tableName, const char* key, string& value)
+bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, string& value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -136,7 +136,7 @@ bool Script::GetValue(const char* fileName, const char* tableName, const char* k
 	return true;
 
 }
-bool Script::GetValue(const char* fileName, const char* tableName, const char* key, int* value)
+bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, int* value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -159,7 +159,7 @@ bool Script::GetValue(const char* fileName, const char* tableName, const char* k
 	*value = lua_tonumber(mLuaState, -1);
 	return true;
 }
-bool Script::GetValue(const char* fileName, const char* tableName, const char* key, double* value)
+bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, double* value)
 {
 	if(!DoFile(fileName))
 		return false;
@@ -184,7 +184,7 @@ bool Script::GetValue(const char* fileName, const char* tableName, const char* k
 }
 
 //'d':double,'i':integer,'s':strings, '|': separator
-bool Script::Call(const char* fileName, const char* funcName, const char* fmt, ...)
+bool LuaState::Call(const char* fileName, const char* funcName, const char* fmt, ...)
 {
 	if(!DoFile(fileName))
 		return false;

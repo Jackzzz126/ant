@@ -1,15 +1,15 @@
-#ifndef _SCRIPT_H_
-#define _SCRIPT_H_
+#ifndef _LUASTATE_H_
+#define _LUASTATE_H_
 
-class Script
+class LuaState
 {
 public:
-	static Script* Singleton();
+	static LuaState* Singleton();
 private:
-	static Script* mScriptSingleton;
+	static LuaState* mLuaStateSingleton;
 private:
-	Script();
-	~Script();
+	LuaState();
+	~LuaState();
 
 public:
 	bool GetValue(const char* fileName, const char* key, string& value);
@@ -20,11 +20,11 @@ public:
 	bool GetValue(const char* fileName, const char* tableName, const char* key, int* value);
 	bool GetValue(const char* fileName, const char* tableName, const char* key, double* value);
 
-	/*Script* pScript = Script::Singleton();
+	/*LuaState* pLuaState = LuaState::Singleton();
 	double x = 0.0;
 	int y = 0;
 	char* z = NULL;
-	if(pScript->Call("lua/test.lua", "f", "dis|dis", 5.0, 5, "bbb", &x, &y, &z))
+	if(pLuaState->Call("lua/test.lua", "f", "dis|dis", 5.0, 5, "bbb", &x, &y, &z))
 	{
 		printf("sum is: %f %d %s\n", x, y, z);
 	}*/
@@ -37,5 +37,5 @@ private:
 	lua_State* mLuaState;
 };
 
-#endif//_SCRIPT_H_
+#endif//_LUASTATE_H_
 
