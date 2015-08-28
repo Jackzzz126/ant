@@ -48,75 +48,50 @@ bool Config::Load(char* fileName)
 		return false;
 	}
 
-
-	FILE* pFile = fopen(fileName, "r");
-	if(pFile == NULL)
-	{
-		Log::Error("Error when open %s: %s.\n", fileName, strerror(errno));
-		return false;
-	}
-
-	fseek(pFile, 0, SEEK_END);
-	size_t fileLen = ftell(pFile); 
-	char buff[1024 * (fileLen / 1024 + 1)];
-	fseek(pFile, 0, SEEK_SET);
-	size_t readLen = fread(buff, 1, fileLen, pFile);
-	if(readLen != fileLen)
-	{
-		Log::Error("Error when read %s: %s.\n", fileName, strerror(errno));
-		return false;
-	}
-	buff[fileLen] = '\0';
-	fclose(pFile);
-	
-	Json json;
-	if(!json.Parse(buff))
-	{
-		Log::Error("Error when parse %s: %s.\n", fileName, strerror(errno));
-		return false;
-	}
-	if( !json.GetValue("server:port", &mPort)
-		|| !json.GetValue("server:ip", mIp)
-		|| !json.GetValue("server:backlog", &mBacklog)
-		|| !json.GetValue("server:daemon", &mDaemon)
-		|| !json.GetValue("server:sockTimeout", &mSockTimeout)
-		|| !json.GetValue("server:workerThreads", &mWorkerThreads)
-		|| !json.GetValue("server:dbThreads", &mDbThreads)
-		|| !json.GetValue("log:logFile", mLogFileName)
-		|| !json.GetValue("log:errFile", mErrFileName)
-		|| !json.GetValue("redis:ip", mRedis_Ip)
-		|| !json.GetValue("redis:port", &mRedis_Port)
-		|| !json.GetValue("redis:charIdSeed", mRedis_CharIdSeed)
-		|| !json.GetValue("redis:char", mRedis_Char)
+	if(!pLua->GetValue("server", "ip", mIp)
+		|| !pLua->GetValue("server", "port", &mPort)
+		|| !pLua->GetValue("server", "backlog", &mBacklog)
+		|| !pLua->GetValue("server", "daemon", &mDaemon)
+		|| !pLua->GetValue("server", "sockTimeout", &mSockTimeout)
+		|| !pLua->GetValue("server", "workerThreads", &mWorkerThreads)
+		|| !pLua->GetValue("server", "dbThreads", &mDbThreads)
+		|| !pLua->GetValue("log", "logFile", mLogFileName)
+		|| !pLua->GetValue("log", "errFile", mErrFileName)
+		|| !pLua->GetValue("redis", "ip", mRedis_Ip)
+		|| !pLua->GetValue("redis", "port", &mRedis_Port)
+		|| !pLua->GetValue("redis", "char", mRedis_Char)
 	  )
 	{
-		Log::Error("Error when parse %s: some value miss.\n", fileName);
+		Log::Error("Error when parse config: some value miss.\n");
 		return false;
 	}
 
-	//check
-	if(mPort == 0 || mIp == "")
-	{
-		Log::Error( "Error when parse %s: ip, port invalid.\n", fileName);
-		return false;
-	}
-	if((mLogFileName == "" || mErrFileName == "") && mDaemon)
-	{
-		Log::Error( "Error when parse %s: must set log file in daemon mode.\n", fileName);
-		return false;
-	}
-	if(mWorkerThreads < 1)
-	{
-		Log::Error( "Error when parse %s: worker threads must > 1.\n", fileName);
-		return false;
-	}
-	if(mRedis_Port == 0 || mRedis_Ip == "" || mRedis_CharIdSeed == ""
-			|| mRedis_Char == "")
-	{
-		Log::Error( "Error when parse %s: reids ip, port or keys invalid.\n", fileName);
-		return false;
-	}
+	//FILE* pFile = fopen(fileName, "r");
+	//if(pFile == NULL)
+	//{
+	//	Log::Error("Error when open %s: %s.\n", fileName, strerror(errno));
+	//	return false;
+	//}
 
+	//fseek(pFile, 0, SEEK_END);
+	//size_t fileLen = ftell(pFile); 
+	//char buff[1024 * (fileLen / 1024 + 1)];
+	//fseek(pFile, 0, SEEK_SET);
+	//size_t readLen = fread(buff, 1, fileLen, pFile);
+	//if(readLen != fileLen)
+	//{
+	//	Log::Error("Error when read %s: %s.\n", fileName, strerror(errno));
+	//	return false;
+	//}
+	//buff[fileLen] = '\0';
+	//fclose(pFile);
+	//
+	//Json json;
+	//if(!json.Parse(buff))
+	//{
+	//	Log::Error("Error when parse %s: %s.\n", fileName, strerror(errno));
+	//	return false;
+	//}
 	//init
 	if(mLogFileName == "" || mErrFileName == "")
 	{

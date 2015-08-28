@@ -11,10 +11,12 @@ public:
 	bool GetValue(const char* fileName, const char* key, string& value);
 	bool GetValue(const char* fileName, const char* key, int* value);
 	bool GetValue(const char* fileName, const char* key, double* value);
+	bool GetValue(const char* fileName, const char* key, bool* value);
 
 	bool GetValue(const char* fileName, const char* tableName, const char* key, string& value);
 	bool GetValue(const char* fileName, const char* tableName, const char* key, int* value);
 	bool GetValue(const char* fileName, const char* tableName, const char* key, double* value);
+	bool GetValue(const char* fileName, const char* tableName, const char* key, bool* value);
 
 	/*LuaState* pLuaState = LuaState::Singleton();
 	double x = 0.0;

@@ -29,7 +29,6 @@ public:
 	//redis
 	string mRedis_Ip;
 	int mRedis_Port;
-	string mRedis_CharIdSeed;
 	string mRedis_Char;
 
 private:

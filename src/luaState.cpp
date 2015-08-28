@@ -102,6 +102,25 @@ bool LuaState::GetValue(const char* fileName, const char* key, double* value)
 	*value = lua_tonumber(mLuaState, -1);
 	return true;
 }
+
+bool LuaState::GetValue(const char* fileName, const char* key, bool* value)
+{
+	if(!DoFile(fileName))
+		return false;
+
+	lua_getglobal(mLuaState, key);
+
+	if(!lua_isnumber(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	int luaValue = lua_tonumber(mLuaState, -1);
+	*value = (luaValue != 0);
+	return true;
+}
+
 bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, string& value)
 {
 	if(!DoFile(fileName))
@@ -126,6 +145,7 @@ bool LuaState::GetValue(const char* fileName, const char* tableName, const char*
 	return true;
 
 }
+
 bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, int* value)
 {
 	if(!DoFile(fileName))
@@ -149,6 +169,7 @@ bool LuaState::GetValue(const char* fileName, const char* tableName, const char*
 	*value = lua_tonumber(mLuaState, -1);
 	return true;
 }
+
 bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, double* value)
 {
 	if(!DoFile(fileName))
@@ -170,6 +191,31 @@ bool LuaState::GetValue(const char* fileName, const char* tableName, const char*
 		return false;
 	}
 	*value = lua_tonumber(mLuaState, -1);
+	return true;
+}
+
+bool LuaState::GetValue(const char* fileName, const char* tableName, const char* key, bool* value)
+{
+	if(!DoFile(fileName))
+		return false;
+
+	lua_getglobal(mLuaState, tableName);
+	if (!lua_istable(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	lua_pushstring(mLuaState, key);
+	lua_gettable(mLuaState, -2);
+	if(!lua_isnumber(mLuaState, -1))
+	{
+		Log::Error("Error when run %s: return value error.\n", fileName);
+		Close();
+		return false;
+	}
+	int luaValue = lua_tonumber(mLuaState, -1);
+	*value = (luaValue != 0);
 	return true;
 }
 
