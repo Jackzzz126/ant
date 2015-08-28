@@ -46,6 +46,7 @@ bool Config::Load(char* fileName)
 				Log::Error("%s\n", iter->c_str());
 			}
 		}
+		DELETE(pLua);
 		return false;
 	}
 
@@ -65,8 +66,10 @@ bool Config::Load(char* fileName)
 	  )
 	{
 		Log::Error("Error when parse config: some value miss.\n");
+		DELETE(pLua);
 		return false;
 	}
+	DELETE(pLua);
 
 	//FILE* pFile = fopen(fileName, "r");
 	//if(pFile == NULL)
