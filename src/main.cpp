@@ -2,6 +2,7 @@
 #include "time.h"
 #include "config.h"
 #include "listen.h"
+#include "udpListen.h"
 #include "msg.h"
 #include "router.h"
 #include "poll.h"
@@ -60,7 +61,16 @@ int main(int argc, char* argv[])
 		return 1;
 	}
 	pPoll->Add(listenSock, pListener);
-	Log::Out("Server start at %s:%d.\n", pConfig->mIp.c_str(), pConfig->mPort);
+
+	int udpListenSock = socket(AF_INET, SOCK_DGRAM, 0);
+	UdpListen* pUdpListener = new UdpListen(udpListenSock);
+	if(pUdpListener->Init() != 0)
+	{
+		Log::Error("Udp listen error: %s.\n", strerror(errno));
+		return 1;
+	}
+	pPoll->Add(udpListenSock, pUdpListener);
+	Log::Out("Server start at %s:%d %d.\n", pConfig->mIp.c_str(), pConfig->mPort, pConfig->mUdpPort);
 
 	//thread start
 	pthread_key_create(&ThreadData::mThreadKey, NULL);
