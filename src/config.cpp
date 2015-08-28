@@ -15,6 +15,7 @@ Config* Config::Singleton()
 Config::Config()
 {
 	mPort = 0;
+	mUdpPort = 0;
 	mBacklog = 128;
 	mDaemon = false;
 	mWorkerThreads = 0;
@@ -48,18 +49,19 @@ bool Config::Load(char* fileName)
 		return false;
 	}
 
-	if(!pLua->GetValue("server", "ip", mIp)
-		|| !pLua->GetValue("server", "port", &mPort)
-		|| !pLua->GetValue("server", "backlog", &mBacklog)
-		|| !pLua->GetValue("server", "daemon", &mDaemon)
-		|| !pLua->GetValue("server", "sockTimeout", &mSockTimeout)
-		|| !pLua->GetValue("server", "workerThreads", &mWorkerThreads)
-		|| !pLua->GetValue("server", "dbThreads", &mDbThreads)
-		|| !pLua->GetValue("log", "logFile", mLogFileName)
-		|| !pLua->GetValue("log", "errFile", mErrFileName)
-		|| !pLua->GetValue("redis", "ip", mRedis_Ip)
-		|| !pLua->GetValue("redis", "port", &mRedis_Port)
-		|| !pLua->GetValue("redis", "char", mRedis_Char)
+	if(!pLua->GetValue("lua/config.lua", "server", "ip", mIp)
+		|| !pLua->GetValue("lua/config.lua", "server", "port", &mPort)
+		|| !pLua->GetValue("lua/config.lua", "server", "udpPort", &mUdpPort)
+		|| !pLua->GetValue("lua/config.lua", "server", "backlog", &mBacklog)
+		|| !pLua->GetValue("lua/config.lua", "server", "daemon", &mDaemon)
+		|| !pLua->GetValue("lua/config.lua", "server", "sockTimeout", &mSockTimeout)
+		|| !pLua->GetValue("lua/config.lua", "server", "workerThreads", &mWorkerThreads)
+		|| !pLua->GetValue("lua/config.lua", "server", "dbThreads", &mDbThreads)
+		|| !pLua->GetValue("lua/config.lua", "log", "logFile", mLogFileName)
+		|| !pLua->GetValue("lua/config.lua", "log", "errFile", mErrFileName)
+		|| !pLua->GetValue("lua/config.lua", "redis", "ip", mRedis_Ip)
+		|| !pLua->GetValue("lua/config.lua", "redis", "port", &mRedis_Port)
+		|| !pLua->GetValue("lua/config.lua", "redis", "char", mRedis_Char)
 	  )
 	{
 		Log::Error("Error when parse config: some value miss.\n");

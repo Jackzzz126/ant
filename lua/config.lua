@@ -1,6 +1,7 @@
 server = {
 	ip = "192.168.1.21",
-	port = 8003,
+	port = 8000,
+	udpPort = 8001,
 	backlog = 128,
 	daemon = 0,
 	sockTimeout = 300,
@@ -22,7 +23,7 @@ redis = {
 function check()
 	local errStr = ""
 
-	if server.ip == "" or server.port == 0 then
+	if server.ip == "" or server.port == 0 or server.udpPort == 0 then
 		errStr = errStr .. "Config error: ip, port invalid.\n";
 	end
 

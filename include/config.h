@@ -18,6 +18,7 @@ public:
 	//server
 	string mIp;
 	int mPort;
+	int mUdpPort;
 	int mBacklog;
 	bool mDaemon;
 	int mSockTimeout;
