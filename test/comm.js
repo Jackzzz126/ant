@@ -1,12 +1,12 @@
 var http = require("http");
 var net = require("net");
 
-var config = require("../config/config.json")
+var config = require("./config.json")
 
 function httpRequest(options, data, func)
 {
-	options.host = config.server.ip;
-	options.port = config.server.port;
+	options.host = config.ip;
+	options.port = config.port;
 
 	options.headers = new Object( );
 	if( data !== null )
@@ -57,7 +57,7 @@ function httpRequest(options, data, func)
 
 function tcpConnect(connFunc, packFunc)
 {
-	var socket = net.createConnection(config.server.port, config.server.ip);
+	var socket = net.createConnection(config.port, config.ip);
 	socket.on("connect", onConn);
 	socket.on("error", onError);
 	socket.on("data", onRecvData);

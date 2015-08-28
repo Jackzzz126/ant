@@ -16,8 +16,19 @@ void UdpListen::OnRead(int timeStamp)
 	struct sockaddr_in addr;
 	int addrLen = sizeof(addr);
 	char buff[BUFF_UNIT];
-	int len = recvfrom(mSock, buff, BUFF_UNIT, 0, (sockaddr*)&addr, (socklen_t*)&addrLen);
-	sendto(mSock, buff, len, 0, (const sockaddr*)&addr, addrLen);
+
+	int len = 0;
+	do
+	{
+		len = recvfrom(mSock, buff, BUFF_UNIT, 0, (sockaddr*)&addr, (socklen_t*)&addrLen);
+		if(len == -1 || len == 0)
+			break;
+		buff[len] = '\0';
+		short port = ntohs(addr.sin_port);
+		char* ip = inet_ntoa(addr.sin_addr);
+		Log::Out("got \"%s\" form %s:%d.\n", buff, ip, port);
+		sendto(mSock, buff, len, 0, (const sockaddr*)&addr, addrLen);
+	}while(len != 0);
 }
 void UdpListen::OnWrite(int timeStamp)
 {
