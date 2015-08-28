@@ -7,10 +7,12 @@ pthread_key_t ThreadData::mThreadKey;
 ThreadData::ThreadData()
 {
 	mRedis = NULL;
+	mLua = NULL;
 }
 ThreadData::~ThreadData()
 {
 	CloseRedis();
+	CloseLuaState();
 }
 
 Redis* ThreadData::GetRedis()
@@ -35,11 +37,32 @@ Redis* ThreadData::GetRedis()
 	}
 }
 
+LuaState* ThreadData::GetLuaState()
+{
+	if(mLua != NULL)
+	{
+		return mLua;
+	}
+	else
+	{
+		mLua = new LuaState();
+		return mLua;
+	}
+}
+
 void ThreadData::CloseRedis()
 {
 	if(mRedis != NULL)
 	{
 		DELETE(mRedis);
+	}
+}
+
+void ThreadData::CloseLuaState()
+{
+	if(mLua != NULL)
+	{
+		DELETE(mLua);
 	}
 }
 
