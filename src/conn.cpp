@@ -404,10 +404,6 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 //************************************************
 map<int, Conn*> ConnMgr::mSockConns;
 
-ConnMgr::ConnMgr()
-{
-}
-
 void ConnMgr::CloseConn(int sock, bool logErr)
 {
 	Poll::Singleton()->Del(sock);

@@ -64,8 +64,5 @@ public:
 	static void SendToSocks(const vector<int>& socks, RefBuff* pRefBuff);
 
 	static void AddConn(int sock, Conn* pConn);
-public:
-	ConnMgr();
-	~ConnMgr(){};
 };
 #endif//_CONN_H_
