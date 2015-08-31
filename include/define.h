@@ -3,6 +3,7 @@
 
 typedef unsigned char byte;
 typedef unsigned int uint;
+typedef unsigned short ushort;
 
 # if __WORDSIZE == 64
 typedef long int		int64;

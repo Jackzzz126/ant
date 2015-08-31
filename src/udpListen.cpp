@@ -24,9 +24,9 @@ void UdpListen::OnRead(int timeStamp)
 		if(len == -1 || len == 0)
 			break;
 		buff[len] = '\0';
-		short port = ntohs(addr.sin_port);
+		ushort port = ntohs(addr.sin_port);
 		char* ip = inet_ntoa(addr.sin_addr);
-		Log::Out("got \"%s\" form %s:%d.\n", buff, ip, port);
+		Log::Out("got \"%s\" from %s:%d.\n", buff, ip, port);
 		sendto(mSock, buff, len, 0, (const sockaddr*)&addr, addrLen);
 	}while(len != 0);
 }
