@@ -1,8 +1,10 @@
 #include "comm.h"
 #include "udpClient.h"
 
-UdpClient::UdpClient()
+UdpClient::UdpClient(sockaddr_in addr, int timeStamp)
 {
+	mAddr = addr;
+	mLastActiveTime = timeStamp;
 }
 UdpClient::~UdpClient()
 {

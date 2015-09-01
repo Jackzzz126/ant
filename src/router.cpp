@@ -78,6 +78,8 @@ void Router::Init()
 	AddDbHandler(-11, BenchMark::LoginDb);
 	AddHandler(-12, BenchMark::Move);
 
+	AddHandler(-22, BenchMark::UdpMove);
+
 	AddHandler(900, Admin::Hello);
 }
 

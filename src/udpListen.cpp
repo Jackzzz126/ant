@@ -3,6 +3,10 @@
 #include "poll.h"
 #include "conn.h"
 #include "config.h"
+#include "udpClient.h"
+#include "msg.h"
+
+#include "benchMark.pb.h"
 
 UdpListen::UdpListen(int sock) : Sock(sock)
 {
@@ -17,18 +21,43 @@ void UdpListen::OnRead(int timeStamp)
 	int addrLen = sizeof(addr);
 	char buff[BUFF_UNIT];
 
-	int len = 0;
-	do
+	int recvLen = 0;
+	while(true)
 	{
-		len = recvfrom(mSock, buff, BUFF_UNIT, 0, (sockaddr*)&addr, (socklen_t*)&addrLen);
-		if(len == -1 || len == 0)
+		recvLen = recvfrom(mSock, buff, BUFF_UNIT, 0, (sockaddr*)&addr, (socklen_t*)&addrLen);
+		if(recvLen == -1 || recvLen == 0)
 			break;
-		buff[len] = '\0';
-		ushort port = ntohs(addr.sin_port);
-		char* ip = inet_ntoa(addr.sin_addr);
-		Log::Out("got \"%s\" from %s:%d.\n", buff, ip, port);
-		sendto(mSock, buff, len, 0, (const sockaddr*)&addr, addrLen);
-	}while(len != 0);
+		if(recvLen < HEAD_LENGTH)
+			continue;
+
+		int packId = *((int*)buff) ^ 0x79669966;
+		int packLen = *((int*)(buff) + 1) ^ 0x79669966;
+		if((packLen + HEAD_LENGTH) != recvLen)
+		{
+			continue;
+		}
+		if(packId == -21)//udp login
+		{
+			BenchMark::ReqUdpLogin req;
+			BenchMark::ResUdpLogin res;
+
+			req.ParseFromArray(buff + HEAD_LENGTH, packLen);
+			UdpClient* pUdpClient = new UdpClient(addr, DateTime::GetTimeStamp());
+			UdpClientMgr::AddUdpClient(req.charid(), pUdpClient);
+
+			res.set_status(STATUS_SUCCESS);
+			int resPackLen = res.ByteSize();
+			PackId::WritePackHead(buff, PackId::BENCHMARK_UDPMOVE, resPackLen);
+			res.SerializeToArray(buff + HEAD_LENGTH, resPackLen);
+			sendto(mSock, buff, resPackLen + HEAD_LENGTH, 0, (const sockaddr*)&addr, addrLen);
+		}
+		else
+		{
+			char* data = NewBuff(packLen);
+			memcpy(data, buff + HEAD_LENGTH, packLen);
+			MsgQueue::Singleton()->PushMsg(mSock, packId, data, packLen);
+		}
+	}
 }
 void UdpListen::OnWrite(int timeStamp)
 {

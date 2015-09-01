@@ -40,3 +40,29 @@ message ResMove{
 	required int32 time  = 4;
 }
 
+//-21
+message ReqUdpLogin{
+	required int32 charId = 1;
+}
+
+//-1021
+message ResUdpLogin{
+	required int32 status = 1;//-21: wrong pwd, -22: no such user;
+}
+
+//-22
+message ReqUdpMove{
+	required int32 charId = 1;
+	required int32 x  = 2;
+	required int32 y  = 3;
+	required int32 time  = 4;
+}
+
+//-1022
+message ResUdpMove{
+	required int32 charId = 1;
+	required int32 x  = 2;
+	required int32 y  = 3;
+	required int32 time  = 4;
+}
+

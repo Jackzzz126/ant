@@ -5,6 +5,7 @@ HPATH+=-I ../deps/libjson
 HPATH+=-I ../deps/hiredis
 HPATH+=-I ../deps/lua-5.3.1/src
 HPATH+=-I ../handle/include
+HPATH+=-I ../proto/build
 SOURCES = $(wildcard $(CPPPATH)/*.cpp)
 OBJS = $(notdir $(patsubst %.cpp,%.o,$(SOURCES)))
 LIBS = -lrt -ldl -lm -ljson -lhandle -lproto -lprotobuf-lite -lhiredis -lcrypto -llua

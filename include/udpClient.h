@@ -4,7 +4,7 @@
 class UdpClient
 {
 public:
-	UdpClient();
+	UdpClient(sockaddr_in addr, int timeStamp);
 	~UdpClient();
 public:
 	struct sockaddr_in mAddr;

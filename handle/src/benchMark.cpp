@@ -179,5 +179,9 @@ void Move(int sock, int msgId, char* data, int size)
 	pCharMgr->SendToChars(chars, pRefBuff);
 }
 
+void UdpMove(int sock, int msgId, char* data, int size)
+{
+}
+
 }//end of name space
 

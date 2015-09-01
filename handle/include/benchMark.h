@@ -11,6 +11,8 @@ namespace BenchMark
 	void Login(int sock, int msgId, char* data, int size);
 	void LoginDb(int sock, int msgId, char* data, int size);
 	void Move(int sock, int msgId, char* data, int size);
+
+	void UdpMove(int sock, int msgId, char* data, int size);
 }
 
 #endif//_BENCHMARK_H_
