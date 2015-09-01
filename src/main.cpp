@@ -11,7 +11,7 @@
 #include "scheduleTasks.h"
 #include "packId.h"
 #include "threadData.h"
-#include "udp.h"
+#include "udpClient.h"
 
 bool gGotQuitSignal = false;
 
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
 	pPoll->Add(listenSock, pListener);
 
 	int udpListenSock = socket(AF_INET, SOCK_DGRAM, 0);
-	UdpMgr::mUdpSock = udpListenSock;
+	UdpClientMgr::mUdpSock = udpListenSock;
 	UdpListen* pUdpListener = new UdpListen(udpListenSock);
 	if(pUdpListener->Init() != 0)
 	{

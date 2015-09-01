@@ -1,5 +1,5 @@
-#ifndef _UDP_H_
-#define _UDP_H_
+#ifndef _UDPCLIENT_H_
+#define _UDPCLIENT_H_
 
 class UdpClient
 {
@@ -26,4 +26,4 @@ public:
 	static void SendToChar(int charId, char* buff, int len);
 	static void SendToChars(const vector<int>& charIds, char* buff, int len);
 };
-#endif//_UDP_H_
+#endif//_UDPCLIENT_H_
