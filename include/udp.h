@@ -13,7 +13,7 @@ private:
 };
 
 //***********************************************************
-class UdpMgr
+class UdpClientMgr
 {
 private:
 	static map<int, UdpClient*> mCharUdpClient;

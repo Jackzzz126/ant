@@ -9,20 +9,20 @@ UdpClient::~UdpClient()
 }
 
 //************************************************
-map<int, UdpClient*> UdpMgr::mCharUdpClient;
-int UdpMgr::mUdpSock = 0;
+map<int, UdpClient*> UdpClientMgr::mCharUdpClient;
+int UdpClientMgr::mUdpSock = 0;
 
-void UdpMgr::AddUdpClient(int charId, UdpClient* pUdpClient)
+void UdpClientMgr::AddUdpClient(int charId, UdpClient* pUdpClient)
 {
 	mCharUdpClient[charId] = pUdpClient;
 }
 
-void UdpMgr::DelUdpClient(int charId)
+void UdpClientMgr::DelUdpClient(int charId)
 {
 	mCharUdpClient.erase(charId);
 }
 
-void UdpMgr::SendToChar(int charId, char* buff, int len)
+void UdpClientMgr::SendToChar(int charId, char* buff, int len)
 {
 	map<int, UdpClient*>::iterator iter = mCharUdpClient.find(charId);
 	if(iter != mCharUdpClient.end())
@@ -32,7 +32,7 @@ void UdpMgr::SendToChar(int charId, char* buff, int len)
 	}
 	DelBuff(&buff);
 }
-void UdpMgr::SendToChars(const vector<int>& charIds, char* buff, int len)
+void UdpClientMgr::SendToChars(const vector<int>& charIds, char* buff, int len)
 {
 	vector<int>::const_iterator iter = charIds.begin();
 	for(; iter != charIds.end(); iter++)
