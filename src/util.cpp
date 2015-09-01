@@ -38,3 +38,15 @@ string Util::GetIpByName(const char* hostName)
 	return string(ipstr);
 }
 
+string Util::GetIpByAddr(sockaddr_in addr)
+{
+	char* ip = inet_ntoa(addr.sin_addr);
+	return ip;
+}
+
+int Util::GetPortByAddr(sockaddr_in addr)
+{
+	ushort port = ntohs(addr.sin_port);
+	return port;
+}
+
