@@ -1,7 +1,7 @@
 var http = require("http");
 var net = require("net");
 
-var config = require("./config.json")
+var config = require("./config.js").config;
 
 function httpRequest(options, data, func)
 {

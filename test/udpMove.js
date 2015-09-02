@@ -1,6 +1,6 @@
 var dgram = require('dgram');
 
-var config = require("./config.json")
+var config = require("./config.js").config;
 
 var ProtoBuf = require("protobufjs");
 var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
