@@ -44,16 +44,11 @@ function sendMsg()
 	{
 		var now = (new Date()).getTime();
 
-		var buff = new Buffer(packSize + config.HEAD_LENGTH);
-		buff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
-		buff.writeInt32LE(packSize ^ config.HEAD_MASK, 4);
-		buff.writeInt32LE(now - timeOrigin , config.HEAD_LENGTH);
+		var dataBuff = new Buffer(packSize);
+		dataBuff.writeInt32LE(now - timeOrigin , 0);
 
-		if(allConns[i].writable)
-		{
-			allConns[i].write(buff);
-			sendCount++;
-		}
+		comm.send(allConns[i], packId, dataBuff);
+		sendCount++;
 	}
 }
 

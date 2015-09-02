@@ -21,13 +21,7 @@ function onConnect(socket)
 		req.pwd = "pwd-" + req.charId;
 
 		var dataBuff = req.encode().toBuffer();
-
-		var headBuff = new Buffer(config.HEAD_LENGTH);
-		headBuff.writeInt32LE(-10 ^ config.HEAD_MASK, 0);
-		headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
-
-		socket.write(headBuff);
-		socket.write(dataBuff);
+		comm.send(socket, -10, dataBuff);
 	}
 }
 
