@@ -53,14 +53,13 @@ int main(int argc, char* argv[])
 	signal(SIGINT, SignalHanle);
 	signal(SIGTERM, SignalHanle);
 	//listener
-	int listenSock = socket(AF_INET, SOCK_STREAM, 0);
-	Listen* pListener = new Listen(listenSock);
+	Listen* pListener = Listen::Singleton();
 	if(pListener->Init() != 0)
 	{
 		Log::Error("Listen error: %s.\n", strerror(errno));
 		return 1;
 	}
-	pPoll->Add(listenSock, pListener);
+	pPoll->Add(pListener->mSock, pListener);
 
 	UdpListen* pUdpListener = UdpListen::Singleton();
 	if(pUdpListener->Init() != 0)

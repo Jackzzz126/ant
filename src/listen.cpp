@@ -4,6 +4,18 @@
 #include "conn.h"
 #include "config.h"
 
+Listen* Listen::mListenSingleton = NULL;
+
+Listen* Listen::Singleton()
+{
+	if(mListenSingleton == NULL)
+	{
+		int listenSock = socket(AF_INET, SOCK_STREAM, 0);
+		mListenSingleton = new Listen(listenSock);
+	}
+	return mListenSingleton;
+}
+
 Listen::Listen(int sock) : Sock(sock)
 {
 }
