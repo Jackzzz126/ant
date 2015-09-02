@@ -121,6 +121,37 @@ function tcpConnect(connFunc, packFunc)
 	}
 }
 
+function udpSend(socket, packId, dataBuff, packFunc)
+{
+	socket.on("message", onMsg);
+
+	var headBuff = new Buffer(config.HEAD_LENGTH);
+	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
+
+	var buffs = new Array();
+	buffs.push(headBuff);
+	buffs.push(dataBuff);
+	var sendBuff = Buffer.concat(buffs);
+
+	socket.send(sendBuff, 0, sendBuff.length, config.udpPort, config.ip);
+	
+	function onMsg(msg, addr)
+	{
+		if(msg.length < config.HEAD_LENGTH)
+			return;
+
+		var packId = msg.readInt32LE(0) ^ config.HEAD_MASK;
+		var packLen = msg.readInt32LE(4) ^ config.HEAD_MASK;
+		if((packLen + config.HEAD_LENGTH) !== msg.length)
+		{
+			return;
+		}
+		packFunc(packId, msg.slice(config.HEAD_LENGTH, msg.length));
+	}
+}
+
 exports.httpRequest = httpRequest;
 exports.tcpConnect = tcpConnect;
+exports.udpSend = udpSend;
 

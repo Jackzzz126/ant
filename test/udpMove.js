@@ -1,6 +1,6 @@
 var dgram = require('dgram');
 
-var config = require("./config.js").config;
+var comm = require("./comm.js");
 
 var ProtoBuf = require("protobufjs");
 var BenchMark = ProtoBuf.loadProtoFile("../proto/benchMark.proto").build("BenchMark");
@@ -17,32 +17,19 @@ for(var i = 0; i < userNum; i++)
 {
 	var socket = dgram.createSocket("udp4");
 	allSockets.push(socket);
-	socket.on("message", onMsg);
 
 	var req = new BenchMark.ReqUdpLogin();
 	req.charId = i + 1;
 	var dataBuff = req.encode().toBuffer();
 
-	var headBuff = new Buffer(config.HEAD_LENGTH);
-	headBuff.writeInt32LE(-21 ^ config.HEAD_MASK, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
-
-	var buffs = new Array();
-	buffs.push(headBuff);
-	buffs.push(dataBuff);
-	var sendBuff = Buffer.concat(buffs);
-
-	socket.send(sendBuff, 0, sendBuff.length, config.udpPort, config.ip);
+	comm.udpSend(socket, -21, dataBuff, onPack);
 }
 
-function onMsg(msg, addr)
+function onPack(packId, buff)
 {
-	var packId = msg.readInt32LE(0) ^ config.HEAD_MASK;
-	var packLen = msg.readInt32LE(4) ^ config.HEAD_MASK;
-
-	if(packLen + config.HEAD_LENGTH == msg.length && packId === -1021)
+	if(packId === -1021)
 	{
-		var res = BenchMark.ResUdpLogin.decode(msg.slice(config.HEAD_LENGTH, msg.length));
+		var res = BenchMark.ResUdpLogin.decode(buff);
 		if(res.status === 0)
 		{
 			loginSucNum++;
@@ -51,6 +38,9 @@ function onMsg(msg, addr)
 		{
 			loginFailNum++;
 		}
+	}
+	else if(packId === -1022)
+	{
 	}
 
 	if((loginSucNum + loginFailNum) === userNum)
