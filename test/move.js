@@ -29,13 +29,7 @@ function onConnect(socket)
 	req.pwd = "pwd-" + req.charId;
 
 	var dataBuff = req.encode().toBuffer();
-
-	var headBuff = new Buffer(config.HEAD_LENGTH);
-	headBuff.writeInt32LE(-11 ^ config.HEAD_MASK, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
-
-	socket.write(headBuff);
-	socket.write(dataBuff);
+	comm.send(socket, -11, dataBuff);
 }
 
 function onPack(packId, packLen, buff)
@@ -104,13 +98,8 @@ function sendMove()
 		req.time = now - timeOrigin;
 
 		var dataBuff = req.encode().toBuffer();
+		comm.send(allSockets[i], -12, dataBuff);
 
-		var headBuff = new Buffer(config.HEAD_LENGTH);
-		headBuff.writeInt32LE(-12 ^ config.HEAD_MASK, 0);
-		headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
-
-		allSockets[i].write(headBuff);
-		allSockets[i].write(dataBuff);
 		moveSendNum++;
 	}
 }

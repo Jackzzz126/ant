@@ -121,6 +121,16 @@ function tcpConnect(connFunc, packFunc)
 	}
 }
 
+function send(socket, packId, dataBuff)
+{
+	var headBuff = new Buffer(config.HEAD_LENGTH);
+	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
+
+	socket.write(headBuff);
+	socket.write(dataBuff);
+}
+
 function udpSend(socket, packId, dataBuff, packFunc)
 {
 	socket.on("message", onMsg);
@@ -153,5 +163,6 @@ function udpSend(socket, packId, dataBuff, packFunc)
 
 exports.httpRequest = httpRequest;
 exports.tcpConnect = tcpConnect;
+exports.send = send;
 exports.udpSend = udpSend;
 
