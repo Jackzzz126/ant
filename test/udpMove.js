@@ -40,7 +40,7 @@ function onMsg(msg, addr)
 	var packId = msg.readInt32LE(0) ^ config.HEAD_MASK;
 	var packLen = msg.readInt32LE(4) ^ config.HEAD_MASK;
 
-	if(packLen + config.HEAD_LENGTH == msg.length && packId === -1022)
+	if(packLen + config.HEAD_LENGTH == msg.length && packId === -1021)
 	{
 		var res = BenchMark.ResUdpLogin.decode(msg.slice(config.HEAD_LENGTH, msg.length));
 		if(res.status === 0)

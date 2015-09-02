@@ -59,7 +59,7 @@ void UdpListen::OnRead(int timeStamp)
 
 			res.set_status(STATUS_SUCCESS);
 			int resPackLen = res.ByteSize();
-			PackId::WritePackHead(buff, PackId::BENCHMARK_UDPMOVE, resPackLen);
+			PackId::WritePackHead(buff, PackId::BENCHMARK_UDPLOGIN, resPackLen);
 			res.SerializeToArray(buff + HEAD_LENGTH, resPackLen);
 			sendto(mSock, buff, resPackLen + HEAD_LENGTH, 0, (const sockaddr*)&addr, addrLen);
 		}
