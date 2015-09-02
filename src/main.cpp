@@ -11,7 +11,6 @@
 #include "scheduleTasks.h"
 #include "packId.h"
 #include "threadData.h"
-#include "udpClient.h"
 
 bool gGotQuitSignal = false;
 
@@ -63,15 +62,13 @@ int main(int argc, char* argv[])
 	}
 	pPoll->Add(listenSock, pListener);
 
-	int udpListenSock = socket(AF_INET, SOCK_DGRAM, 0);
-	UdpClientMgr::mUdpSock = udpListenSock;
-	UdpListen* pUdpListener = new UdpListen(udpListenSock);
+	UdpListen* pUdpListener = UdpListen::Singleton();
 	if(pUdpListener->Init() != 0)
 	{
 		Log::Error("Udp listen error: %s.\n", strerror(errno));
 		return 1;
 	}
-	pPoll->Add(udpListenSock, pUdpListener);
+	pPoll->Add(pUdpListener->mSock, pUdpListener);
 	Log::Out("Server start at %s:%d %d.\n", pConfig->mIp.c_str(), pConfig->mPort, pConfig->mUdpPort);
 
 	//thread start

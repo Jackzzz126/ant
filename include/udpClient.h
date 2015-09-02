@@ -18,8 +18,6 @@ class UdpClientMgr
 private:
 	static map<int, UdpClient*> mCharUdpClient;
 public:
-	static int mUdpSock;
-public:
 	static void AddUdpClient(int charId, UdpClient* pUdpClient);
 	static void DelUdpClient(int charId);
 

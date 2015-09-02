@@ -6,9 +6,14 @@
 class UdpListen : public Sock
 {
 public:
+	static UdpListen* Singleton();
+private:
+	static UdpListen* mUdpListenSingleton;
+private:
 	UdpListen(int sock);
 	~UdpListen();
 
+public:
 	virtual void OnRead(int timeStamp);
 	virtual void OnWrite(int timeStamp);
 

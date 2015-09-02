@@ -8,6 +8,18 @@
 
 #include "benchMark.pb.h"
 
+UdpListen* UdpListen::mUdpListenSingleton = NULL;
+
+UdpListen* UdpListen::Singleton()
+{
+	if(mUdpListenSingleton == NULL)
+	{
+		int udpListenSock = socket(AF_INET, SOCK_DGRAM, 0);
+		mUdpListenSingleton = new UdpListen(udpListenSock);
+	}
+	return mUdpListenSingleton;
+}
+
 UdpListen::UdpListen(int sock) : Sock(sock)
 {
 }

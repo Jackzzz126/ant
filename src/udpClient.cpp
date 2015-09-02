@@ -1,5 +1,6 @@
 #include "comm.h"
 #include "udpClient.h"
+#include "udpListen.h"
 
 UdpClient::UdpClient(sockaddr_in addr, int timeStamp)
 {
@@ -12,7 +13,6 @@ UdpClient::~UdpClient()
 
 //************************************************
 map<int, UdpClient*> UdpClientMgr::mCharUdpClient;
-int UdpClientMgr::mUdpSock = 0;
 
 void UdpClientMgr::AddUdpClient(int charId, UdpClient* pUdpClient)
 {
@@ -26,23 +26,25 @@ void UdpClientMgr::DelUdpClient(int charId)
 
 void UdpClientMgr::SendToChar(int charId, char* buff, int len)
 {
+	UdpListen* pUdpListener = UdpListen::Singleton();
 	map<int, UdpClient*>::iterator iter = mCharUdpClient.find(charId);
 	if(iter != mCharUdpClient.end())
 	{
-		sendto(mUdpSock, buff, len, 0, (const sockaddr*)&iter->second->mAddr,
+		sendto(pUdpListener->mSock, buff, len, 0, (const sockaddr*)&iter->second->mAddr,
 			sizeof(sockaddr_in));
 	}
 	DelBuff(&buff);
 }
 void UdpClientMgr::SendToChars(const vector<int>& charIds, char* buff, int len)
 {
+	UdpListen* pUdpListener = UdpListen::Singleton();
 	vector<int>::const_iterator iter = charIds.begin();
 	for(; iter != charIds.end(); iter++)
 	{
 		map<int, UdpClient*>::iterator udpIter = mCharUdpClient.find(*iter);
 		if(udpIter != mCharUdpClient.end())
 		{
-			sendto(mUdpSock, buff, len, 0, (const sockaddr*)&udpIter->second->mAddr,
+			sendto(pUdpListener->mSock, buff, len, 0, (const sockaddr*)&udpIter->second->mAddr,
 				sizeof(sockaddr_in));
 		}
 	}
