@@ -42,8 +42,8 @@ void UdpListen::OnRead(int timeStamp)
 		if(recvLen < HEAD_LENGTH)
 			continue;
 
-		int packId = *((int*)buff) ^ 0x79669966;
-		int packLen = *((int*)(buff) + 1) ^ 0x79669966;
+		int packId = *((int*)buff) ^ HEAD_MASK;
+		int packLen = *((int*)(buff) + 1) ^ HEAD_MASK;
 		if((packLen + HEAD_LENGTH) != recvLen)
 		{
 			continue;

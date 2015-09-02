@@ -14,10 +14,11 @@ typedef long long int		int64;
 typedef unsigned long long int	uint64;
 # endif
 
-#define MAX_INT 2147483647
-#define MIN_INT -2147483648
+//#define MAX_INT 2147483647
+//#define MIN_INT -2147483648
 #define BUFF_UNIT 1024
 #define HEAD_LENGTH 8
+#define HEAD_MASK 0x79669966
 
 #define STATUS_SUCCESS 0
 #define STATUS_WRONG_ARG -1

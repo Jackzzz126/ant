@@ -23,9 +23,9 @@ for(var i = 0; i < userNum; i++)
 	req.charId = i + 1;
 	var dataBuff = req.encode().toBuffer();
 
-	var headBuff = new Buffer(8);
-	headBuff.writeInt32LE(-21 ^ 0x79669966, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+	var headBuff = new Buffer(config.HEAD_LENGTH);
+	headBuff.writeInt32LE(-21 ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
 
 	var buffs = new Array();
 	buffs.push(headBuff);
@@ -37,12 +37,12 @@ for(var i = 0; i < userNum; i++)
 
 function onMsg(msg, addr)
 {
-	var packId = msg.readInt32LE(0) ^ 0x79669966;
-	var packLen = msg.readInt32LE(4) ^ 0x79669966;
+	var packId = msg.readInt32LE(0) ^ config.HEAD_MASK;
+	var packLen = msg.readInt32LE(4) ^ config.HEAD_MASK;
 
-	if(packLen + 8 == msg.length && packId === -1022)
+	if(packLen + config.HEAD_LENGTH == msg.length && packId === -1022)
 	{
-		var res = BenchMark.ResUdpLogin.decode(msg.slice(8, msg.length));
+		var res = BenchMark.ResUdpLogin.decode(msg.slice(config.HEAD_LENGTH, msg.length));
 		if(res.status === 0)
 		{
 			loginSucNum++;

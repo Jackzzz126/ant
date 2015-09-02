@@ -76,7 +76,6 @@ function tcpConnect(connFunc, packFunc)
 	var dataPacksRecved = new Array( );
 	function onRecvData(dataBuff)
 	{
-		var HEADLEN = 8;
 		dataPacksRecved.push(dataBuff);
 
 		while(true)
@@ -87,31 +86,31 @@ function tcpConnect(connFunc, packFunc)
 				totalLength += dataPacksRecved[i].length;
 			}
 
-			if(totalLength < HEADLEN)
+			if(totalLength < config.HEAD_LENGTH)
 			{
 				break;
 			}
 
-			if(dataPacksRecved[0].length < HEADLEN)
+			if(dataPacksRecved[0].length < config.HEAD_LENGTH)
 			{
 				var buff = Buffer.concat(dataPacksRecved);
 				dataPacksRecved = new Array();
 				dataPacksRecved.push(buff);
 			}
 
-			var packId = dataPacksRecved[0].readInt32LE(0) ^ 0x79669966;
-			var packLen = dataPacksRecved[0].readInt32LE(4) ^ 0x79669966;
-			if(totalLength < (packLen + HEADLEN))
+			var packId = dataPacksRecved[0].readInt32LE(0) ^ config.HEAD_MASK;
+			var packLen = dataPacksRecved[0].readInt32LE(4) ^ config.HEAD_MASK;
+			if(totalLength < (packLen + config.HEAD_LENGTH))
 			{
 				break;
 			}
 			var recvBuff = Buffer.concat(dataPacksRecved);
-			packFunc(packId, packLen, recvBuff.slice(HEADLEN, packLen + HEADLEN));
+			packFunc(packId, packLen, recvBuff.slice(config.HEAD_LENGTH, packLen + config.HEAD_LENGTH));
 
-			if(totalLength > (packLen + HEADLEN))
+			if(totalLength > (packLen + config.HEAD_LENGTH))
 			{
 				dataPacksRecved = new Array();
-				dataPacksRecved.push(recvBuff.slice(packLen + HEADLEN, totalLength));
+				dataPacksRecved.push(recvBuff.slice(packLen + config.HEAD_LENGTH, totalLength));
 			}
 			else//==
 			{

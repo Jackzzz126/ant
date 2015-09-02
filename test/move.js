@@ -30,9 +30,9 @@ function onConnect(socket)
 
 	var dataBuff = req.encode().toBuffer();
 
-	var headBuff = new Buffer(8);
-	headBuff.writeInt32LE(-11 ^ 0x79669966, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+	var headBuff = new Buffer(config.HEAD_LENGTH);
+	headBuff.writeInt32LE(-11 ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
 
 	socket.write(headBuff);
 	socket.write(dataBuff);
@@ -105,9 +105,9 @@ function sendMove()
 
 		var dataBuff = req.encode().toBuffer();
 
-		var headBuff = new Buffer(8);
-		headBuff.writeInt32LE(-12 ^ 0x79669966, 0);
-		headBuff.writeInt32LE(dataBuff.length ^ 0x79669966, 4);
+		var headBuff = new Buffer(config.HEAD_LENGTH);
+		headBuff.writeInt32LE(-12 ^ config.HEAD_MASK, 0);
+		headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
 
 		allSockets[i].write(headBuff);
 		allSockets[i].write(dataBuff);
