@@ -131,21 +131,9 @@ function send(socket, packId, dataBuff)
 	socket.write(dataBuff);
 }
 
-function udpSend(socket, packId, dataBuff, packFunc)
+function udpSetCallBack(socket, packFunc)
 {
 	socket.on("message", onMsg);
-
-	var headBuff = new Buffer(config.HEAD_LENGTH);
-	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
-
-	var buffs = new Array();
-	buffs.push(headBuff);
-	buffs.push(dataBuff);
-	var sendBuff = Buffer.concat(buffs);
-
-	socket.send(sendBuff, 0, sendBuff.length, config.udpPort, config.ip);
-	
 	function onMsg(msg, addr)
 	{
 		if(msg.length < config.HEAD_LENGTH)
@@ -161,8 +149,23 @@ function udpSend(socket, packId, dataBuff, packFunc)
 	}
 }
 
+function udpSend(socket, packId, dataBuff)
+{
+	var headBuff = new Buffer(config.HEAD_LENGTH);
+	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
+
+	var buffs = new Array();
+	buffs.push(headBuff);
+	buffs.push(dataBuff);
+	var sendBuff = Buffer.concat(buffs);
+
+	socket.send(sendBuff, 0, sendBuff.length, config.udpPort, config.ip);
+}
+
 exports.httpRequest = httpRequest;
 exports.tcpConnect = tcpConnect;
 exports.send = send;
+exports.udpSetCallBack = udpSetCallBack;
 exports.udpSend = udpSend;
 
