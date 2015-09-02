@@ -11,6 +11,7 @@
 #include "char.h"
 #include "msg.h"
 #include "refBuff.h"
+#include "udpClient.h"
 
 #include "benchMark.pb.h"
 
@@ -181,6 +182,38 @@ void Move(int sock, int msgId, char* data, int size)
 
 void UdpMove(int sock, int msgId, char* data, int size)
 {
+	ReqUdpMove req;
+	ResUdpMove res;
+	req.ParseFromArray(data, size);
+	DelBuff(&data);
+
+	int charId = req.charid();//send to xx1 x10
+	int beginId;
+	if(charId % 10 == 0)
+	{
+		beginId = charId - 10;
+	}
+	else
+	{
+		beginId = charId - charId % 10;
+	}
+
+	vector<int> chars;
+	for(int i = 0; i < 10; i++)
+	{
+		chars.push_back(beginId + i + 1);
+	}
+
+	res.set_charid(req.charid());
+	res.set_x(req.x());
+	res.set_y(req.y());
+	res.set_time(req.time());
+
+	int packLen = res.ByteSize();
+	char * buff = NewBuff(packLen + HEAD_LENGTH);
+	PackId::WritePackHead(buff, PackId::BENCHMARK_UDPMOVE, packLen);
+	res.SerializeToArray(buff + HEAD_LENGTH, packLen);
+	UdpClientMgr::SendToChars(chars, buff, packLen + HEAD_LENGTH);
 }
 
 }//end of name space
