@@ -277,8 +277,8 @@ void Conn::ParseNormalPack()
 	{
 		if(((mRecvBuff + mValidSize) - curPos) < HEAD_LENGTH)
 			break;
-		int packId = *((int*)curPos) ^ HEAD_MASK;
-		int packLen = *((int*)(curPos) + 1) ^ HEAD_MASK;
+		int packId = ntohl(*((int*)curPos)) ^ HEAD_MASK;
+		int packLen = ntohl(*((int*)(curPos) + 1)) ^ HEAD_MASK;
 		int dataLen = (mRecvBuff + mValidSize) - (curPos + HEAD_LENGTH);
 		if(dataLen < packLen)
 		{
@@ -370,8 +370,8 @@ void Conn::HandleHttpPack(const string& url, char* buff, int size)
 			Log::Error("Unknown http pack, size: %d.\n", size);
 			return;
 		}
-		packId = *((int*)buff) ^ HEAD_MASK;
-		int packLen = *((int*)(buff) + 1) ^ HEAD_MASK;
+		packId = ntohl(*((int*)buff)) ^ HEAD_MASK;
+		int packLen = ntohl(*((int*)(buff) + 1)) ^ HEAD_MASK;
 		if((size - HEAD_LENGTH) != packLen)
 		{
 			Log::Error("Unknown http pack: packId: %d, size:%d.\n",

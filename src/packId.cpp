@@ -5,8 +5,8 @@ map<string, int> PackId::mUrlIds;
 
 void PackId::WritePackHead(char* buff, PackIdType packId, int len)
 {
-	*(int*)(buff) = packId ^ HEAD_MASK;
-	*((int*)(buff) + 1) = len ^ HEAD_MASK;
+	*(int*)(buff) = htonl(packId ^ HEAD_MASK);
+	*((int*)(buff) + 1) = htonl(len ^ HEAD_MASK);
 }
 
 int PackId::GetPackIdByUrl(const string& url)
