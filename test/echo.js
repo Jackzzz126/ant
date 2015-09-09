@@ -45,7 +45,7 @@ function sendMsg()
 		var now = (new Date()).getTime();
 
 		var dataBuff = new Buffer(packSize);
-		dataBuff.writeInt32LE(now - timeOrigin , 0);
+		dataBuff.writeInt32BE(now - timeOrigin , 0);
 
 		comm.send(allConns[i], packId, dataBuff);
 		sendCount++;
@@ -56,7 +56,7 @@ function onPack(packId, packLen, buff)
 {
 	recvCount++;
 
-	var timeStamp = buff.readInt32LE(0);
+	var timeStamp = buff.readInt32BE(0);
 	var now = (new Date()).getTime();
 	var timeDelta = now - timeOrigin - timeStamp;
 	totalTimeDelta += timeDelta;

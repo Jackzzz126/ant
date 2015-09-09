@@ -98,8 +98,8 @@ function tcpConnect(connFunc, packFunc)
 				dataPacksRecved.push(buff);
 			}
 
-			var packId = dataPacksRecved[0].readInt32LE(0) ^ config.HEAD_MASK;
-			var packLen = dataPacksRecved[0].readInt32LE(4) ^ config.HEAD_MASK;
+			var packId = dataPacksRecved[0].readInt32BE(0) ^ config.HEAD_MASK;
+			var packLen = dataPacksRecved[0].readInt32BE(4) ^ config.HEAD_MASK;
 			if(totalLength < (packLen + config.HEAD_LENGTH))
 			{
 				break;
@@ -124,8 +124,8 @@ function tcpConnect(connFunc, packFunc)
 function send(socket, packId, dataBuff)
 {
 	var headBuff = new Buffer(config.HEAD_LENGTH);
-	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
+	headBuff.writeInt32BE(packId ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32BE(dataBuff.length ^ config.HEAD_MASK, 4);
 
 	socket.write(headBuff);
 	socket.write(dataBuff);
@@ -139,8 +139,8 @@ function udpSetCallBack(socket, packFunc)
 		if(msg.length < config.HEAD_LENGTH)
 			return;
 
-		var packId = msg.readInt32LE(0) ^ config.HEAD_MASK;
-		var packLen = msg.readInt32LE(4) ^ config.HEAD_MASK;
+		var packId = msg.readInt32BE(0) ^ config.HEAD_MASK;
+		var packLen = msg.readInt32BE(4) ^ config.HEAD_MASK;
 		if((packLen + config.HEAD_LENGTH) !== msg.length)
 		{
 			return;
@@ -152,8 +152,8 @@ function udpSetCallBack(socket, packFunc)
 function udpSend(socket, packId, dataBuff)
 {
 	var headBuff = new Buffer(config.HEAD_LENGTH);
-	headBuff.writeInt32LE(packId ^ config.HEAD_MASK, 0);
-	headBuff.writeInt32LE(dataBuff.length ^ config.HEAD_MASK, 4);
+	headBuff.writeInt32BE(packId ^ config.HEAD_MASK, 0);
+	headBuff.writeInt32BE(dataBuff.length ^ config.HEAD_MASK, 4);
 
 	var buffs = new Array();
 	buffs.push(headBuff);
